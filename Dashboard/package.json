@@ -1,0 +1,47 @@
+{
+  "name": "techwind",
+  "version": "3.2.0",
+  "description": "Techwind - Next Js Multipurpose App, Saas & Software Landing & Admin Dashboard Template",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^44.3.0",
+    "@ckeditor/ckeditor5-react": "^11.0.1",
+    "@fullcalendar/daygrid": "^6.1.20",
+    "@fullcalendar/react": "^6.1.20",
+    "@tailwindcss/postcss": "^4.0.0",
+    "chart.js": "^4.5.1",
+    "framer-motion": "^12.38.0",
+    "jsvectormap": "^1.7.0",
+    "next": "^16.1.1",
+    "react": "^19.2.3",
+    "react-apexcharts": "^1.9.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-countup": "^6.5.3",
+    "react-dom": "^19.2.3",
+    "react-feather": "^2.0.10",
+    "react-icons": "^5.6.0",
+    "react-scroll": "^1.9.3",
+    "react-select": "^5.10.2",
+    "simplebar-react": "^3.3.2",
+    "tiny-slider-react": "^0.5.7",
+    "yet-another-react-lightbox": "^3.28.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@types/react-scroll": "^1.8.10",
+    "@types/swiper": "^6.0.0",
+    "@types/tiny-slider-react": "^0.3.8",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.9.3"
+  }
+}
