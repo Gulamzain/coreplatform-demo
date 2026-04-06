@@ -2,6 +2,7 @@
 'use client'
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { 
   BiHome, BiTrendingUp, BiHistory, BiWallet, BiBarChartAlt,
@@ -10,10 +11,9 @@ import {
   BiCalendar, BiWrench, BiMessage, BiCheckCircle,
   BiHeadphone, BiShield, BiLock, BiGridAlt, BiLineChart, BiChat,
   BiHelpCircle, BiChevronDown, BiChevronRight, BiPlusCircle,
-  BiMinusCircle, BiFolder, BiFolderOpen,BiMessageRoundedDetail
+  BiMinusCircle
 } from 'react-icons/bi';
 import { FiSettings } from 'react-icons/fi';
-import { MdOutlineConfirmationNumber } from 'react-icons/md';
 
 // Menu sections with nested items
 const menuSections = [
@@ -23,7 +23,6 @@ const menuSections = [
     items: [
       { name: 'Overview', href: '/dashboard', icon: BiHome },
       { name: 'My Accounts', href: '/dashboard/accounts', icon: BiUser },
-      // { name: 'Trading', href: '/dashboard/trading', icon: BiTrendingUp },
       { name: 'History', href: '/dashboard/history', icon: BiHistory },
     ]
   },
@@ -56,16 +55,15 @@ const menuSections = [
     ]
   },
   {
-  title: 'SUPPORT',
-  icon: BiSupport,
-  items: [
-    { name: 'Live Chat', href: '/dashboard/chat', icon: BiChat },
-    // Update the icon here:
-    { name: 'Open Tickets', href: '/dashboard/tickets', icon: BiSupport },
-    { name: 'Closed Tickets', href: '/dashboard/tickets/closed', icon: BiCheckCircle },
-    { name: 'Contact Us', href: '/dashboard/contact', icon: BiHeadphone },
-  ]
-},
+    title: 'SUPPORT',
+    icon: BiSupport,
+    items: [
+      { name: 'Live Chat', href: '/dashboard/chat', icon: BiChat },
+      { name: 'Open Tickets', href: '/dashboard/tickets', icon: BiHelpCircle },
+      { name: 'Closed Tickets', href: '/dashboard/tickets/closed', icon: BiCheckCircle },
+      { name: 'Contact Us', href: '/dashboard/contact', icon: BiHeadphone },
+    ]
+  },
   {
     title: 'SETTINGS',
     icon: FiSettings,
@@ -113,7 +111,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }));
   };
 
-  // Auto-expand section if a child is active
   const isChildActive = (items: any[]) => {
     return items.some(item => pathname === item.href);
   };
@@ -128,16 +125,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Sidebar */}
       <div className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-content">
-          {/* Logo */}
+          {/* Logo - F Icon with Hover Effects */}
           <div className="logo-section">
-            <div className="logo-icon"><span>F</span></div>
-            <div><h1 className="logo-text">Foxnance</h1><p className="logo-subtext">Client Portal</p></div>
+            <div className="logo-icon">
+              <span>F</span>
+              <div className="logo-glow"></div>
+            </div>
+            <div className="logo-text-wrapper">
+              <Image 
+                src="/images/FoxnanceMain.png" 
+                alt="Foxnance" 
+                width={140} 
+                height={38}
+                className="logo-image"
+                priority
+              />
+              <p className="logo-subtext">Client Portal</p>
+            </div>
           </div>
 
           {/* User Profile */}
           <div className="user-profile">
-            <div className="user-avatar"><span>JD</span><div className="online-dot"></div></div>
-            <div className="user-info"><p className="user-name">Gulam</p><p className="user-id">ID: FOX12345</p></div>
+            <div className="user-avatar"><span>GZ</span><div className="online-dot"></div></div>
+            <div className="user-info"><p className="user-name">Gulam Zain</p><p className="user-id">ID: FOX12345</p></div>
             <button className="user-settings"><BiUser size={16} /></button>
           </div>
 
@@ -181,14 +191,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               );
             })}
           </nav>
-
-          {/* Upgrade Card */}
-          <div className="upgrade-card">
-            <div className="upgrade-icon"><BiTrendingUp size={20} /></div>
-            <h4 className="upgrade-title">Foxnance Pro</h4>
-            <p className="upgrade-desc">Unlock sub-50ms latency</p>
-            <button className="upgrade-btn">Upgrade Now →</button>
-          </div>
 
           {/* Theme Toggle */}
           <div className="theme-toggle-section">
@@ -257,16 +259,115 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         .sidebar-content { padding: 24px; display: flex; flex-direction: column; height: 100%; }
 
-        .logo-section { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
-        .logo-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3fcb1b, #2e9c14); display: flex; align-items: center; justify-content: center; }
-        .logo-icon span { color: white; font-size: 24px; font-weight: bold; }
-        .logo-text { font-size: 20px; font-weight: bold; color: var(--text-primary); margin: 0; }
-        .logo-subtext { font-size: 10px; color: #3fcb1b; margin: 0; }
+        /* Logo Section - Fixed Alignment */
+        .logo-section {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+          margin-bottom: 32px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid var(--border-color);
+          text-decoration: none;
+        }
+        
+        .logo-icon {
+          position: relative;
+          width: 50px;
+          height: 50px;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #3fcb1b, #2e9c14);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(63,203,27,0.3);
+          transition: all 0.3s ease;
+          cursor: pointer;
+          flex-shrink: 0;
+        }
+        
+        .logo-icon:hover {
+          transform: scale(1.05);
+          box-shadow: 0 8px 20px rgba(63,203,27,0.4);
+        }
+        
+        .logo-icon span {
+          color: white;
+          font-size: 30px;
+          font-weight: bold;
+          transition: all 0.3s ease;
+        }
+        
+        .logo-icon:hover span {
+          transform: scale(1.02);
+        }
+        
+        .logo-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 100%;
+          height: 100%;
+          transform: translate(-50%, -50%);
+          background: radial-gradient(circle, rgba(63,203,27,0.4) 0%, transparent 70%);
+          border-radius: 50%;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+          pointer-events: none;
+        }
+        
+        .logo-icon:hover .logo-glow {
+          opacity: 1;
+          animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+          0%, 100% {
+            transform: translate(-50%, -50%) scale(0.9);
+            opacity: 0;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.3);
+            opacity: 0.5;
+          }
+        }
+        
+        .logo-text-wrapper {
+          display: flex;
+          flex-direction: column;
+          flex: 1;
+        }
+        
+        .logo-image {
+          object-fit: contain;
+          transition: all 0.3s ease;
+          margin-bottom: 6px;
+        }
+        
+        .logo-image:hover {
+          transform: scale(1.02);
+          filter: brightness(1.05);
+        }
+        
+        .logo-subtext {
+          font-size: 10px;
+          color: #3fcb1b;
+          margin: 0;
+          letter-spacing: 0.5px;
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
+        
+        .logo-text-wrapper:hover .logo-subtext {
+          letter-spacing: 1px;
+          color: #2e9c14;
+        }
 
-        .user-profile { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 24px; border-radius: 12px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); }
+        .user-profile { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 24px; border-radius: 12px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); transition: all 0.3s ease; }
+        .user-profile:hover { background: rgba(63,203,27,0.15); transform: translateY(-2px); }
         .user-avatar { position: relative; width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #3fcb1b, #2e9c14); display: flex; align-items: center; justify-content: center; }
-        .user-avatar span { color: black; font-weight: bold; }
-        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; background: #3fcb1b; border: 2px solid var(--bg-primary); }
+        .user-avatar span { color: black; font-weight: bold; font-size: 18px; }
+        .online-dot { position: absolute; bottom: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; background: #3fcb1b; border: 2px solid var(--bg-primary); animation: pulseDot 2s ease-in-out infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
         .user-info { flex: 1; }
         .user-name { color: var(--text-primary); font-weight: 600; margin: 0; }
         .user-id { color: var(--text-secondary); font-size: 11px; margin: 0; }
@@ -296,6 +397,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         .nav-section-header:hover {
           background: rgba(63,203,27,0.1);
           color: #3fcb1b;
+          transform: translateX(4px);
         }
         
         .nav-section-header.has-active {
@@ -329,6 +431,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         .nav-item:hover {
           background: rgba(63,203,27,0.1);
           color: #3fcb1b;
+          transform: translateX(4px);
         }
         
         .nav-item.active {
@@ -343,39 +446,44 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           height: 6px;
           border-radius: 50%;
           background: #3fcb1b;
+          animation: pulseActive 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulseActive {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.8); }
         }
 
-        .upgrade-card { margin: 24px 0; padding: 16px; border-radius: 12px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); text-align: center; }
-        .upgrade-icon { width: 48px; height: 48px; margin: 0 auto 12px; border-radius: 12px; background: linear-gradient(135deg, #3fcb1b, #2e9c14); display: flex; align-items: center; justify-content: center; }
-        .upgrade-title { color: var(--text-primary); font-weight: bold; margin: 0 0 4px; }
-        .upgrade-desc { color: var(--text-secondary); font-size: 11px; margin: 0 0 12px; }
-        .upgrade-btn { width: 100%; padding: 8px; border-radius: 8px; background: #3fcb1b; color: black; font-weight: 600; border: none; cursor: pointer; }
-
         .theme-toggle-section { margin-bottom: 16px; }
-        .theme-toggle-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; border-radius: 10px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); color: #3fcb1b; cursor: pointer; }
-        .floating-theme-btn { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .floating-theme-btn:hover { background: #3fcb1b; color: white; }
+        .theme-toggle-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 10px; border-radius: 10px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); color: #3fcb1b; cursor: pointer; transition: all 0.3s ease; }
+        .theme-toggle-btn:hover { background: rgba(63,203,27,0.2); transform: translateY(-2px); }
+        .floating-theme-btn { position: fixed; bottom: 24px; right: 24px; width: 48px; height: 48px; border-radius: 50%; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 100; transition: all 0.3s ease; }
+        .floating-theme-btn:hover { background: #3fcb1b; color: white; transform: scale(1.1); }
 
         .logout-section { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border-color); }
-        .logout-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 12px; background: rgba(239,68,68,0.1); color: #ef4444; border: none; cursor: pointer; }
+        .logout-btn { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px; border-radius: 12px; background: rgba(239,68,68,0.1); color: #ef4444; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .logout-btn:hover { background: rgba(239,68,68,0.2); transform: translateY(-2px); }
 
         .main-content { flex: 1; margin-left: 280px; }
         @media (max-width: 768px) { .main-content { margin-left: 0; } }
 
-        .top-bar { position: sticky; top: 0; z-index: 30; background: var(--bg-primary); }
+        .top-bar { position: sticky; top: 0; z-index: 30; background: var(--bg-primary); transition: all 0.3s ease; }
         .top-bar.scrolled { background: var(--bg-secondary); border-bottom: 1px solid var(--border-color); }
         .top-bar-content { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; flex-wrap: wrap; gap: 16px; }
         .welcome-title { font-size: 20px; font-weight: 600; color: var(--text-primary); margin: 0; }
         .welcome-subtitle { font-size: 13px; color: var(--text-secondary); margin: 4px 0 0; }
         .top-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .action-btn { padding: 10px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; }
-        .period-select { padding: 10px 16px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); }
+        .action-btn { padding: 10px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; transition: all 0.3s ease; }
+        .action-btn:hover { background: rgba(63,203,27,0.1); color: #3fcb1b; transform: translateY(-2px); }
+        .period-select { padding: 10px 16px; border-radius: 12px; background: var(--bg-secondary); border: 1px solid var(--border-color); color: var(--text-primary); cursor: pointer; transition: all 0.3s ease; }
+        .period-select:hover { border-color: #3fcb1b; }
 
         .page-content { padding: 24px; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0,0,0,0.05); border-radius: 3px; }
         ::-webkit-scrollbar-thumb { background: rgba(63,203,27,0.3); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(63,203,27,0.5); }
       `}</style>
     </div>
   );

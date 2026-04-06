@@ -105,7 +105,7 @@ export default function FoxnanceBroker() {
           <source src="/videos/hero-desktop.mp4" type="video/mp4" />
         </video>
         <video className="fx-hero__vid fx-hero__vid--mob" autoPlay loop muted playsInline poster="/images/hero-poster.jpg">
-          <source src="/videos/hero-mobile.mp4" type="video/mp4" />
+          <source src="/videos/hero-desktop.mp4" type="video/mp4" />
         </video>
         <div className="fx-hero__overlay" />
         <div className={`fx-hero__body ${heroReady ? "hero-animate" : ""}`}>
