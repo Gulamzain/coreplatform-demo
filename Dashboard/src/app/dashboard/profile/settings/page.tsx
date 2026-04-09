@@ -2,10 +2,10 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-import Footer from "../components/footer";
-import Switcher from "../components/switcher";
-import UserProfileTab from "../components/user-profile-tab";
-import Wrapper from "../components/wrapper";
+import Footer from "../../../components/footer";
+import Switcher from "../../../components/switcher";
+import UserProfileTab from "../../../components/user-profile-tab";
+import Wrapper from "../../../components/wrapper";
  
 import * as Icon from 'react-feather'
 
