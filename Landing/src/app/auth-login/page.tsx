@@ -50,7 +50,8 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setTimeout(() => {
-      window.location.href = 'http://localhost:3001/dashboard'
+      // window.location.href = 'http://localhost:3001/dashboard'
+      window.location.href = 'https://gulam-dashboard.netlify.app/dashboard'
     }, 1200)
   }
 
