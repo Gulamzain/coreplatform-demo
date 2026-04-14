@@ -2,9 +2,9 @@
 import React,{useState} from "react";
 import Link from "next/link";
 
-import Footer from "../components/footer";
-import Switcher from "../components/switcher";
-import Wrapper from "../components/wrapper";
+import Footer from "../../components/footer";
+import Switcher from "../../components/switcher";
+import Wrapper from "../../components/wrapper";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { AiOutlineCheckCircle, AiOutlineClose } from "react-icons/ai";
 
