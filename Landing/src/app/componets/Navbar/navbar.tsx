@@ -8,124 +8,81 @@ import {
   LuTrendingUp, LuMonitor, LuGlobe, LuSmartphone,
   LuBook, LuCalendar, LuUsers, LuShield, LuPhone,
   LuZap, LuCpu, LuLayers, LuActivity, LuInfo,
-  LuAward, LuDollarSign, LuCircleHelp,
+  LuAward, LuDollarSign, LuCircleHelp,LuCoins,LuHandshake,LuBriefcase
 } from 'react-icons/lu';
-
+import { BiBarChart, BiLineChart } from 'react-icons/bi';
 const LuHelpCircle = LuCircleHelp;
 
 const NAV_ITEMS = [
   {
-    title: 'Trading', mega: true,
+    title: 'Trading',
+    mega: true,
     columns: [
       {
-        heading: 'Trading Accounts',
+        heading: 'Accounts',
         links: [
-          { name: 'Accounts Overview',   href: '/trading/accounts',    icon: LuLayers },
-          { name: 'Standard Account',    href: '/trading/standard',    icon: LuDollarSign },
-          { name: 'Raw Spread Account',  href: '/trading/raw-spread',  icon: LuActivity },
-          { name: 'Swap Free Account',   href: '/trading/swap-free',   icon: LuShield },
-          { name: 'How to Deposit',      href: '/trading/deposit',     icon: LuZap },
-          { name: 'How to Withdraw',     href: '/trading/withdraw',    icon: LuZap },
+          { name: 'Standard Account', href: '/trading/standard', icon: LuDollarSign },
+          { name: 'Raw Spread Account', href: '/trading/raw-spread', icon: LuActivity },
+          { name: 'Swap Free Account', href: '/trading/swap-free', icon: LuShield },
+          { name: 'Demo Account', href: '/trading/demo', icon: LuMonitor },
         ],
       },
       {
-        heading: 'Products',
+        heading: 'Platform',
         links: [
-          { name: 'Forex CFDs',          href: '/markets/forex',       icon: LuDollarSign },
-          { name: 'Commodities CFDs',    href: '/markets/commodities', icon: LuTrendingUp },
-          { name: 'Indices CFDs',        href: '/markets/indices',     icon: LuActivity },
-          { name: 'Cryptocurrency CFDs', href: '/markets/crypto',      icon: LuCpu },
-          { name: 'Stocks CFDs',         href: '/markets/stocks',      icon: LuTrendingUp },
-          { name: 'Futures & Bonds',     href: '/markets/futures',     icon: LuLayers },
+          { name: 'MetaTrader 5', href: '/platforms/mt5', icon: LuMonitor, badge: 'RECOMMENDED' },
+          { name: 'MetaTrader 4', href: '/platforms/mt4', icon: LuMonitor },
+          { name: 'WebTrader', href: '/platforms/web', icon: LuGlobe },
+          { name: 'Mobile App', href: '/platforms/mobile', icon: LuSmartphone },
         ],
       },
       {
-        heading: 'Pricing',
+        heading: 'Learn',
         links: [
-          { name: 'Spreads',             href: '/pricing/spreads',     icon: LuActivity },
-          { name: 'Trading Conditions',  href: '/pricing/conditions',  icon: LuTrendingUp },
-          { name: 'Trading Hours',       href: '/pricing/hours',       icon: LuCalendar },
-          { name: 'Swap Rates',          href: '/pricing/swap-rates',  icon: LuDollarSign },
+          { name: 'Education Center', href: '/education', icon: LuBook },
+          { name: 'Trading Basics', href: '/education/forex', icon: BiBarChart },
+          { name: 'Webinars', href: '/education/webinars', icon: LuUsers },
+          { name: 'Video Tutorials', href: '/education/videos', icon: LuMonitor },
         ],
       },
     ],
-    promo: {
-      label: 'NEW',
-      title: 'Raw Spread Accounts',
-      desc: 'Trade from 0.0 pips with institutional-grade ECN liquidity.',
-      href: '/trading/raw-spread',
-      cta: 'Learn More',
-    },
   },
   {
-    title: 'Platforms', mega: true,
+    title: 'Markets',
+    mega: true,
     columns: [
       {
-        heading: 'MetaTrader',
+        heading: 'Markets',
         links: [
-          { name: 'MetaTrader 5',       href: '/platforms/mt5',        icon: LuMonitor, badge: 'RECOMMENDED' },
-          { name: 'MetaTrader 4',       href: '/platforms/mt4',        icon: LuMonitor },
-          { name: 'MT WebTrader',       href: '/platforms/mt-web',     icon: LuGlobe },
-          { name: 'MT iPhone / iPad',   href: '/platforms/mt-ios',     icon: LuSmartphone },
-          { name: 'MT Android',         href: '/platforms/mt-android', icon: LuSmartphone },
-          { name: 'MT Mac',             href: '/platforms/mt-mac',     icon: LuMonitor },
-        ],
-      },
-      {
-        heading: 'Other Platforms',
-        links: [
-          { name: 'Foxnance WebTrader', href: '/platforms/web',        icon: LuGlobe, badge: 'NO DOWNLOAD' },
-          { name: 'Mobile App',         href: '/platforms/mobile',     icon: LuSmartphone },
-          { name: 'cTrader',            href: '/platforms/ctrader',    icon: LuActivity },
-          { name: 'TradingView',        href: '/platforms/tradingview',icon: LuMonitor, badge: 'NEW' },
-        ],
-      },
-      {
-        heading: 'Trading Tools',
-        links: [
-          { name: 'VPS Hosting',        href: '/tools/vps',            icon: LuZap },
-          { name: 'Trading Servers',    href: '/tools/servers',        icon: LuMonitor },
-          { name: 'IC Insights',        href: '/tools/insights',       icon: LuActivity },
-          { name: 'Trading Central',    href: '/tools/trading-central',icon: LuTrendingUp },
+          { name: 'Forex', href: '/markets/forex', icon: LuDollarSign },
+          { name: 'Commodities', href: '/markets/commodities', icon: LuCoins },
+          { name: 'Stocks', href: '/markets/stocks', icon: LuTrendingUp },
+          { name: 'Indices', href: '/markets/indices', icon: BiLineChart },
+          { name: 'Crypto', href: '/markets/crypto', icon: LuCpu },
         ],
       },
     ],
   },
   {
-    title: 'Markets', mega: false,
+    title: 'Partners',
+    mega: false,
     links: [
-      { name: 'Forex',        href: '/markets/forex',       icon: LuDollarSign },
-      { name: 'Commodities',  href: '/markets/commodities', icon: LuTrendingUp },
-      { name: 'Indices',      href: '/markets/indices',     icon: LuActivity },
-      { name: 'Crypto CFDs',  href: '/markets/crypto',      icon: LuCpu },
-      { name: 'Stocks CFDs',  href: '/markets/stocks',      icon: LuTrendingUp },
-      { name: 'Futures',      href: '/markets/futures',     icon: LuLayers },
+      { name: 'Partner Program', href: '/partners', icon: LuHandshake },
+      { name: 'Introducing Broker', href: '/partners/ib', icon: LuUsers },
+      { name: 'Affiliates', href: '/partners/affiliates', icon: LuAward },
     ],
   },
   {
-    title: 'Education', mega: false,
+    title: 'Company',
+    mega: false,
     links: [
-      { name: 'Education Overview', href: '/education',          icon: LuBook },
-      { name: 'Forex Basics',       href: '/education/forex',    icon: LuDollarSign },
-      { name: 'CFD Trading',        href: '/education/cfds',     icon: LuActivity },
-      { name: 'Webinars',           href: '/education/webinars', icon: LuUsers },
-      { name: 'Video Tutorials',    href: '/education/videos',   icon: LuMonitor },
-      { name: 'Economic Calendar',  href: '/tools/calendar',     icon: LuCalendar },
-    ],
-  },
-  {
-    title: 'Company', mega: false,
-    links: [
-      { name: 'About Foxnance', href: '/about',       icon: LuInfo },
-      { name: 'Why Us',         href: '/why-us',      icon: LuAward },
-      { name: 'Regulation',     href: '/regulation',  icon: LuShield },
-      { name: 'Careers',        href: '/careers',     icon: LuUsers },
-      { name: 'Contact Us',     href: '/contact-one', icon: LuPhone },
-      { name: 'Help Centre',    href: '/helpcenter',  icon: LuHelpCircle },
+      { name: 'About Us', href: '/about', icon: LuInfo },
+      { name: 'Contact', href: '/contact-one', icon: LuPhone },
+      { name: 'Regulation', href: '/regulation', icon: LuShield },
+      { name: 'Careers', href: '/careers', icon: LuBriefcase },
     ],
   },
 ];
-
 export default function Navbar(props: { navClass: any; navJustify: any; bg: any }) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -255,14 +212,7 @@ export default function Navbar(props: { navClass: any; navJustify: any; bg: any 
                             ))}
                           </div>
                         ))}
-                        {item.promo && (
-                          <div className="fox-mega__promo" style={{ background: 'linear-gradient(135deg, rgba(63,203,27,0.1), rgba(63,203,27,0.05))', borderColor: 'rgba(63,203,27,0.2)' }}>
-                            <span className="fox-mega__promo-tag" style={{ color: '#3fcb1b', background: 'rgba(63,203,27,0.15)' }}>{item.promo.label}</span>
-                            <h4 className="fox-mega__promo-h" style={{ color: dropTextHover }}>{item.promo.title}</h4>
-                            <p className="fox-mega__promo-p" style={{ color: dropText }}>{item.promo.desc}</p>
-                            <Link href={item.promo.href} className="fox-mega__promo-cta" style={{ color: '#3fcb1b' }}>{item.promo.cta} →</Link>
-                          </div>
-                        )}
+                       
                       </div>
                     </div>
                   )}
