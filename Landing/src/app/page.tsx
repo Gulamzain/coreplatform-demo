@@ -265,35 +265,68 @@ export default function FoxnanceBroker() {
 </section>
 
       {/* ═══ 5. ACCOUNT TYPES SECTION ═══ */}
-      <section id="accounts" ref={ref("accounts")} className={`fx-section fx-section--black fx-reveal ${visible.has("accounts")?"on":""}`}>
+   <section id="accounts" ref={ref("accounts")} className={`fx-section fx-section--black fx-reveal ${visible.has("accounts")?"on":""}`}>
         <div className="fx-container">
           <div className="fx-section__head">
             <p className="fx-eyebrow" style={{ color: '#3fcb1b' }}>Account Types</p>
             <h2 className="fx-h2 fx-h2--white">More Choice. More Control.</h2>
-            <p className="fx-section__sub fx-section__sub--light">Transparent pricing. No hidden fees.</p>
+            <p className="fx-section__sub fx-section__sub--light">Transparent pricing. No hidden fees. Tailored to your trading style.</p>
           </div>
-          <div className="fx-accounts">
+          <div className="fx-accounts-three-grid">
             {[
-              {name:"Standard",  badge:"",            featured:false, rows:[["Min. Deposit","$200"],["Spread","From 1.0 pips"],["Commission","Zero"],["Leverage","1:500"],["Platforms","MT5, WebTrader"]]},
-              {name:"Raw Spread",badge:"Most Popular", featured:true,  rows:[["Min. Deposit","$200"],["Spread","From 0.0 pips"],["Commission","$3.5 / lot"],["Leverage","1:500"],["Platforms","MT5, cTrader"]]},
-              {name:"cTrader Raw",badge:"",           featured:false, rows:[["Min. Deposit","$200"],["Spread","From 0.0 pips"],["Commission","$3.0 / lot"],["Leverage","1:500"],["Platforms","cTrader only"]]},
-              {name:"Swap Free", badge:"Islamic",     featured:false, rows:[["Min. Deposit","$200"],["Spread","From 0.0 pips"],["Commission","$3.5 / lot"],["Leverage","1:500"],["Platforms","MT5"]]},
-            ].map((a,i)=>(
+              {
+                name: "Standard", 
+                badge: "", 
+                featured: false, 
+                rows: [
+                  ["Min. Deposit", "$10"],
+                  ["Leverage", "1:500"],
+                  ["Spread", "From 0.9 pips"],
+                  ["Commission", "Zero"],
+                  ["Support", "24/7 Support"]
+                ]
+              },
+              {
+                name: "Elite", 
+                badge: "Most Popular", 
+                featured: true, 
+                rows: [
+                  ["Min. Deposit", "$500"],
+                  ["Leverage", "1:500"],
+                  ["Spread", "From 0.7 pips"],
+                  ["Commission", "Zero"],
+                  ["Support", "24/7 Support"]
+                ]
+              },
+              {
+                name: "Pro", 
+                badge: "Institutional", 
+                featured: false, 
+                rows: [
+                  ["Min. Deposit", "$10,000"],
+                  ["Spread", "From 0.5 pips"],
+                  ["Commission", "Zero"],
+                  ["Leverage", "1:500"],
+                  ["Dedicated", "Personal Manager"]
+                ]
+              },
+            ].map((a, i) => (
               <div 
                 key={i} 
-                className={`fx-account ${a.featured?"fx-account--featured":""} ${hoveredAccount === i ? 'hovered' : ''}`} 
+                className={`fx-account ${a.featured ? "fx-account--featured" : ""} ${hoveredAccount === i ? 'hovered' : ''}`} 
                 onMouseEnter={() => setHoveredAccount(i)}
                 onMouseLeave={() => setHoveredAccount(null)}
-                style={{transitionDelay:`${i*80}ms`}}
+                style={{ transitionDelay: `${i * 80}ms` }}
               >
-                {a.badge&&<div className="fx-account__badge" style={{ background: '#3fcb1b', color: '#000' }}>{a.badge}</div>}
+                {a.badge && <div className="fx-account__badge" style={{ background: '#3fcb1b', color: '#000' }}>{a.badge}</div>}
                 <h3 className="fx-account__name">{a.name}</h3>
-                {a.rows.map(([k,v],j)=>(
+                {a.rows.map(([k, v], j) => (
                   <div key={j} className="fx-account__row">
-                    <span className="fx-account__key">{k}</span><span className="fx-account__val">{v}</span>
+                    <span className="fx-account__key">{k}</span>
+                    <span className="fx-account__val">{v}</span>
                   </div>
                 ))}
-                <Link href="/auth-signup" className={`fx-btn fx-btn--sm fx-btn--full ${a.featured?"fx-btn--green":"fx-btn--outline-white"}`}>
+                <Link href="/auth-signup" className={`fx-btn fx-btn--sm fx-btn--full ${a.featured ? "fx-btn--green" : "fx-btn--outline-white"}`}>
                   Open {a.name} Account
                 </Link>
               </div>
@@ -1079,22 +1112,91 @@ export default function FoxnanceBroker() {
         .fx-accounts{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
         @media(max-width:1024px){.fx-accounts{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:640px){.fx-accounts{grid-template-columns:1fr;}}
-        .fx-account{position:relative;padding:28px 24px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.1);border-radius:var(--radius);transition:all .3s;}
-        .fx-account.hovered{transform:translateY(-4px);border-color:rgba(63,203,27,.4);box-shadow:0 16px 40px rgba(63,203,27,.12);}
-        .fx-account--featured{border-color:var(--green);background:rgba(63,203,27,.06);}
-        .fx-account__badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);padding:3px 16px;border-radius:99px;font-size:.68rem;font-weight:800;white-space:nowrap;}
-        .fx-account__name{font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:16px;margin-top:6px;}
-        .fx-account__row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.84rem;}
-        .fx-account__row:last-of-type{border-bottom:none;}
-        .fx-account__key{color:rgba(255,255,255,.5);}
-        .fx-account__val{font-weight:700;color:#fff;}
+        .fx-account {
+          position: relative;
+          padding: 40px 32px; /* Increased padding for better hierarchy */
+          background: rgba(255, 255, 255, .05);
+          border: 1px solid rgba(255, 255, 255, .1);
+          border-radius: var(--radius);
+          transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+        }
+          .fx-account.hovered {
+          transform: translateY(-8px);
+          border-color: rgba(63, 203, 27, .5);
+          background: rgba(63, 203, 27, .03);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .fx-account--featured {
+          border: 1px solid #3fcb1b;
+          background: rgba(63, 203, 27, .06);
+          /* Subtle glow for featured card */
+          box-shadow: 0 0 30px rgba(63, 203, 27, 0.1);
+        }
+        .fx-account__badge {
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 4px 16px;
+          border-radius: 99px;
+          font-size: .7rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        }
+        .fx-account__name {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #fff;
+          margin-bottom: 24px;
+          text-align: center;
+        }
+        .fx-account__row {
+          display: flex;
+          justify-content: space-between;
+          padding: 14px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, .08);
+          font-size: .9rem;
+        }
+        .fx-account__row:last-of-type {
+          border-bottom: none;
+        }
+        .fx-account__key {
+          color: rgba(255, 255, 255, .5);
+        }
+        .fx-account__val {
+          font-weight: 700;
+          color: #fff;
+        }
+        .fx-accounts-three-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+
+
 
         /* PAYMENT ICONS - Centered */
         .fx-payment-icons-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:30px;margin:40px 0;}
         .fx-payment-icon{transition:all 0.3s ease;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08));}
         .fx-payment-icon:hover{transform:translateY(-6px);filter:drop-shadow(0 12px 20px rgba(0,0,0,0.12));}
         .fx-pay-note{text-align:center;margin-top:28px;font-size:.78rem;color:#6B6B6B;}
+@media(max-width:1024px) {
+          .fx-accounts-three-grid {
+            grid-template-columns: repeat(2, 1fr); /* 2 on tablets */
+            gap: 20px;
+          }
+        }
 
+        @media(max-width:640px) {
+          .fx-accounts-three-grid {
+            grid-template-columns: 1fr; /* 1 on mobile */
+          }
+        }
         /* GET STARTED */
       /* ═══ GET STARTED REFINED ═══ */
 .fx-steps {

@@ -1,4 +1,4 @@
-// src/app/markets/forex/page.tsx
+// src/app/markets/commodities/page.tsx
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -6,16 +6,9 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import {
   BiDollar, BiShield, BiGlobe, BiCheckCircle,
-  BiPlus, BiMinus, BiChart, BiMap, BiLock
+  BiPlus, BiMinus, BiChart, BiMap, BiLock, BiTrendingUp, BiBold
 } from 'react-icons/bi';
 import { FiArrowUpRight, FiArrowDownRight, FiArrowRight } from 'react-icons/fi';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS, CategoryScale, LinearScale,
-  PointElement, LineElement, Title, Tooltip, Legend, Filler
-} from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 // Components
 const Navbar = dynamic(() => import('../../componets/Navbar/navbar'));
@@ -30,33 +23,36 @@ const TRADING_CATEGORIES = [
   { image: "/images/Indices.png",   title: "Indices",     desc: "S&P 500, FTSE 100, DAX 40 and more",                  link: "/markets/indices" },
 ];
 
+// Initial live commodity prices (simulated data)
 const initialLivePrices = [
-  { pair: 'EUR/USD', bid: 1.08432, ask: 1.08435, change: 0.04, high: 1.08550, low: 1.08320, direction: 'up' as const },
-  { pair: 'GBP/USD', bid: 1.27680, ask: 1.27685, change: 0.19, high: 1.27800, low: 1.27550, direction: 'up' as const },
-  { pair: 'USD/JPY', bid: 151.22,  ask: 151.25,  change: -0.12, high: 151.50,  low: 151.00,  direction: 'down' as const },
-  { pair: 'AUD/USD', bid: 0.65420, ask: 0.65425, change: 0.08, high: 0.65500, low: 0.65350, direction: 'up' as const },
-  { pair: 'USD/CAD', bid: 1.35840, ask: 1.35845, change: -0.05, high: 1.35900, low: 1.35780, direction: 'down' as const },
-  { pair: 'NZD/USD', bid: 0.61230, ask: 0.61235, change: 0.11, high: 0.61300, low: 0.61150, direction: 'up' as const },
+  { pair: 'XAU/USD', bid: 2341.20, ask: 2341.27, change: 0.35, high: 2350.50, low: 2330.00, direction: 'up' as const },
+  { pair: 'XAG/USD', bid: 27.85, ask: 27.89, change: 0.42, high: 28.20, low: 27.50, direction: 'up' as const },
+  { pair: 'WTI/USD', bid: 78.45, ask: 78.50, change: -0.28, high: 79.50, low: 77.80, direction: 'down' as const },
+  { pair: 'BRENT/USD', bid: 82.30, ask: 82.35, change: -0.15, high: 83.50, low: 81.50, direction: 'down' as const },
+  { pair: 'COPPER', bid: 4.12, ask: 4.14, change: 0.18, high: 4.20, low: 4.05, direction: 'up' as const },
+  { pair: 'NGAS', bid: 2.65, ask: 2.67, change: -0.32, high: 2.80, low: 2.55, direction: 'down' as const },
 ];
 
-const features = [
-  { icon: BiMap,    title: 'Ultra-Fast Execution', desc: 'Sub-40ms execution with no dealing desk intervention' },
-  { icon: BiDollar, title: 'Tight Spreads',        desc: 'From 0.0 pips on major currency pairs' },
+// Commodity specific features
+// Commodity specific features - Remove color property
+const commodityFeatures = [
+  { icon: BiBold,   title: 'Gold & Silver Trading', desc: 'Trade XAU/USD and XAG/USD with spreads from 0.07 points' },
+  { icon: BiDollar, title: 'Tight Spreads',        desc: 'From 0.07 points on Gold, 0.02 on Silver' },
+  { icon: BiTrendingUp, title: 'High Liquidity',   desc: 'Access deep institutional liquidity for all commodities' },
   { icon: BiShield, title: 'FCA Regulated',        desc: 'Fully regulated and compliant with global standards' },
-  { icon: BiGlobe,  title: 'Global Markets',       desc: 'Trade 70+ currency pairs 24/5' },
-  { icon: BiChart,  title: 'Advanced Tools',       desc: 'Powerful charts and analysis tools' },
+  { icon: BiGlobe,  title: 'Global Markets',       desc: 'Trade Gold, Silver, Oil, Copper and more 24/5' },
   { icon: BiLock,   title: 'Secure Trading',       desc: 'Segregated accounts and SSL encryption' },
 ];
 
 const faqItems = [
-  { q: 'What is Forex trading?',       a: 'Forex trading is the buying and selling of currencies on the foreign exchange market. It\'s the world\'s largest financial market, with over $6 trillion traded daily.' },
-  { q: 'What are the trading hours?',  a: 'Forex markets are open 24 hours a day, 5 days a week (Monday to Friday), allowing you to trade at any time that suits your schedule.' },
-  { q: 'What is the minimum deposit?', a: 'The minimum deposit is $200 for all account types. Fund via bank transfer, credit card, or e-wallet.' },
-  { q: 'What leverage do you offer?',  a: 'We offer leverage up to 1:500 on Forex pairs, allowing you to control larger positions with a smaller capital investment.' },
-  { q: 'Is there a demo account?',     a: 'Yes, you can open a free demo account with $10,000 virtual funds to practice trading without risk.' },
+  { q: 'What is commodity trading?',       a: 'Commodity trading involves buying and selling raw materials like gold, silver, oil, and agricultural products. It\'s a popular way to diversify portfolios and hedge against inflation.' },
+  { q: 'What commodities can I trade?',    a: 'You can trade Gold (XAU/USD), Silver (XAG/USD), WTI Crude Oil, Brent Oil, Copper, Natural Gas, and agricultural products.' },
+  { q: 'What is the minimum deposit?',     a: 'The minimum deposit is $200 for all account types. Fund via bank transfer, credit card, or e-wallet.' },
+  { q: 'What leverage do you offer?',      a: 'We offer leverage up to 1:200 on Gold and Silver, and up to 1:100 on Oil and other commodities.' },
+  { q: 'Is there a demo account?',         a: 'Yes, you can open a free demo account with $10,000 virtual funds to practice trading commodities without risk.' },
 ];
 
-export default function ForexPage() {
+export default function CommoditiesPage() {
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [selectedPair, setSelectedPair] = useState(initialLivePrices[0]);
@@ -70,14 +66,24 @@ export default function ForexPage() {
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Real-time price simulation with 2-second delay
   useEffect(() => {
     const scheduleUpdate = () => {
       updateTimeoutRef.current = setTimeout(() => {
         setLivePrices(prevPrices => 
           prevPrices.map(price => {
-            const movement = (Math.random() - 0.5) * 0.0008;
-            const newBid = +(price.bid + movement).toFixed(5);
-            const newAsk = +(price.ask + movement).toFixed(5);
+            let movement;
+            if (price.pair === 'XAU/USD') {
+              movement = (Math.random() - 0.5) * 1.2;
+            } else if (price.pair === 'XAG/USD') {
+              movement = (Math.random() - 0.5) * 0.08;
+            } else if (price.pair.includes('OIL') || price.pair === 'WTI/USD' || price.pair === 'BRENT/USD') {
+              movement = (Math.random() - 0.5) * 0.35;
+            } else {
+              movement = (Math.random() - 0.5) * 0.03;
+            }
+            const newBid = +(price.bid + movement).toFixed(2);
+            const newAsk = +(price.ask + movement).toFixed(2);
             const newChange = +(((newBid - (price.bid - movement * 0.5)) / (price.bid - movement * 0.5)) * 100).toFixed(2);
             const direction = movement >= 0 ? 'up' : 'down';
             
@@ -131,7 +137,7 @@ export default function ForexPage() {
     <>
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
       
-      <div id="forex-layout-wrapper">
+      <div id="commodities-layout-wrapper">
         {/* Hero Section */}
         <section className="fp-hero-ref">
           <div className="fp-hero__bg">
@@ -151,7 +157,7 @@ export default function ForexPage() {
           <div className={`fp-hero-ref__inner ${heroReady ? 'ready' : ''}`}>
             <div className="hero-visual h-item h-d1">
               <div className="hero-glow-ring" />
-              <Image src="/images/MainForex.png" alt="Forex Symbols" width={1000} height={1000} className="hero-3d-asset" priority />
+              <Image src="/images/CommodityIn.png" alt="Commodity Symbols" width={1000} height={1000} className="hero-3d-asset" priority />
             </div>
 
             <div className="hero-content h-item h-d2">
@@ -160,11 +166,11 @@ export default function ForexPage() {
                 <span>Markets Open · Live Prices</span>
               </div>
               <h1 className="hero-brand">
-                FORE<span className="green-x">X</span>
+                COMMODITIE<span className="green-x">S</span>
               </h1>
-              <h2 className="hero-tagline">The world's most traded market.</h2>
+              <h2 className="hero-tagline">The original safe haven.</h2>
               <p className="hero-description">
-                Trade 70+ currency pairs with tight spreads, deep liquidity, and execution that never misses a move.
+                Trade gold with razor-thin spreads and institutional-grade execution, because when markets panic, every pip counts.
               </p>
               <div className="hero-actions">
                 <Link href="/auth-signup" className="btn-green-ref">
@@ -172,7 +178,7 @@ export default function ForexPage() {
                 </Link>
               </div>
               <div className="hero-stats-row">
-                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Pairs'},{v:'0.0',l:'Min Spread'}].map((s,i) => (
+                {[{v:'$6T+',l:'Daily Volume'},{v:'10+',l:'Commodities'},{v:'0.07',l:'Min Spread'}].map((s,i) => (
                   <div key={i} className="hero-stat">
                     <span className="hero-stat__val">{s.v}</span>
                     <span className="hero-stat__lbl">{s.l}</span>
@@ -190,7 +196,7 @@ export default function ForexPage() {
                   <div key={i} className="fp-ticker__item">
                     <span className="fp-ticker__pair">{p.pair}</span>
                     <span className={`fp-ticker__bid ${priceAnimations[p.pair] === 'up' ? 'flash-up' : priceAnimations[p.pair] === 'down' ? 'flash-down' : ''}`}>
-                      {p.bid}
+                      ${p.bid}
                     </span>
                     <span className={`fp-ticker__chg ${p.direction === 'up' ? 'up' : 'dn'}`}>
                       {p.direction === 'up' ? <FiArrowUpRight size={11}/> : <FiArrowDownRight size={11}/>}
@@ -203,18 +209,18 @@ export default function ForexPage() {
           </div>
         </section>
 
-        {/* Live Market Data */}
+        {/* Live Market Data - Single Table Full Width */}
         <section id="prices" ref={setRef('prices')} className={`fp-section fp-section--alt fp-reveal ${visible.has('prices')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
               <span className="fp-eyebrow">LIVE MARKET DATA</span>
-              <h2 className="fp-h2">Real-Time Forex Prices</h2>
+              <h2 className="fp-h2">Real-Time Commodity Prices</h2>
               <p className="fp-sub">Live streaming prices updated every 2 seconds</p>
             </div>
             <div className="fp-prices-single">
               <div className="fp-prices-tbl-full">
                 <div className="fp-prices-thead">
-                  <span>Pair</span><span>Bid</span><span>Ask</span><span>Change</span><span>24H H/L</span>
+                  <span>Instrument</span><span>Bid</span><span>Ask</span><span>Change</span><span>24H H/L</span>
                 </div>
                 {livePrices.map((p,i)=>(
                   <div 
@@ -226,13 +232,13 @@ export default function ForexPage() {
                   >
                     <span className="fp-pr-pair">{p.pair}</span>
                     <span className={`fp-pr-mono ${priceAnimations[p.pair] === 'up' ? 'price-up-text' : priceAnimations[p.pair] === 'down' ? 'price-down-text' : ''}`}>
-                      {p.bid}
+                      ${p.bid}
                     </span>
-                    <span className="fp-pr-mono">{p.ask}</span>
+                    <span className="fp-pr-mono">${p.ask}</span>
                     <span className={`fp-pr-chg ${p.direction === 'up'?'up':'dn'}`}>
                       {p.direction === 'up'?<FiArrowUpRight />:<FiArrowDownRight />}{p.change>=0?'+':''}{Math.abs(p.change)}%
                     </span>
-                    <span className="fp-pr-hl">{p.high}/{p.low}</span>
+                    <span className="fp-pr-hl">${p.high}/${p.low}</span>
                   </div>
                 ))}
               </div>
@@ -240,25 +246,25 @@ export default function ForexPage() {
           </div>
         </section>
 
-        {/* What is Forex */}
+        {/* What is Commodity Trading */}
         <section id="what" ref={setRef('what')} className={`fp-section fp-reveal ${visible.has('what')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
               <span className="fp-eyebrow">Learn the Basics</span>
-              <h2 className="fp-h2">What is Forex Trading?</h2>
+              <h2 className="fp-h2">What is Commodity Trading?</h2>
             </div>
             <div className="fp-what-grid">
               <div className="fp-what-text">
-                <p>Forex (foreign exchange) trading is the buying and selling of currencies on the global market. It&apos;s the world&apos;s largest financial market, with over $6 trillion traded daily.</p>
-                <p>Unlike stock markets, Forex operates 24 hours a day, five days a week, allowing traders to respond to market movements as they happen.</p>
+                <p>Commodity trading involves buying and selling raw materials like gold, silver, oil, and agricultural products. It's one of the oldest forms of trading and remains a popular way to diversify investment portfolios.</p>
+                <p>Commodities are often seen as a hedge against inflation and currency devaluation, making them an essential part of any balanced trading strategy.</p>
                 <ul className="fp-checklist">
-                  {['Trade major, minor, and exotic currency pairs','Leverage up to 1:500 to maximize opportunities','Access deep liquidity from top-tier banks','Trade from anywhere with mobile and web platforms'].map((t,i)=>(
+                  {['Trade Gold, Silver, Oil, Copper, and Natural Gas','Leverage up to 1:200 on precious metals','Access deep liquidity from global markets','Hedge against inflation and market volatility'].map((t,i)=>(
                     <li key={i} style={{ '--li': i } as React.CSSProperties}><BiCheckCircle />{t}</li>
                   ))}
                 </ul>
               </div>
               <div className="fp-what-stats">
-                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Currency Pairs'},{v:'24/5',l:'Trading Hours'}].map((s,i)=>(
+                {[{v:'$2T+',l:'Daily Volume'},{v:'10+',l:'Commodities'},{v:'24/5',l:'Trading Hours'}].map((s,i)=>(
                   <div key={i} className="fp-stat-card" style={{ '--si': i } as React.CSSProperties}>
                     <div className="fp-stat-card__glow" />
                     <span className="fp-sc-val">{s.v}</span>
@@ -270,24 +276,24 @@ export default function ForexPage() {
           </div>
         </section>
 
-        {/* Why Trade with Foxnance */}
+        {/* Why Trade Commodities */}
         <section id="why" ref={setRef('why')} className={`fp-section fp-section--alt fp-reveal ${visible.has('why')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
-              <span className="fp-eyebrow">Why Choose Us</span>
-              <h2 className="fp-h2">Why Trade with Foxnance?</h2>
-              <p className="fp-sub">Experience trading with a broker that puts you first</p>
+              <span className="fp-eyebrow">Why Trade Commodities</span>
+              <h2 className="fp-h2">Why Trade Commodities with Foxnance?</h2>
+              <p className="fp-sub">Experience commodity trading with a broker that puts you first</p>
             </div>
             <div className="fp-features-grid">
-              {features.map((f,i)=>(
-                <div key={i} className="fp-feat-card" style={{ '--fi': i } as React.CSSProperties}>
-                  <div className="fp-feat-card__shine" />
-                  <div className="fp-feat-icon"><f.icon size={28} /></div>
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
-                </div>
-              ))}
-            </div>
+  {commodityFeatures.map((f,i)=>(
+    <div key={i} className="fp-feat-card" style={{ '--fi': i } as React.CSSProperties}>
+      <div className="fp-feat-card__shine" />
+      <div className="fp-feat-icon"><f.icon size={28} /></div>
+      <h3>{f.title}</h3>
+      <p>{f.desc}</p>
+    </div>
+  ))}
+</div>
           </div>
         </section>
 
@@ -311,18 +317,16 @@ export default function ForexPage() {
                 >
                   <div className="fp-mkt-card__glow" />
                   <div className="fx-trade-category-image">
-  <Image 
-    src={cat.image} 
-    alt={cat.title} 
-    width={140} 
-    height={140} 
-    className="fx-category-img" 
-    /* This allows us to target ONLY Indices in CSS */
-    data-category={cat.title} 
-    priority 
-  />
-</div>
-                 
+                    <Image 
+                      src={cat.image} 
+                      alt={cat.title} 
+                      width={140} 
+                      height={140} 
+                      className="fx-category-img" 
+                      data-category={cat.title} 
+                      priority 
+                    />
+                  </div>
                   <h3 className="fp-mkt-title">{cat.title}</h3>
                   <p className="fp-mkt-desc">{cat.desc}</p>
                   <div className="fp-mkt-overlay"><span>TRADE {cat.title.toUpperCase()} <FiArrowRight size={12}/></span></div>
@@ -345,7 +349,7 @@ export default function ForexPage() {
                 <h2 className="fp-h2 fp-h2--w">Open a Foxnance Account Now</h2>
                 <div className="fp-spacer"></div>
                 <div className="fp-steps">
-                  {[{n:'1',t:'Register',d:'Quick and easy account opening process.'},{n:'2',t:'Fund',d:'Fund your account with multiple deposit methods.'},{n:'3',t:'Trade',d:'Trade with spreads from 0.0 pips.'}].map((s,i)=>(
+                  {[{n:'1',t:'Register',d:'Quick and easy account opening process.'},{n:'2',t:'Fund',d:'Fund your account with multiple deposit methods.'},{n:'3',t:'Trade',d:'Trade commodities with spreads from 0.07 points.'}].map((s,i)=>(
                     <div key={i} className="fp-step" style={{ '--sti': i } as React.CSSProperties}>
                       <div className="fp-step-num">{s.n}</div>
                       <div><h4>{s.t}</h4><p>{s.d}</p></div>
@@ -369,7 +373,7 @@ export default function ForexPage() {
             <div className="fp-head">
               <span className="fp-eyebrow">FAQ</span>
               <h2 className="fp-h2">Frequently Asked Questions</h2>
-              <p className="fp-sub">Everything you need to know about Forex trading</p>
+              <p className="fp-sub">Everything you need to know about commodity trading</p>
             </div>
             <div className="fp-faq">
               {faqItems.map((item,i)=>(
@@ -390,9 +394,10 @@ export default function ForexPage() {
       <CookieModal />
 
       <style jsx global>{`
-        #forex-layout-wrapper {
+        #commodities-layout-wrapper {
           --green:      #3fcb1b;
           --green-dk:   #2e9c14;
+          --orange:     #f59e0b;
           --green-glow: rgba(63,203,27,0.25);
           --bg:         #ffffff;
           --bg-alt:     #f7f8f5;
@@ -409,7 +414,7 @@ export default function ForexPage() {
           color: var(--text);
         }
         @media(prefers-color-scheme:dark){
-          #forex-layout-wrapper {
+          #commodities-layout-wrapper {
             --bg:      #0A0A0A;
             --bg-alt:  #111111;
             --bg-card: #181818;
@@ -419,8 +424,8 @@ export default function ForexPage() {
           }
         }
 
-        #forex-layout-wrapper .fp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        @media(min-width:1024px){ #forex-layout-wrapper .fp-container { padding: 0 64px; } }
+        #commodities-layout-wrapper .fp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        @media(min-width:1024px){ #commodities-layout-wrapper .fp-container { padding: 0 64px; } }
 
         .fp-section { padding: 96px 0; }
         .fp-section--alt  { background: var(--bg-alt); }
@@ -479,7 +484,7 @@ export default function ForexPage() {
         .fp-hero__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
         .fp-hero__orb { position: absolute; border-radius: 50%; filter: blur(90px); }
         .fp-hero__orb--1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(63,203,27,.22), transparent 70%); top: -140px; right: -80px; animation: orbF 9s ease-in-out infinite; }
-        .fp-hero__orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,.15), transparent 70%); bottom: -80px; left: -60px; animation: orbF 11s ease-in-out infinite reverse; }
+        .fp-hero__orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(245,158,11,.15), transparent 70%); bottom: -80px; left: -60px; animation: orbF 11s ease-in-out infinite reverse; }
         .fp-hero__orb--3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(63,203,27,.1), transparent 70%); top: 40%; left: 40%; animation: orbF 14s ease-in-out infinite 3s; }
         @keyframes orbF { 0%,100%{transform:translate(0,0);} 50%{transform:translate(18px,-18px);} }
         .fp-hero__grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(63,203,27,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(63,203,27,.05) 1px, transparent 1px); background-size: 52px 52px; }
@@ -489,9 +494,9 @@ export default function ForexPage() {
         .fp-hero-ref__inner { display: flex; justify-content: flex-end; align-items: center; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 64px; position: relative; z-index: 1; flex: 1; }
         @media(max-width:968px){ .fp-hero-ref__inner { justify-content: center; text-align: center; padding: 0 24px; } }
         .hero-visual { position: absolute; left: -120px; top: 50%; transform: translateY(-50%); width: 45%; display: flex; justify-content: center; pointer-events: none; animation: floatAsset 6s ease-in-out infinite; }
-        .hero-glow-ring { position: absolute; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(63,203,27,.15); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringPulse 4s ease-in-out infinite; }
+        .hero-glow-ring { position: absolute; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(245,158,11,.15); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringPulse 4s ease-in-out infinite; }
         @keyframes ringPulse { 0%,100%{ opacity: 0.4; transform: translate(-50%,-50%) scale(1); } 50%{ opacity: 0.8; transform: translate(-50%,-50%) scale(1.04); } }
-        .hero-3d-asset { width: 100%; height: auto; max-width: 600px; object-fit: contain; filter: drop-shadow(0 0 80px rgba(63,203,27,.3)); position: relative; z-index: 1; }
+        .hero-3d-asset { width: 100%; height: auto; max-width: 600px; object-fit: contain; filter: drop-shadow(0 0 80px rgba(245,158,11,.3)); position: relative; z-index: 1; }
         @keyframes floatAsset { 0%,100%{ transform: translateY(-50%) translateY(0px); } 50%{ transform: translateY(-50%) translateY(-20px); } }
         .hero-content { width: 100%; max-width: 490px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; color: white; position: relative; z-index: 2; }
         @media(max-width:968px){ .hero-content { text-align: center; align-items: center; max-width: 100%; } .hero-visual { display: none; } }
@@ -531,7 +536,7 @@ export default function ForexPage() {
         .fp-ticker__chg.up { color: #10b981; }
         .fp-ticker__chg.dn { color: #ef4444; }
 
-        /* Live Prices */
+        /* Live Prices - Single Table Full Width */
         .fp-prices-single { width: 100%; max-width: 1000px; margin: 0 auto; }
         .fp-prices-tbl-full { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; width: 100%; }
         .fp-prices-thead { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; padding: 16px 24px; background: rgba(63,203,27,.05); border-bottom: 1px solid var(--border); font-size: .8rem; font-weight: 700; color: var(--text2); letter-spacing: .04em; }
@@ -551,24 +556,25 @@ export default function ForexPage() {
         .fp-pr-chg.dn { color: #ef4444; }
         .fp-pr-hl { font-size: .78rem; color: var(--text2); }
 
-        /* What is Forex */
-        .fp-what-grid { display: grid; grid-template-columns: 1fr .85fr; gap: 56px; align-items: center; }
-        @media(max-width:900px){ .fp-what-grid { grid-template-columns: 1fr; } }
-        .fp-what-text p { color: var(--text2); line-height: 1.75; margin-bottom: 18px; font-size: .95rem; }
-        .fp-checklist { list-style: none; margin-top: 24px; }
-        .fp-checklist li { display: flex; align-items: center; gap: 12px; color: var(--text); font-size: .92rem; padding: 10px 14px; border-radius: 10px; transition: all 0.3s; cursor: pointer; }
-        .fp-checklist li:hover { background: rgba(63,203,27,.08); transform: translateX(6px); }
-        .fp-checklist li svg { color: var(--green); flex-shrink: 0; }
-        .fp-what-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .fp-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; text-align: center; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
-        .fp-stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(63,203,27,.15); border-color: var(--green); }
-        .fp-stat-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .4s; }
-        .fp-stat-card:hover .fp-stat-card__glow { opacity: 1; }
-        .fp-sc-val { font-size: 2.2rem; font-weight: 900; color: var(--green); display: block; margin-bottom: 8px; transition: transform 0.3s; }
-        .fp-stat-card:hover .fp-sc-val { transform: scale(1.05); }
-        .fp-sc-lbl { font-size: .8rem; color: var(--text2); font-weight: 600; }
+ /* What is Commodity Trading - Green theme */
+.fp-what-grid { display: grid; grid-template-columns: 1fr .85fr; gap: 56px; align-items: center; }
+@media(max-width:900px){ .fp-what-grid { grid-template-columns: 1fr; } }
+.fp-what-text p { color: var(--text2); line-height: 1.75; margin-bottom: 18px; font-size: .95rem; }
+.fp-checklist { list-style: none; margin-top: 24px; }
+.fp-checklist li { display: flex; align-items: center; gap: 12px; color: var(--text); font-size: .92rem; padding: 10px 14px; border-radius: 10px; transition: all 0.3s; cursor: pointer; }
+.fp-checklist li:hover { background: rgba(63,203,27,.08); transform: translateX(6px); }
+.fp-checklist li svg { color: var(--green); flex-shrink: 0; }
 
-        /* Features */
+.fp-what-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.fp-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; text-align: center; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
+.fp-stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(63,203,27,.15); border-color: var(--green); }
+.fp-stat-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .4s; }
+.fp-stat-card:hover .fp-stat-card__glow { opacity: 1; }
+.fp-sc-val { font-size: 2.2rem; font-weight: 900; color: var(--green); display: block; margin-bottom: 8px; transition: transform 0.3s; }
+.fp-stat-card:hover .fp-sc-val { transform: scale(1.05); }
+.fp-sc-lbl { font-size: .8rem; color: var(--text2); font-weight: 600; }
+
+        /* Features - White icons, green outline only */
         .fp-features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
         .fp-feat-card { background: var(--bg-card); border: 1px solid var(--green); border-radius: 20px; padding: 32px 28px; text-align: center; transition: all 0.35s ease; position: relative; overflow: hidden; cursor: pointer; }
         .fp-feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(63,203,27,.12); background: rgba(63,203,27,.02); }
@@ -594,34 +600,11 @@ export default function ForexPage() {
         .fp-mkt-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 56px; background: linear-gradient(135deg, var(--green), var(--green-dk)); transform: translateY(100%); transition: transform .4s; display: flex; align-items: center; justify-content: center; z-index: 1; }
         .fp-mkt-card:hover .fp-mkt-overlay { transform: translateY(0); }
         .fp-mkt-overlay span { font-size: .75rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; }
-/* Keep all category images at default size */
-.fx-category-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-}
 
-/* ONLY target the Indices icon to reduce its height */
-.fx-category-img[data-category="Indices"] {
-  height: 75% !important; /* Adjust this percentage to your liking */
-  width: auto !important;
-  margin: 0 auto;
-}
+        .fx-category-img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1); }
+        .fx-category-img[data-category="Indices"] { height: 75% !important; width: auto !important; margin: 0 auto; }
+        .fx-trade-category-image { width: 100%; height: 200px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
 
-/* Ensure the container height remains stable for alignment */
-.fx-trade-category-image {
-  width: 100%;
-  height: 200px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-}
-
-        
         /* Open Account */
         .fp-open-card { background: linear-gradient(135deg, rgba(63,203,27,.08), rgba(0,0,0,.25)); border: 1px solid rgba(63,203,27,.15); border-radius: 28px; padding: 56px; display: grid; grid-template-columns: 1fr .8fr; gap: 56px; position: relative; overflow: hidden; }
         @media(max-width:900px){ .fp-open-card { grid-template-columns: 1fr; padding: 32px 24px; } }
