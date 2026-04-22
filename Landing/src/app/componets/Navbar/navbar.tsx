@@ -67,19 +67,19 @@ const NAV_ITEMS = [
     title: 'Partners',
     mega: false,
     links: [
-      { name: 'Partner Program', href: '/partners', icon: LuHandshake },
-      { name: 'Introducing Broker', href: '/partners/ib', icon: LuUsers },
-      { name: 'Affiliates', href: '/partners/affiliates', icon: LuAward },
+      { name: 'Partner Program', href: '/partners/partner', icon: LuHandshake },
+      // { name: 'Introducing Broker', href: '/partners/ib', icon: LuUsers },
+      // { name: 'Affiliates', href: '/partners/affiliates', icon: LuAward },
     ],
   },
   {
     title: 'Company',
     mega: false,
     links: [
-      { name: 'About Us', href: '/about', icon: LuInfo },
-      { name: 'Contact', href: '/contact-one', icon: LuPhone },
-      { name: 'Regulation', href: '/regulation', icon: LuShield },
-      { name: 'Careers', href: '/careers', icon: LuBriefcase },
+      { name: 'About Us', href: '/company/about', icon: LuInfo },
+      // { name: 'Contact', href: '/contact-one', icon: LuPhone },
+      // { name: 'Regulation', href: '/regulation', icon: LuShield },
+      // { name: 'Careers', href: '/careers', icon: LuBriefcase },
     ],
   },
 ];
