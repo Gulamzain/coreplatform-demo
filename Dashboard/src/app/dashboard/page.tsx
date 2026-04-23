@@ -1,405 +1,1113 @@
 // src/app/dashboard/page.tsx
 'use client'
-import React from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
-  BiChevronRight,
-  BiChevronLeft,
-  BiDollar,
-  BiRefresh,
-  BiDownload,
-  BiPlus,
-} from 'react-icons/bi'
-import { FiArrowUpRight, FiArrowDownRight } from 'react-icons/fi'
+  BiDollar, BiTrendingUp, BiTrendingDown, BiArrowToRight,
+  BiArrowFromLeft, BiWallet, BiLineChart, BiPieChart,
+  BiRefresh, BiBell, BiCalendar, BiDownload, BiX, BiCheck,
+  BiTransfer, BiShield, BiTime
+} from 'react-icons/bi';
+import {
+  FiArrowUpRight, FiArrowDownRight, FiZap, FiActivity,
+  FiCreditCard, FiRepeat, FiChevronRight, FiTrendingUp
+} from 'react-icons/fi';
+import { Line, Doughnut } from 'react-chartjs-2';
+import {
+  Chart as ChartJS, CategoryScale, LinearScale, PointElement,
+  LineElement, Title, Tooltip, Legend, ArcElement, Filler
+} from 'chart.js';
 
-const ticker = [
-  { label: 'EUR/USD', price: '1.08945', change: '+0.47%', up: true },
-  { label: 'GBP/USD', price: '1.27420', change: '-0.21%', up: false },
-  { label: 'XAU/USD', price: '2356.80', change: '+0.67%', up: true },
-  { label: 'BTC/USD', price: '69,150', change: '+1.39%', up: true },
-  { label: 'USD/JPY', price: '154.32', change: '+0.12%', up: true },
-  { label: 'OIL/USD', price: '78.45', change: '-0.88%', up: false },
-]
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement,
+  Title, Tooltip, Legend, ArcElement, Filler);
 
+// ── DATA ────────────────────────────────────────────────────────────────
 const accounts = [
-  { id: 1, name: 'MT5 #155691', tag: 'LIVE' },
-  { id: 2, name: 'MT5 #155692', tag: 'DEMO' },
-]
+  { id: 1, name: 'MT5 #155691', type: 'Standard', status: 'Live', balance: 25340.50, equity: 26780.30, profit: 1439.80, profitPercent: 5.68, margin: 1439.80, freeMargin: 25340.50, marginLevel: 1861.02 },
+  { id: 2, name: 'MT5 #155692', type: 'Raw Spread', status: 'Demo', balance: 10000.00, equity: 10890.20, profit: 890.20, profitPercent: 8.90, margin: 890.20, freeMargin: 10000.00, marginLevel: 1223.35 },
+];
 
-const metrics = [
-  {
-    id: 'balance',
-    title: 'Account Balance',
-    value: '$25,340.50',
-    sub: '↑ +$1,439.80 ( +5.68% )',
-    positive: true,
-  },
-  {
-    id: 'equity',
-    title: 'Total Equity',
-    value: '$26,780.30',
-    sub: 'Floating P&L: +$1,439.80',
-    positive: true,
-  },
-  {
-    id: 'free',
-    title: 'Free Margin',
-    value: '$25,340.50',
-    sub: 'Margin Used: $1,439.80',
-    positive: true,
-  },
-  {
-    id: 'margin',
-    title: 'Margin Level',
-    value: '1861.02%',
-    sub: 'Safe Level',
-    positive: true,
-  },
-]
+const recentTrades = [
+  { id: 1, symbol: 'EUR/USD', type: 'Buy',  volume: 0.5,  price: 1.08432, current: 1.08945, profit: 256.50,  time: '10:32', flag: '🇪🇺' },
+  { id: 2, symbol: 'GBP/USD', type: 'Sell', volume: 0.3,  price: 1.27680, current: 1.27420, profit: 78.00,   time: '10:28', flag: '🇬🇧' },
+  { id: 3, symbol: 'XAU/USD', type: 'Buy',  volume: 0.1,  price: 2341.20, current: 2356.80, profit: 156.00,  time: '10:15', flag: '🥇' },
+  { id: 4, symbol: 'BTC/USD', type: 'Buy',  volume: 0.05, price: 68200,   current: 69150,   profit: 47.50,   time: '09:58', flag: '₿' },
+];
 
-const positions = [
-  {
-    symbol: 'EUR/USD',
-    type: 'Buy',
-    volume: 0.5,
-    open: 1.08432,
-    current: 1.08945,
-    pnl: 256.5,
-    time: '10:32',
-  },
-  {
-    symbol: 'GBP/USD',
-    type: 'Sell',
-    volume: 0.3,
-    open: 1.2768,
-    current: 1.2742,
-    pnl: 78.0,
-    time: '10:28',
-  },
-  {
-    symbol: 'XAU/USD',
-    type: 'Buy',
-    volume: 0.1,
-    open: 2341.2,
-    current: 2356.8,
-    pnl: 156.0,
-    time: '10:15',
-  },
-  {
-    symbol: 'BTC/USD',
-    type: 'Buy',
-    volume: 0.01,
-    open: 68000,
-    current: 69150,
-    pnl: 1150.0,
-    time: '09:58',
-  },
-]
+const marketTicker = [
+  { symbol: 'EUR/USD', price: '1.08945', change: '+0.47%', up: true },
+  { symbol: 'GBP/USD', price: '1.27420', change: '-0.21%', up: false },
+  { symbol: 'XAU/USD', price: '2356.80', change: '+0.67%', up: true },
+  { symbol: 'BTC/USD', price: '69,150',  change: '+1.39%', up: true },
+  { symbol: 'USD/JPY', price: '154.32',  change: '+0.12%', up: true },
+  { symbol: 'OIL/USD', price: '78.45',   change: '-0.88%', up: false },
+];
 
-export default function DashboardPage() {
+const balanceHistoryData = {
+  labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7', 'Wk 8'],
+  datasets: [{
+    label: 'Balance',
+    data: [12500, 14200, 13800, 15600, 16800, 18500, 19200, 20500],
+    borderColor: '#3fcb1b',
+    backgroundColor: (ctx: any) => {
+      const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 260);
+      g.addColorStop(0, 'rgba(63,203,27,0.18)');
+      g.addColorStop(1, 'rgba(63,203,27,0)');
+      return g;
+    },
+    fill: true, tension: 0.45,
+    pointBackgroundColor: '#3fcb1b',
+    pointBorderColor: '#0c0f0a',
+    pointBorderWidth: 2,
+    pointRadius: 4,
+    pointHoverRadius: 7,
+    borderWidth: 2.5,
+  }],
+};
+
+const allocationData = {
+  labels: ['Forex', 'Commodities', 'Indices', 'Crypto', 'Stocks'],
+  datasets: [{
+    data: [45, 20, 15, 12, 8],
+    backgroundColor: ['#3fcb1b', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec489a'],
+    hoverBackgroundColor: ['#4de022', '#fbbf24', '#60a5fa', '#a78bfa', '#f472b6'],
+    borderWidth: 0,
+    hoverOffset: 6,
+  }],
+};
+
+// ── COMPONENT ────────────────────────────────────────────────────────────
+export default function DashboardOverview() {
+  const [selectedAccount, setSelectedAccount] = useState(0);
+  const [showDeposit, setShowDeposit]   = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [amount, setAmount]             = useState('');
+  const [activePeriod, setActivePeriod] = useState('1M');
+  const [selectedMethod, setSelectedMethod] = useState('');
+  const [tickerX, setTickerX] = useState(0);
+  const [counters, setCounters] = useState({ balance: 0, equity: 0, profit: 0 });
+  const [mounted, setMounted] = useState(false);
+  const tickerRef = useRef<number>(0);
+  const animRef   = useRef<number>(0);
+
+  const currentAccount = accounts[selectedAccount];
+  const totalBalance   = accounts.reduce((s, a) => s + a.balance, 0);
+  const totalProfit    = accounts.reduce((s, a) => s + a.profit, 0);
+
+  // Mount animation
+  useEffect(() => {
+    setMounted(true);
+    const targets = { balance: currentAccount.balance, equity: currentAccount.equity, profit: currentAccount.profit };
+    let start: number | null = null;
+    const duration = 1200;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const p = Math.min((ts - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setCounters({
+        balance: targets.balance * ease,
+        equity:  targets.equity  * ease,
+        profit:  targets.profit  * ease,
+      });
+      if (p < 1) animRef.current = requestAnimationFrame(step);
+    };
+    animRef.current = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(animRef.current);
+  }, [selectedAccount]);
+
+  // Ticker scroll
+  useEffect(() => {
+    const speed = 0.4;
+    const scroll = () => {
+      setTickerX(x => {
+        const next = x - speed;
+        return next < -900 ? 0 : next;
+      });
+      tickerRef.current = requestAnimationFrame(scroll);
+    };
+    tickerRef.current = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(tickerRef.current);
+  }, []);
+
+  const chartOptions: any = {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: 'rgba(12,15,10,0.95)',
+        titleColor: '#edf0ea', bodyColor: '#9aad94',
+        borderColor: 'rgba(63,203,27,0.4)', borderWidth: 1,
+        padding: 10, cornerRadius: 10,
+        callbacks: { label: (ctx: any) => ' $' + ctx.raw.toLocaleString() },
+      },
+    },
+    scales: {
+      y: {
+        grid: { color: 'rgba(237,240,234,0.05)', drawBorder: false },
+        ticks: { color: '#556050', font: { size: 10 }, callback: (v: any) => '$' + (v/1000).toFixed(0) + 'k' },
+        border: { display: false },
+      },
+      x: {
+        grid: { display: false }, border: { display: false },
+        ticks: { color: '#556050', font: { size: 10 } },
+      },
+    },
+    interaction: { mode: 'index', intersect: false },
+  };
+
+  const doughnutOptions: any = {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '72%',
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#556050', usePointStyle: true, boxWidth: 7, font: { size: 10 }, padding: 14 },
+      },
+      tooltip: {
+        backgroundColor: 'rgba(12,15,10,0.95)',
+        titleColor: '#edf0ea', bodyColor: '#9aad94',
+        borderColor: 'rgba(63,203,27,0.3)', borderWidth: 1,
+        padding: 10, cornerRadius: 10,
+      },
+    },
+  };
+
+  const allocationColors = ['#3fcb1b','#f59e0b','#3b82f6','#8b5cf6','#ec489a'];
+
+  const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   return (
-    <div className="dashboard-root">
-      <div className="container">
-        {/* Top ticker */}
-        <div className="ticker">
-          <button className="ticker-btn"><BiChevronLeft /></button>
-          <div className="ticker-scroll">
-            {ticker.map((t, i) => (
+    <div className={`dov ${mounted ? 'mounted' : ''}`}>
+
+      {/* ── MARKET TICKER ── */}
+      <div className="ticker-wrap">
+        <div className="ticker-label"><FiActivity size={11} />LIVE</div>
+        <div className="ticker-track">
+          <div className="ticker-inner" style={{ transform: `translateX(${tickerX}px)` }}>
+            {[...marketTicker, ...marketTicker, ...marketTicker].map((m, i) => (
               <div key={i} className="ticker-item">
-                <div className="t-label">{t.label}</div>
-                <div className="t-price">{t.price}</div>
-                <div className={`t-change ${t.up ? 'up' : 'down'}`}>{t.change}</div>
+                <span className="ticker-sym">{m.symbol}</span>
+                <span className="ticker-price">{m.price}</span>
+                <span className={`ticker-chg ${m.up ? 'up' : 'dn'}`}>{m.change}</span>
               </div>
             ))}
           </div>
-          <button className="ticker-btn"><BiChevronRight /></button>
         </div>
+      </div>
 
-        {/* Greeting + accounts */}
-        <div className="header-row">
-          <div className="greeting">
-            <h2>Hello, Gulam Zain</h2>
-            <p>Good morning 👋 Here’s your trading overview for today</p>
-          </div>
-
-          <div className="accounts-row">
-            {accounts.map((a) => (
-              <div key={a.id} className="account-pill">
-                <div className="acc-name">{a.name}</div>
-                <div className={`acc-tag ${a.tag === 'LIVE' ? 'live' : 'demo'}`}>{a.tag}</div>
-              </div>
-            ))}
-
-            <button className="btn-new"><BiPlus /> New Account</button>
-          </div>
+      {/* ── WELCOME BANNER ── */}
+      <div className="welcome">
+        <div className="welcome__canvas">
+          <div className="welcome__orb" />
+          <svg className="welcome__grid" xmlns="http://www.w3.org/2000/svg">
+            <defs><pattern id="wg" width="48" height="48" patternUnits="userSpaceOnUse">
+              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(63,203,27,0.05)" strokeWidth="1"/>
+            </pattern></defs>
+            <rect width="100%" height="100%" fill="url(#wg)" />
+          </svg>
         </div>
-
-        {/* Portfolio summary */}
-        <div className="grid-3">
-          <div className="portfolio-card">
-            <div className="portfolio-top">
-              <div>
-                <div className="muted">Total Portfolio</div>
-                <div className="big">$35,340.50</div>
-                <div className="gain">+ $2,330.00</div>
-              </div>
-
-              <div className="portfolio-actions">
-                <button className="action-btn"><BiRefresh /> Refresh</button>
-                <button className="action-btn"><BiDownload /> Export</button>
-              </div>
+        <div className="welcome__left">
+          <div className="welcome__greeting">
+            <span className="welcome__dot" />
+            Good Morning
+          </div>
+          <h2 className="welcome__name">Gulam Zain 👋</h2>
+          <p className="welcome__sub">Here's your trading overview for today</p>
+        </div>
+        <div className="welcome__right">
+          <div className="welcome__kpi">
+            <div className="welcome__kpi-icon"><BiWallet size={18} /></div>
+            <div>
+              <span className="welcome__kpi-lbl">Total Portfolio</span>
+              <strong className="welcome__kpi-val">${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
             </div>
+          </div>
+          <div className="welcome__divider" />
+          <div className="welcome__kpi">
+            <div className="welcome__kpi-icon green"><FiTrendingUp size={18} /></div>
+            <div>
+              <span className="welcome__kpi-lbl">Total P&L</span>
+              <strong className="welcome__kpi-val profit">+${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div className="balance-section">
-              <div className="balance-meta">
-                <div className="meta-title">Balance History</div>
-                <div className="meta-badges">
-                  <span className="badge green">Peak $20,500</span>
-                  <span className="badge slate">Growth +64%</span>
-                  <span className="badge red">Drawdown -2.8%</span>
+      {/* ── ACCOUNT TABS ── */}
+      <div className="acc-tabs">
+        {accounts.map((acc, i) => (
+          <button
+            key={acc.id}
+            onClick={() => setSelectedAccount(i)}
+            className={`acc-tab ${selectedAccount === i ? 'active' : ''}`}
+          >
+            <span className={`acc-tab__dot ${acc.status === 'Live' ? 'live' : 'demo'}`} />
+            <span className="acc-tab__name">{acc.name}</span>
+            <span className={`acc-tab__badge ${acc.status === 'Live' ? 'live' : 'demo'}`}>{acc.status}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── KPI CARDS ROW ── */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedAccount}
+          className="kpi-row"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -12 }}
+          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {/* Balance */}
+          <div className="kpi-card kpi-card--green">
+            <div className="kpi-card__top">
+              <div className="kpi-card__icon green"><BiDollar size={20} /></div>
+              <span className="kpi-card__lbl">Account Balance</span>
+            </div>
+            <strong className="kpi-card__val">${fmt(counters.balance)}</strong>
+            <div className="kpi-card__footer">
+              <span className="kpi-badge up"><FiArrowUpRight size={11} />+${fmt(currentAccount.profit)} ({currentAccount.profitPercent}%)</span>
+            </div>
+            <div className="kpi-card__bar"><div className="kpi-card__bar-fill" style={{ width: '72%' }} /></div>
+          </div>
+
+          {/* Equity */}
+          <div className="kpi-card kpi-card--blue">
+            <div className="kpi-card__top">
+              <div className="kpi-card__icon blue"><BiLineChart size={20} /></div>
+              <span className="kpi-card__lbl">Total Equity</span>
+            </div>
+            <strong className="kpi-card__val">${fmt(counters.equity)}</strong>
+            <div className="kpi-card__footer">
+              <span className="kpi-card__sub">Floating P&L: <em className="profit">+${fmt(currentAccount.profit)}</em></span>
+            </div>
+            <div className="kpi-card__bar"><div className="kpi-card__bar-fill blue" style={{ width: '88%' }} /></div>
+          </div>
+
+          {/* Margin */}
+          <div className="kpi-card kpi-card--amber">
+            <div className="kpi-card__top">
+              <div className="kpi-card__icon amber"><FiZap size={18} /></div>
+              <span className="kpi-card__lbl">Free Margin</span>
+            </div>
+            <strong className="kpi-card__val">${fmt(currentAccount.freeMargin)}</strong>
+            <div className="kpi-card__footer">
+              <span className="kpi-card__sub">Margin Used: <em>${fmt(currentAccount.margin)}</em></span>
+            </div>
+            <div className="kpi-card__bar"><div className="kpi-card__bar-fill amber" style={{ width: '55%' }} /></div>
+          </div>
+
+          {/* Margin Level */}
+          <div className="kpi-card kpi-card--purple">
+            <div className="kpi-card__top">
+              <div className="kpi-card__icon purple"><BiShield size={20} /></div>
+              <span className="kpi-card__lbl">Margin Level</span>
+            </div>
+            <strong className="kpi-card__val">{currentAccount.marginLevel.toFixed(2)}%</strong>
+            <div className="kpi-card__footer">
+              <span className="kpi-badge safe"><BiCheck size={11} />Safe Level</span>
+            </div>
+            <div className="kpi-card__bar"><div className="kpi-card__bar-fill purple" style={{ width: '93%' }} /></div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+
+      {/* ── ACTION BUTTONS ── */}
+      <div className="actions">
+        <button className="act-btn act-btn--deposit" onClick={() => { setShowDeposit(true); setAmount(''); setSelectedMethod(''); }}>
+          <div className="act-btn__icon"><BiArrowFromLeft size={18} /></div>
+          <div className="act-btn__text">
+            <strong>Deposit</strong>
+            <span>Add funds</span>
+          </div>
+          <FiChevronRight size={16} className="act-btn__arrow" />
+        </button>
+        <button className="act-btn act-btn--withdraw" onClick={() => { setShowWithdraw(true); setAmount(''); setSelectedMethod(''); }}>
+          <div className="act-btn__icon"><BiArrowToRight size={18} /></div>
+          <div className="act-btn__text">
+            <strong>Withdraw</strong>
+            <span>Cash out</span>
+          </div>
+          <FiChevronRight size={16} className="act-btn__arrow" />
+        </button>
+        <button className="act-btn act-btn--transfer">
+          <div className="act-btn__icon"><BiTransfer size={18} /></div>
+          <div className="act-btn__text">
+            <strong>Transfer</strong>
+            <span>Between accounts</span>
+          </div>
+          <FiChevronRight size={16} className="act-btn__arrow" />
+        </button>
+      </div>
+
+      {/* ── CHARTS ROW ── */}
+      <div className="charts-row">
+        {/* Line Chart */}
+        <div className="chart-card">
+          <div className="chart-card__head">
+            <div>
+              <h3 className="chart-card__title">Balance History</h3>
+              <p className="chart-card__sub">Portfolio performance over time</p>
+            </div>
+            <div className="periods">
+              {['1W','1M','3M','1Y'].map(p => (
+                <button
+                  key={p}
+                  className={`period-btn ${activePeriod === p ? 'active' : ''}`}
+                  onClick={() => setActivePeriod(p)}
+                >{p}</button>
+              ))}
+            </div>
+          </div>
+          {/* Inline stat */}
+          <div className="chart-card__stat-row">
+            <div className="chart-mini-stat">
+              <span>Peak</span><strong>$20,500</strong>
+            </div>
+            <div className="chart-mini-stat">
+              <span>Growth</span><strong className="profit">+64%</strong>
+            </div>
+            <div className="chart-mini-stat">
+              <span>Drawdown</span><strong className="loss">-2.8%</strong>
+            </div>
+          </div>
+          <div className="chart-card__body">
+            <Line data={balanceHistoryData} options={chartOptions} />
+          </div>
+        </div>
+
+        {/* Doughnut Chart */}
+        <div className="chart-card chart-card--sm">
+          <div className="chart-card__head">
+            <div>
+              <h3 className="chart-card__title">Asset Allocation</h3>
+              <p className="chart-card__sub">Portfolio diversification</p>
+            </div>
+          </div>
+          <div className="chart-card__donut-wrap">
+            <div className="chart-card__donut-center">
+              <span>Total</span>
+              <strong>100%</strong>
+            </div>
+            <Doughnut data={allocationData} options={doughnutOptions} />
+          </div>
+          {/* Manual legend */}
+          <div className="allocation-list">
+            {['Forex','Commodities','Indices','Crypto','Stocks'].map((l, i) => (
+              <div key={l} className="alloc-row">
+                <div className="alloc-dot" style={{ background: allocationColors[i] }} />
+                <span className="alloc-label">{l}</span>
+                <div className="alloc-bar-track">
+                  <div className="alloc-bar-fill" style={{ width: `${[45,20,15,12,8][i]}%`, background: allocationColors[i] }} />
+                </div>
+                <span className="alloc-pct">{[45,20,15,12,8][i]}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── RECENT TRADES ── */}
+      <div className="trades-card">
+        <div className="trades-card__head">
+          <div>
+            <h3 className="trades-card__title">Open Positions</h3>
+            <p className="trades-card__sub">{recentTrades.length} active trades</p>
+          </div>
+          <button className="view-all-btn">View All <FiChevronRight size={14} /></button>
+        </div>
+
+        {/* Mobile cards view */}
+        <div className="trades-cards-mobile">
+          {recentTrades.map(t => (
+            <div key={t.id} className="trade-mob-card">
+              <div className="trade-mob-card__left">
+                <div className="trade-mob-card__flag">{t.flag}</div>
+                <div>
+                  <strong className="trade-mob-card__sym">{t.symbol}</strong>
+                  <span className={`trade-mob-card__badge ${t.type === 'Buy' ? 'buy' : 'sell'}`}>{t.type}</span>
                 </div>
               </div>
-
-              <div className="chart-wrap">
-                <svg viewBox="0 0 100 30" preserveAspectRatio="none" className="sparkline">
-                  <defs>
-                    <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
-                      <stop offset="0%" stopColor="#34d399" stopOpacity="0.6" />
-                      <stop offset="100%" stopColor="#0ea5a0" stopOpacity="0.05" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M0,25 L10,22 L20,18 L30,16 L40,12 L50,10 L60,8 L70,6 L80,5 L90,4 L100,3" stroke="#34d399" strokeWidth="1.6" fill="none" />
-                  <path d="M0,25 L10,22 L20,18 L30,16 L40,12 L50,10 L60,8 L70,6 L80,5 L90,4 L100,3 L100,30 L0,30 Z" fill="url(#g1)" opacity="0.9" />
-                </svg>
+              <div className="trade-mob-card__mid">
+                <span className="trade-mob-card__lbl">Vol</span>
+                <span className="trade-mob-card__val">{t.volume}</span>
+              </div>
+              <div className="trade-mob-card__mid">
+                <span className="trade-mob-card__lbl">Price</span>
+                <span className="trade-mob-card__val">{t.price}</span>
+              </div>
+              <div className="trade-mob-card__right">
+                <span className={`trade-mob-card__pnl ${t.profit >= 0 ? 'profit' : 'loss'}`}>
+                  {t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}
+                </span>
+                <span className="trade-mob-card__time">{t.time}</span>
               </div>
             </div>
-          </div>
-
-          <div className="donut-card">
-            <div className="donut-top">
-              <div>
-                <div className="muted">Asset Allocation</div>
-                <div className="big">Total 100%</div>
-              </div>
-              <div className="muted">Legend</div>
-            </div>
-
-            <div className="donut-body">
-              <div className="donut" />
-              <ul className="legend">
-                <li><span className="swatch forex" /> <span className="legend-label">Forex</span> <span className="legend-value">45%</span></li>
-                <li><span className="swatch comm" /> <span className="legend-label">Commodities</span> <span className="legend-value">20%</span></li>
-                <li><span className="swatch idx" /> <span className="legend-label">Indices</span> <span className="legend-value">15%</span></li>
-                <li><span className="swatch crypto" /> <span className="legend-label">Crypto</span> <span className="legend-value">12%</span></li>
-                <li><span className="swatch stocks" /> <span className="legend-label">Stocks</span> <span className="legend-value">8%</span></li>
-              </ul>
-            </div>
-
-            <div className="margin-level">
-              <div className="muted">Margin Level <span className="ml-auto bold">1861.02% (Safe)</span></div>
-              <div className="progress">
-                <div className="progress-fill" style={{ width: '86%' }} />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Metrics grid */}
-        <div className="metrics-grid">
-          {metrics.map((m) => (
-            <motion.div key={m.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="metric-card">
-              <div className="muted">{m.title}</div>
-              <div className="metric-value">{m.value}</div>
-              <div className={`metric-sub ${m.positive ? 'pos' : 'neg'}`}>{m.sub}</div>
-            </motion.div>
           ))}
         </div>
 
-        {/* Actions */}
-        <div className="actions-row">
-          <button className="btn-deposit"><BiDollar /> Deposit</button>
-          <button className="btn-outline">Withdraw</button>
-          <button className="btn-outline">Transfer</button>
+        {/* Desktop table */}
+        <div className="trades-table-wrap">
+          <table className="trades-table">
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Type</th>
+                <th>Volume</th>
+                <th>Open Price</th>
+                <th>Current</th>
+                <th>P&L</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentTrades.map((t, i) => (
+                <motion.tr
+                  key={t.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.06, duration: 0.3 }}
+                  className="trade-row"
+                >
+                  <td>
+                    <div className="trade-sym-cell">
+                      <span className="trade-flag">{t.flag}</span>
+                      <span className="trade-sym">{t.symbol}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`t-badge ${t.type === 'Buy' ? 'buy' : 'sell'}`}>{t.type}</span>
+                  </td>
+                  <td className="t-num">{t.volume}</td>
+                  <td className="t-num">{t.price}</td>
+                  <td className="t-num">{t.current}</td>
+                  <td className={`t-pnl ${t.profit >= 0 ? 'profit' : 'loss'}`}>
+                    {t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}
+                  </td>
+                  <td className="t-time">
+                    <BiTime size={11} style={{ marginRight: 4 }} />{t.time}
+                  </td>
+                </motion.tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-
-        {/* Open Positions */}
-        <div className="positions-card">
-          <div className="positions-header">
-            <div>
-              <h3>Open Positions</h3>
-              <p className="muted">Active trades and real-time P&L</p>
-            </div>
-            <div className="positions-controls">
-              <span className="active-pill">4 Active</span>
-              <button className="manage-btn">Manage</button>
-            </div>
-          </div>
-
-          <div className="table-wrap">
-            <table className="positions-table">
-              <thead>
-                <tr>
-                  <th>Symbol</th>
-                  <th>Type</th>
-                  <th>Volume</th>
-                  <th>Open Price</th>
-                  <th>Current</th>
-                  <th>P&L</th>
-                  <th>Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                {positions.map((p, i) => (
-                  <tr key={i}>
-                    <td className="sym">{p.symbol}</td>
-                    <td>
-                      <div className={`type-pill ${p.type === 'Buy' ? 'buy' : 'sell'}`}>
-                        {p.type === 'Buy' ? <FiArrowUpRight /> : <FiArrowDownRight />} {p.type}
-                      </div>
-                    </td>
-                    <td>{p.volume}</td>
-                    <td>{p.open}</td>
-                    <td>{p.current}</td>
-                    <td className={`pnl ${p.pnl >= 0 ? 'pnl-pos' : 'pnl-neg'}`}>{p.pnl >= 0 ? `+${p.pnl.toFixed(2)}` : p.pnl.toFixed(2)}</td>
-                    <td className="muted">{p.time}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
       </div>
 
+      {/* ── DEPOSIT MODAL ── */}
+      <AnimatePresence>
+        {showDeposit && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setShowDeposit(false)}
+          >
+            <motion.div
+              className="modal"
+              initial={{ scale: 0.92, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.94, y: 16, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="modal__glow" />
+              <div className="modal__head">
+                <div className="modal__icon deposit"><BiArrowFromLeft size={20} /></div>
+                <div>
+                  <h3 className="modal__title">Deposit Funds</h3>
+                  <p className="modal__sub">Instant deposits, no fees</p>
+                </div>
+                <button className="modal__close" onClick={() => setShowDeposit(false)}><BiX size={20} /></button>
+              </div>
+              <p className="modal__section-label">Select Payment Method</p>
+              <div className="modal__methods">
+                {[
+                  { id: 'card', label: 'Credit Card', icon: '💳' },
+                  { id: 'bank', label: 'Bank Wire',   icon: '🏦' },
+                  { id: 'crypto', label: 'Crypto',    icon: '₿' },
+                  { id: 'skrill', label: 'Skrill',    icon: '⚡' },
+                ].map(m => (
+                  <button
+                    key={m.id}
+                    className={`modal__method ${selectedMethod === m.id ? 'active' : ''}`}
+                    onClick={() => setSelectedMethod(m.id)}
+                  >
+                    <span className="modal__method-icon">{m.icon}</span>
+                    <span>{m.label}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="modal__section-label">Amount</p>
+              <div className="modal__input-wrap">
+                <span className="modal__input-prefix">$</span>
+                <input
+                  type="number" placeholder="0.00"
+                  className="modal__input" value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                />
+              </div>
+              <div className="modal__quick-amounts">
+                {['100','500','1000','5000'].map(v => (
+                  <button key={v} className="modal__quick" onClick={() => setAmount(v)}>${v}</button>
+                ))}
+              </div>
+              <div className="modal__footer">
+                <button className="modal__cancel" onClick={() => setShowDeposit(false)}>Cancel</button>
+                <button className="modal__confirm">
+                  <BiCheck size={16} /> Confirm Deposit
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── WITHDRAW MODAL ── */}
+      <AnimatePresence>
+        {showWithdraw && (
+          <motion.div
+            className="modal-overlay"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setShowWithdraw(false)}
+          >
+            <motion.div
+              className="modal"
+              initial={{ scale: 0.92, y: 24, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.94, y: 16, opacity: 0 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="modal__glow modal__glow--red" />
+              <div className="modal__head">
+                <div className="modal__icon withdraw"><BiArrowToRight size={20} /></div>
+                <div>
+                  <h3 className="modal__title">Withdraw Funds</h3>
+                  <p className="modal__sub">Available: ${fmt(currentAccount.balance)}</p>
+                </div>
+                <button className="modal__close" onClick={() => setShowWithdraw(false)}><BiX size={20} /></button>
+              </div>
+              <p className="modal__section-label">Select Withdrawal Method</p>
+              <div className="modal__methods">
+                {[
+                  { id: 'bank',    label: 'Bank Wire', icon: '🏦' },
+                  { id: 'crypto',  label: 'Crypto',    icon: '₿' },
+                  { id: 'skrill',  label: 'Skrill',    icon: '⚡' },
+                  { id: 'neteller', label: 'Neteller', icon: '🔵' },
+                ].map(m => (
+                  <button
+                    key={m.id}
+                    className={`modal__method ${selectedMethod === m.id ? 'active' : ''}`}
+                    onClick={() => setSelectedMethod(m.id)}
+                  >
+                    <span className="modal__method-icon">{m.icon}</span>
+                    <span>{m.label}</span>
+                  </button>
+                ))}
+              </div>
+              <p className="modal__section-label">Amount</p>
+              <div className="modal__input-wrap">
+                <span className="modal__input-prefix">$</span>
+                <input
+                  type="number" placeholder="0.00"
+                  className="modal__input" value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                />
+              </div>
+              <div className="modal__quick-amounts">
+                {['100','500','1000','5000'].map(v => (
+                  <button key={v} className="modal__quick" onClick={() => setAmount(v)}>${v}</button>
+                ))}
+              </div>
+              <div className="modal__footer">
+                <button className="modal__cancel" onClick={() => setShowWithdraw(false)}>Cancel</button>
+                <button className="modal__confirm modal__confirm--red">
+                  <BiCheck size={16} /> Confirm Withdrawal
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══════════════════════════════════════════
+          STYLES
+      ══════════════════════════════════════════ */}
       <style jsx>{`
-        :root{
-          --bg:#0f1724;
-          --card:#071028;
-          --card-border:#1f2937;
-          --muted:#94a3b8;
-          --accent-green:#10b981;
-          --accent-yellow:#f59e0b;
-          --accent-blue:#3b82f6;
-          --accent-purple:#8b5cf6;
-          --accent-pink:#ec4899;
+        /* ── TOKENS ── */
+        .dov {
+          --g:        #3fcb1b;
+          --g-dk:     #2e9c14;
+          --g-faint:  rgba(63,203,27,0.08);
+          --g-border: rgba(63,203,27,0.22);
+          --blue:     #3b82f6;
+          --amber:    #f59e0b;
+          --purple:   #8b5cf6;
+          --red:      #ef4444;
+          --profit:   #10b981;
+          --bg:       var(--bg-primary, #0c0f0a);
+          --bg2:      var(--bg-secondary, #141914);
+          --bg3:      var(--bg-card, #1a201a);
+          --border:   var(--border-color, rgba(255,255,255,0.08));
+          --text:     var(--text-primary, #edf0ea);
+          --text2:    var(--text-secondary, #556050);
+          --ease:     cubic-bezier(0.16,1,0.3,1);
+          --r:        16px;
+          font-family: 'Sora', 'DM Sans', system-ui, sans-serif;
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 0;
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity .5s var(--ease), transform .5s var(--ease);
         }
-        .dashboard-root{
-          min-height:100vh;
-          background:var(--bg);
-          color:#e6eef6;
-          padding:24px;
-          font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        .dov.mounted { opacity: 1; transform: translateY(0); }
+
+        /* ── TICKER ── */
+        .ticker-wrap {
+          display: flex; align-items: center; gap: 0;
+          background: var(--bg3); border: 1px solid var(--border);
+          border-radius: 12px; overflow: hidden;
+          margin-bottom: 20px; height: 38px;
         }
-        .container{ max-width:1400px; margin:0 auto; display:flex; flex-direction:column; gap:20px; }
+        .ticker-label {
+          display: flex; align-items: center; gap: 5px;
+          padding: 0 14px; background: var(--g); color: #000;
+          font-size: .62rem; font-weight: 800; letter-spacing: .1em;
+          text-transform: uppercase; height: 100%; flex-shrink: 0; white-space: nowrap;
+        }
+        .ticker-track { flex: 1; overflow: hidden; height: 100%; }
+        .ticker-inner {
+          display: flex; align-items: center; height: 100%;
+          will-change: transform;
+        }
+        .ticker-item {
+          display: flex; align-items: center; gap: 7px;
+          padding: 0 20px; white-space: nowrap;
+          border-right: 1px solid var(--border);
+          height: 100%;
+        }
+        .ticker-sym  { font-size: .72rem; font-weight: 700; color: var(--text); }
+        .ticker-price{ font-size: .72rem; color: var(--text2); }
+        .ticker-chg  { font-size: .68rem; font-weight: 700; }
+        .ticker-chg.up { color: var(--g); }
+        .ticker-chg.dn { color: var(--red); }
 
-        /* Ticker */
-        .ticker{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:8px; display:flex; align-items:center; gap:8px; overflow:hidden; }
-        .ticker-btn{ background:transparent; border:none; color:inherit; padding:6px; border-radius:8px; cursor:pointer; }
-        .ticker-scroll{ display:flex; gap:20px; overflow-x:auto; padding:6px 4px; scrollbar-width:none; -ms-overflow-style:none; }
-        .ticker-scroll::-webkit-scrollbar{ display:none; }
-        .ticker-item{ display:flex; gap:8px; align-items:center; padding:6px 8px; border-radius:8px; }
-        .t-label{ font-size:12px; color:var(--muted); min-width:70px; }
-        .t-price{ font-weight:700; color:#fff; min-width:70px; }
-        .t-change{ font-size:12px; padding:4px 8px; border-radius:999px; font-weight:600; }
-        .t-change.up{ background:rgba(16,185,129,0.08); color:#34d399; }
-        .t-change.down{ background:rgba(239,68,68,0.08); color:#fb7185; }
+        /* ── WELCOME ── */
+        .welcome {
+          position: relative; overflow: hidden;
+          background: linear-gradient(135deg, rgba(63,203,27,0.08) 0%, rgba(63,203,27,0.03) 50%, transparent 100%);
+          border: 1px solid var(--g-border);
+          border-radius: 20px; padding: 22px 28px;
+          display: flex; justify-content: space-between; align-items: center;
+          flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
+        }
+        .welcome__canvas { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .welcome__orb {
+          position: absolute; width: 300px; height: 300px;
+          background: radial-gradient(circle, rgba(63,203,27,0.12), transparent);
+          border-radius: 50%; filter: blur(60px);
+          top: -100px; right: -50px;
+          animation: welcomeOrb 8s ease-in-out infinite;
+        }
+        @keyframes welcomeOrb { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-15px,10px);} }
+        .welcome__grid { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-        /* Header */
-        .header-row{ display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
-        .greeting h2{ margin:0; font-size:22px; color:#fff; }
-        .greeting p{ margin:4px 0 0; color:var(--muted); font-size:13px; }
+        .welcome__left { position: relative; z-index: 1; }
+        .welcome__greeting {
+          display: inline-flex; align-items: center; gap: 7px;
+          font-size: .68rem; font-weight: 700; color: var(--g);
+          letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+        }
+        .welcome__dot {
+          width: 7px; height: 7px; border-radius: 50%; background: var(--g);
+          animation: wDotPulse 2s ease-in-out infinite;
+        }
+        @keyframes wDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(63,203,27,.5);} 50%{box-shadow:0 0 0 5px rgba(63,203,27,0);} }
+        .welcome__name { font-size: clamp(1.2rem,2.5vw,1.6rem); font-weight: 900; color: var(--text); letter-spacing: -.03em; margin: 0 0 4px; }
+        .welcome__sub  { font-size: .78rem; color: var(--text2); margin: 0; }
 
-        .accounts-row{ display:flex; gap:12px; align-items:center; }
-        .account-pill{ background:var(--card); border:1px solid var(--card-border); padding:12px 14px; border-radius:12px; display:flex; flex-direction:column; gap:8px; min-width:160px; }
-        .acc-name{ font-weight:700; color:#fff; }
-        .acc-tag{ font-size:12px; padding:6px 8px; border-radius:999px; font-weight:700; display:inline-block; }
-        .acc-tag.live{ background:rgba(63,203,27,0.08); color:#34d399; }
-        .acc-tag.demo{ background:rgba(59,130,246,0.08); color:#60a5fa; }
-        .btn-new{ display:inline-flex; align-items:center; gap:8px; background:linear-gradient(135deg,#34d399,#16a34a); color:#071028; padding:10px 12px; border-radius:10px; border:none; font-weight:700; cursor:pointer; }
+        .welcome__right {
+          display: flex; align-items: center; gap: 20px;
+          position: relative; z-index: 1;
+          background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+          border-radius: 14px; padding: 14px 20px;
+          backdrop-filter: blur(10px);
+        }
+        .welcome__kpi { display: flex; align-items: center; gap: 12px; }
+        .welcome__kpi-icon {
+          width: 40px; height: 40px; border-radius: 11px;
+          background: rgba(255,255,255,0.06); border: 1px solid var(--border);
+          color: var(--text2);
+          display: flex; align-items: center; justify-content: center;
+        }
+        .welcome__kpi-icon.green { background: var(--g-faint); border-color: var(--g-border); color: var(--g); }
+        .welcome__kpi-lbl { font-size: .66rem; color: var(--text2); display: block; margin-bottom: 3px; }
+        .welcome__kpi-val { font-size: 1rem; font-weight: 800; color: var(--text); display: block; letter-spacing: -.02em; }
+        .welcome__kpi-val.profit { color: var(--profit); }
+        .welcome__divider { width: 1px; height: 36px; background: var(--border); }
 
-        /* Grid 3 */
-        .grid-3{ display:grid; grid-template-columns: 1fr 360px; gap:20px; align-items:start; }
-        .portfolio-card{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:18px; }
-        .portfolio-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-        .muted{ color:var(--muted); font-size:13px; }
-        .big{ font-size:28px; font-weight:800; color:#fff; margin-top:6px; }
-        .gain{ color:#34d399; margin-top:6px; font-weight:700; }
+        @media(max-width:640px){
+          .welcome { padding: 18px 18px; }
+          .welcome__right { width: 100%; justify-content: center; }
+        }
 
-        .portfolio-actions{ display:flex; gap:8px; }
-        .action-btn{ background:#0b1220; border:1px solid var(--card-border); color:var(--muted); padding:8px 10px; border-radius:8px; display:inline-flex; gap:8px; align-items:center; cursor:pointer; }
+        /* ── ACCOUNT TABS ── */
+        .acc-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .acc-tab {
+          display: flex; align-items: center; gap: 8px;
+          padding: 9px 16px; background: var(--bg3);
+          border: 1px solid var(--border); border-radius: 30px;
+          color: var(--text2); cursor: pointer; font-size: .82rem;
+          transition: all .25s var(--ease);
+        }
+        .acc-tab.active { background: var(--g-faint); border-color: var(--g-border); color: var(--text); }
+        .acc-tab__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .acc-tab__dot.live { background: var(--g); box-shadow: 0 0 0 3px rgba(63,203,27,.2); animation: wDotPulse 2s ease-in-out infinite; }
+        .acc-tab__dot.demo { background: var(--blue); }
+        .acc-tab__name { font-weight: 600; }
+        .acc-tab__badge {
+          font-size: .6rem; font-weight: 700; padding: 2px 7px;
+          border-radius: 100px; text-transform: uppercase; letter-spacing: .06em;
+        }
+        .acc-tab__badge.live { background: rgba(63,203,27,.15); color: var(--g); }
+        .acc-tab__badge.demo { background: rgba(59,130,246,.15); color: var(--blue); }
 
-        .balance-section{ margin-top:16px; }
-        .balance-meta{ display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
-        .meta-title{ font-weight:700; color:#fff; }
-        .meta-badges{ display:flex; gap:8px; align-items:center; }
-        .badge{ font-size:12px; padding:6px 8px; border-radius:8px; }
-        .badge.green{ background:rgba(16,185,129,0.08); color:#34d399; }
-        .badge.slate{ background:rgba(148,163,184,0.06); color:var(--muted); }
-        .badge.red{ background:rgba(239,68,68,0.06); color:#fb7185; }
+        /* ── KPI CARDS ── */
+        .kpi-row {
+          display: grid;
+          grid-template-columns: repeat(4,1fr);
+          gap: 16px; margin-bottom: 20px;
+        }
+        @media(max-width:1100px){ .kpi-row { grid-template-columns: repeat(2,1fr); } }
+        @media(max-width:520px)  { .kpi-row { grid-template-columns: 1fr; } }
 
-        .chart-wrap{ margin-top:12px; background:linear-gradient(180deg,#071028,#06101a); border-radius:10px; padding:12px; border:1px solid #0f1724; height:160px; display:flex; align-items:center; }
-        .sparkline{ width:100%; height:100%; }
+        .kpi-card {
+          background: var(--bg3); border: 1px solid var(--border);
+          border-radius: 18px; padding: 20px 18px;
+          position: relative; overflow: hidden;
+          transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
+        }
+        .kpi-card:hover { transform: translateY(-4px); }
+        .kpi-card--green:hover { border-color: var(--g-border); box-shadow: 0 8px 28px rgba(63,203,27,.12); }
+        .kpi-card--blue:hover  { border-color: rgba(59,130,246,.3); box-shadow: 0 8px 28px rgba(59,130,246,.1); }
+        .kpi-card--amber:hover { border-color: rgba(245,158,11,.3); box-shadow: 0 8px 28px rgba(245,158,11,.1); }
+        .kpi-card--purple:hover{ border-color: rgba(139,92,246,.3); box-shadow: 0 8px 28px rgba(139,92,246,.1); }
+
+        .kpi-card__top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+        .kpi-card__icon {
+          width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .kpi-card__icon.green  { background: var(--g-faint); color: var(--g); border: 1px solid var(--g-border); }
+        .kpi-card__icon.blue   { background: rgba(59,130,246,.1); color: var(--blue); border: 1px solid rgba(59,130,246,.2); }
+        .kpi-card__icon.amber  { background: rgba(245,158,11,.1); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
+        .kpi-card__icon.purple { background: rgba(139,92,246,.1); color: var(--purple); border: 1px solid rgba(139,92,246,.2); }
+        .kpi-card__lbl { font-size: .68rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+
+        .kpi-card__val {
+          font-size: clamp(1.3rem,2vw,1.7rem); font-weight: 900;
+          color: var(--text); letter-spacing: -.04em;
+          display: block; margin-bottom: 10px;
+          font-variant-numeric: tabular-nums;
+        }
+        .kpi-card__footer { margin-bottom: 14px; }
+        .kpi-card__sub { font-size: .72rem; color: var(--text2); }
+        .kpi-card__sub em { font-style: normal; }
+
+        .kpi-badge {
+          display: inline-flex; align-items: center; gap: 4px;
+          font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 100px;
+        }
+        .kpi-badge.up   { background: rgba(16,185,129,.12); color: var(--profit); }
+        .kpi-badge.safe { background: rgba(63,203,27,.1); color: var(--g); }
+
+        .kpi-card__bar { height: 3px; background: var(--border); border-radius: 100px; overflow: hidden; }
+        .kpi-card__bar-fill {
+          height: 100%; border-radius: 100px;
+          background: linear-gradient(90deg, var(--g), #7de84a);
+          transition: width 1.2s var(--ease);
+        }
+        .kpi-card__bar-fill.blue   { background: linear-gradient(90deg, var(--blue), #93c5fd); }
+        .kpi-card__bar-fill.amber  { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+        .kpi-card__bar-fill.purple { background: linear-gradient(90deg, var(--purple), #c4b5fd); }
+
+        /* ── ACTION BUTTONS ── */
+        .actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+        @media(max-width:640px){ .actions { grid-template-columns: 1fr; gap: 10px; } }
+
+        .act-btn {
+          display: flex; align-items: center; gap: 14px;
+          padding: 14px 18px; border-radius: 15px; cursor: pointer;
+          border: none; transition: all .3s var(--ease);
+          text-align: left;
+        }
+        .act-btn__icon {
+          width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .act-btn__text { flex: 1; }
+        .act-btn__text strong { display: block; font-size: .88rem; font-weight: 800; margin-bottom: 2px; }
+        .act-btn__text span   { display: block; font-size: .7rem; opacity: .65; }
+        .act-btn__arrow { opacity: .4; transition: all .3s; flex-shrink: 0; }
+        .act-btn:hover .act-btn__arrow { opacity: 1; transform: translateX(3px); }
+
+        .act-btn--deposit {
+          background: linear-gradient(135deg, #3fcb1b, #2e9c14);
+          color: #000;
+        }
+        .act-btn--deposit .act-btn__icon { background: rgba(0,0,0,.15); color: #000; }
+        .act-btn--deposit:hover { box-shadow: 0 10px 28px rgba(63,203,27,.35); transform: translateY(-3px); }
+
+        .act-btn--withdraw {
+          background: var(--bg3); border: 1px solid var(--border);
+          color: var(--text);
+        }
+        .act-btn--withdraw .act-btn__icon { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+        .act-btn--withdraw:hover { border-color: rgba(239,68,68,.3); box-shadow: 0 8px 24px rgba(239,68,68,.08); transform: translateY(-2px); }
+
+        .act-btn--transfer {
+          background: var(--bg3); border: 1px solid var(--border);
+          color: var(--text);
+        }
+        .act-btn--transfer .act-btn__icon { background: rgba(59,130,246,.1); color: var(--blue); border: 1px solid rgba(59,130,246,.2); }
+        .act-btn--transfer:hover { border-color: rgba(59,130,246,.3); box-shadow: 0 8px 24px rgba(59,130,246,.08); transform: translateY(-2px); }
+
+        /* ── CHARTS ROW ── */
+        .charts-row {
+          display: grid; grid-template-columns: 1.55fr 1fr;
+          gap: 16px; margin-bottom: 20px;
+        }
+        @media(max-width:960px){ .charts-row { grid-template-columns: 1fr; } }
+
+        .chart-card {
+          background: var(--bg3); border: 1px solid var(--border);
+          border-radius: 20px; padding: 22px; overflow: hidden;
+        }
+        .chart-card__head {
+          display: flex; justify-content: space-between; align-items: flex-start;
+          flex-wrap: wrap; gap: 12px; margin-bottom: 14px;
+        }
+        .chart-card__title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 0 0 3px; }
+        .chart-card__sub   { font-size: .7rem; color: var(--text2); margin: 0; }
+        .chart-card__stat-row { display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
+        .chart-mini-stat { display: flex; flex-direction: column; gap: 2px; }
+        .chart-mini-stat span    { font-size: .65rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+        .chart-mini-stat strong  { font-size: .9rem; font-weight: 800; color: var(--text); }
+
+        .periods { display: flex; gap: 5px; }
+        .period-btn {
+          padding: 4px 11px; background: transparent;
+          border: 1px solid var(--border); border-radius: 20px;
+          color: var(--text2); font-size: .68rem; cursor: pointer;
+          transition: all .2s;
+        }
+        .period-btn.active { background: var(--g-faint); border-color: var(--g-border); color: var(--g); font-weight: 700; }
+        .period-btn:not(.active):hover { border-color: var(--text2); color: var(--text); }
+
+        .chart-card__body { height: 240px; }
+        @media(max-width:480px){ .chart-card__body { height: 190px; } }
 
         /* Donut card */
-        .donut-card{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:18px; display:flex; flex-direction:column; gap:12px; }
-        .donut-top{ display:flex; justify-content:space-between; align-items:center; }
-        .donut-body{ display:flex; gap:12px; align-items:center; }
-        .donut{ width:144px; height:144px; border-radius:999px; background: conic-gradient(#10b981 0% 45%, #f59e0b 45% 65%, #3b82f6 65% 80%, #8b5cf6 80% 92%, #ec4899 92% 100%); box-shadow: inset 0 2px 6px rgba(0,0,0,0.4); }
-        .legend{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
-        .legend li{ display:flex; align-items:center; gap:8px; }
-        .swatch{ width:12px; height:12px; display:inline-block; border-radius:3px; }
-        .swatch.forex{ background:#10b981; }
-        .swatch.comm{ background:#f59e0b; }
-        .swatch.idx{ background:#3b82f6; }
-        .swatch.crypto{ background:#8b5cf6; }
-        .swatch.stocks{ background:#ec4899; }
-        .legend-label{ color:var(--muted); }
-        .legend-value{ margin-left:auto; color:#fff; font-weight:700; }
-
-        .margin-level{ margin-top:8px; }
-        .progress{ background:#071028; border:1px solid #0f1724; height:10px; border-radius:999px; overflow:hidden; margin-top:8px; }
-        .progress-fill{ height:100%; background:linear-gradient(90deg,#34d399,#059669); border-radius:999px; }
-
-        /* Metrics grid */
-        .metrics-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:16px; margin-top:6px; }
-        .metric-card{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:14px; }
-        .metric-value{ font-size:18px; font-weight:800; color:#fff; margin-top:8px; }
-        .metric-sub.pos{ color:#34d399; margin-top:6px; }
-        .metric-sub.neg{ color:#fb7185; margin-top:6px; }
-
-        /* Actions */
-        .actions-row{ display:flex; gap:12px; margin-top:12px; }
-        .btn-deposit{ background:linear-gradient(135deg,#34d399,#16a34a); color:#071028; padding:10px 14px; border-radius:10px; border:none; font-weight:800; display:inline-flex; gap:8px; align-items:center; cursor:pointer; }
-        .btn-outline{ background:#0b1220; border:1px solid var(--card-border); color:var(--muted); padding:10px 14px; border-radius:10px; cursor:pointer; }
-
-        /* Positions */
-        .positions-card{ background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:18px; margin-top:8px; }
-        .positions-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-        .positions-controls{ display:flex; gap:8px; align-items:center; }
-        .active-pill{ background:#0b1220; padding:6px 10px; border-radius:8px; color:var(--muted); }
-        .manage-btn{ background:#0b1220; border:1px solid var(--card-border); padding:6px 10px; border-radius:8px; color:var(--muted); cursor:pointer; }
-
-        .table-wrap{ overflow-x:auto; }
-        .positions-table{ width:100%; border-collapse:collapse; min-width:900px; }
-        .positions-table thead th{ text-align:left; color:var(--muted); padding:10px 8px; font-size:13px; }
-        .positions-table tbody tr{ border-top:1px solid #0f1724; }
-        .positions-table td{ padding:12px 8px; vertical-align:middle; color:#fff; }
-        .type-pill{ display:inline-flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; font-weight:700; font-size:13px; }
-        .type-pill.buy{ background:rgba(16,185,129,0.06); color:#34d399; }
-        .type-pill.sell{ background:rgba(239,68,68,0.06); color:#fb7185; }
-        .pnl-pos{ color:#34d399; font-weight:800; }
-        .pnl-neg{ color:#fb7185; font-weight:800; }
-
-        /* Responsive */
-        @media (max-width: 1100px){
-          .grid-3{ grid-template-columns: 1fr; }
-          .metrics-grid{ grid-template-columns: repeat(2, 1fr); }
+        .chart-card--sm {}
+        .chart-card__donut-wrap { position: relative; height: 200px; margin-bottom: 16px; }
+        .chart-card__donut-center {
+          position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+          text-align: center; pointer-events: none; z-index: 1;
         }
-        @media (max-width: 640px){
-          .metrics-grid{ grid-template-columns: 1fr; }
-          .accounts-row{ flex-direction:column; align-items:flex-start; gap:8px; }
+        .chart-card__donut-center span  { display: block; font-size: .62rem; color: var(--text2); margin-bottom: 2px; }
+        .chart-card__donut-center strong{ display: block; font-size: 1.3rem; font-weight: 900; color: var(--text); }
+
+        .allocation-list { display: flex; flex-direction: column; gap: 8px; }
+        .alloc-row { display: flex; align-items: center; gap: 8px; }
+        .alloc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+        .alloc-label { font-size: .72rem; color: var(--text2); width: 80px; flex-shrink: 0; }
+        .alloc-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
+        .alloc-bar-fill  { height: 100%; border-radius: 100px; transition: width 1s var(--ease); }
+        .alloc-pct { font-size: .7rem; font-weight: 700; color: var(--text); width: 32px; text-align: right; flex-shrink: 0; }
+
+        /* ── TRADES ── */
+        .trades-card {
+          background: var(--bg3); border: 1px solid var(--border);
+          border-radius: 20px; padding: 22px; overflow: hidden;
         }
+        .trades-card__head {
+          display: flex; justify-content: space-between; align-items: center;
+          margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
+        }
+        .trades-card__title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 0 0 2px; }
+        .trades-card__sub   { font-size: .7rem; color: var(--text2); margin: 0; }
+        .view-all-btn {
+          display: inline-flex; align-items: center; gap: 4px;
+          background: var(--g-faint); border: 1px solid var(--g-border);
+          color: var(--g); font-size: .76rem; font-weight: 700;
+          padding: 6px 13px; border-radius: 20px; cursor: pointer;
+          transition: all .2s;
+        }
+        .view-all-btn:hover { background: rgba(63,203,27,.15); }
+
+        /* Mobile card view */
+        .trades-cards-mobile { display: none; flex-direction: column; gap: 10px; }
+        @media(max-width:700px){ 
+          .trades-cards-mobile { display: flex; }
+          .trades-table-wrap   { display: none; }
+        }
+
+        .trade-mob-card {
+          display: flex; align-items: center; gap: 10px;
+          padding: 12px 14px; background: var(--bg2);
+          border: 1px solid var(--border); border-radius: 13px;
+          flex-wrap: wrap;
+        }
+        .trade-mob-card__left  { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 110px; }
+        .trade-mob-card__flag  { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.05); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+        .trade-mob-card__sym   { display: block; font-size: .84rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+        .trade-mob-card__badge { font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+        .trade-mob-card__badge.buy  { background: rgba(63,203,27,.12); color: var(--g); }
+        .trade-mob-card__badge.sell { background: rgba(239,68,68,.12); color: var(--red); }
+        .trade-mob-card__mid  { display: flex; flex-direction: column; gap: 2px; }
+        .trade-mob-card__lbl  { font-size: .62rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
+        .trade-mob-card__val  { font-size: .78rem; color: var(--text); font-weight: 600; }
+        .trade-mob-card__right{ margin-left: auto; text-align: right; }
+        .trade-mob-card__pnl  { display: block; font-size: .9rem; font-weight: 800; }
+        .trade-mob-card__time { font-size: .66rem; color: var(--text2); }
+
+        /* Desktop table */
+        .trades-table-wrap { overflow-x: auto; }
+        .trades-table {
+          width: 100%; border-collapse: collapse; min-width: 560px;
+        }
+        .trades-table thead th {
+          text-align: left; padding: 9px 12px;
+          font-size: .66rem; color: var(--text2); font-weight: 600;
+          text-transform: uppercase; letter-spacing: .08em;
+          border-bottom: 1px solid var(--border);
+        }
+        .trade-row { transition: background .2s; }
+        .trade-row:hover { background: rgba(255,255,255,.025); }
+        .trades-table td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
+        .trades-table tr:last-child td { border-bottom: none; }
+
+        .trade-sym-cell { display: flex; align-items: center; gap: 9px; }
+        .trade-flag { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,.05); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+        .trade-sym  { font-size: .84rem; font-weight: 700; color: var(--text); }
+        .t-badge { font-size: .66rem; font-weight: 700; padding: 3px 9px; border-radius: 10px; }
+        .t-badge.buy  { background: rgba(63,203,27,.12); color: var(--g); }
+        .t-badge.sell { background: rgba(239,68,68,.12); color: var(--red); }
+        .t-num    { font-size: .8rem; color: var(--text2); font-variant-numeric: tabular-nums; }
+        .t-pnl    { font-size: .84rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+        .t-time   { font-size: .72rem; color: var(--text2); display: flex; align-items: center; white-space: nowrap; }
+
+        /* shared profit/loss colors */
+        .profit { color: var(--profit) !important; }
+        .loss   { color: var(--red)    !important; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+          position: fixed; inset: 0;
+          background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
+          z-index: 1000; display: flex; align-items: center; justify-content: center;
+          padding: 20px;
+        }
+        .modal {
+          background: var(--bg3); border: 1px solid var(--border);
+          border-radius: 24px; padding: 28px;
+          width: 100%; max-width: 440px;
+          position: relative; overflow: hidden;
+          box-shadow: 0 32px 80px rgba(0,0,0,.6);
+        }
+        .modal__glow {
+          position: absolute; top: -60px; right: -60px; width: 200px; height: 200px;
+          background: radial-gradient(circle, rgba(63,203,27,.15), transparent);
+          border-radius: 50%; filter: blur(40px); pointer-events: none;
+        }
+        .modal__glow--red {
+          background: radial-gradient(circle, rgba(239,68,68,.12), transparent);
+        }
+        .modal__head {
+          display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
+          position: relative; z-index: 1;
+        }
+        .modal__icon {
+          width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .modal__icon.deposit  { background: var(--g-faint); color: var(--g); border: 1px solid var(--g-border); }
+        .modal__icon.withdraw { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
+        .modal__title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 3px; }
+        .modal__sub   { font-size: .76rem; color: var(--text2); margin: 0; }
+        .modal__close {
+          margin-left: auto; flex-shrink: 0; width: 32px; height: 32px;
+          border-radius: 8px; border: 1px solid var(--border);
+          background: transparent; color: var(--text2);
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; transition: all .2s;
+        }
+        .modal__close:hover { background: rgba(255,255,255,.06); color: var(--text); }
+
+        .modal__section-label { font-size: .65rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 10px; position: relative; z-index:1; }
+
+        .modal__methods { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 20px; position: relative; z-index:1; }
+        @media(max-width:380px){ .modal__methods { grid-template-columns: repeat(2,1fr); } }
+        .modal__method {
+          display: flex; flex-direction: column; align-items: center; gap: 5px;
+          padding: 10px 8px; background: var(--bg2);
+          border: 1px solid var(--border); border-radius: 12px;
+          color: var(--text2); cursor: pointer; font-size: .72rem; font-weight: 600;
+          transition: all .25s var(--ease);
+        }
+        .modal__method:hover  { border-color: var(--text2); color: var(--text); }
+        .modal__method.active { background: var(--g-faint); border-color: var(--g-border); color: var(--g); }
+        .modal__method-icon   { font-size: 1.2rem; }
+
+        .modal__input-wrap { position: relative; margin-bottom: 12px; z-index:1; }
+        .modal__input-prefix {
+          position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+          font-size: 1.1rem; font-weight: 700; color: var(--text2);
+        }
+        .modal__input {
+          width: 100%; padding: 14px 14px 14px 32px;
+          background: var(--bg2); border: 1px solid var(--border);
+          border-radius: 13px; color: var(--text); font-size: 1.1rem; font-weight: 700;
+          transition: border-color .2s;
+          font-family: inherit;
+        }
+        .modal__input:focus { outline: none; border-color: var(--g-border); }
+        .modal__input::placeholder { color: var(--text2); font-weight: 400; }
+
+        .modal__quick-amounts { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; position: relative; z-index:1; }
+        .modal__quick {
+          padding: 6px 14px; background: var(--bg2);
+          border: 1px solid var(--border); border-radius: 20px;
+          color: var(--text2); font-size: .76rem; font-weight: 700;
+          cursor: pointer; transition: all .2s;
+        }
+        .modal__quick:hover { border-color: var(--g-border); color: var(--g); background: var(--g-faint); }
+
+        .modal__footer { display: flex; gap: 10px; position: relative; z-index:1; }
+        .modal__cancel, .modal__confirm {
+          flex: 1; padding: 13px; border-radius: 13px;
+          font-weight: 700; font-size: .88rem; cursor: pointer;
+          display: flex; align-items: center; justify-content: center; gap: 6px;
+          transition: all .25s var(--ease);
+        }
+        .modal__cancel {
+          background: transparent; border: 1px solid var(--border); color: var(--text2);
+        }
+        .modal__cancel:hover { border-color: var(--text2); color: var(--text); }
+        .modal__confirm {
+          background: linear-gradient(135deg, #3fcb1b, #2e9c14);
+          color: #000; border: none;
+        }
+        .modal__confirm:hover { box-shadow: 0 8px 24px rgba(63,203,27,.35); transform: translateY(-2px); }
+        .modal__confirm--red {
+          background: linear-gradient(135deg, #ef4444, #dc2626);
+          color: #fff;
+        }
+        .modal__confirm--red:hover { box-shadow: 0 8px 24px rgba(239,68,68,.3); }
       `}</style>
     </div>
-  )
+  );
 }
