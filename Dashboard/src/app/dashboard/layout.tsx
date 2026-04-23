@@ -166,16 +166,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
         <div className="sidebar-content">
           {/* Logo */}
-          <div className="logo-section">
-            <div className="logo-icon">
-              <span>F</span>
-              <div className="logo-glow" />
-            </div>
-            <div className="logo-text-wrapper">
-              <Image src="/images/FoxnanceMain.png" alt="Foxnance" width={140} height={38} className="logo-image" priority />
-              <p className="logo-subtext">Client Portal</p>
-            </div>
-          </div>
+          <div className="logo-section flex justify-center items-center">
+  <div className="logo-text-wrapper">
+    <Image 
+      src="/images/FoxnanceMain.png" 
+      alt="Foxnance" 
+      width={140} 
+      height={38} 
+      className="logo-image mx-auto" 
+      priority
+    />
+    <p className="logo-subtext">Client Portal</p>
+  </div>
+</div>
+
 
           {/* User Profile */}
           <div className="user-profile">
@@ -184,7 +188,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="user-name">Gulam Zain</p>
               <p className="user-id">ID: FOX12345</p>
             </div>
-            <button className="user-settings" aria-label="Profile"><BiUser size={16} /></button>
+           
           </div>
 
           {/* Navigation */}
@@ -229,13 +233,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </nav>
 
           {/* Theme Toggle */}
-          <div className="theme-toggle-section">
-            <button className="theme-toggle-btn" onClick={toggleTheme}>
-              {isDarkMode ? <BiSun size={18} /> : <BiMoon size={18} />}
-              <span>{isDarkMode ? 'Light Mode' : 'Dark Mode'}</span>
-            </button>
-          </div>
-
+       
           {/* Logout */}
           <div className="logout-section">
             <button className="logout-btn"><BiLogOut size={18} /><span>Disconnect MT5</span></button>
@@ -295,17 +293,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           --bg-card: #1a1a1a;
           --text-primary: #ffffff;
           --text-secondary: rgba(255,255,255,0.6);
-          --border-color: rgba(255,255,255,0.1);
+          --border-color: rgba(255,255,255,0.08);
           --accent-green: #3fcb1b;
           --accent-green-dark: #2e9c14;
-          --accent-green-glow: rgba(63,203,27,0.3);
-          --hover-bg: rgba(63,203,27,0.1);
-          --active-bg: rgba(63,203,27,0.15);
+          --hover-bg: rgba(63,203,27,0.08);
+          --active-bg: rgba(63,203,27,0.12);
         }
 
         /* ========== LIGHT MODE - Light backgrounds with Green accents ========== */
         [data-theme="light"] {
-          --bg-primary: #f5f7fa;
+          --bg-primary: #f8f9fc;
           --bg-secondary: #ffffff;
           --bg-card: #ffffff;
           --text-primary: #1a1f36;
@@ -313,9 +310,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           --border-color: #e5e7eb;
           --accent-green: #3fcb1b;
           --accent-green-dark: #2e9c14;
-          --accent-green-glow: rgba(63,203,27,0.2);
-          --hover-bg: rgba(63,203,27,0.08);
-          --active-bg: rgba(63,203,27,0.12);
+          --hover-bg: rgba(63,203,27,0.05);
+          --active-bg: rgba(63,203,27,0.1);
         }
 
         .dashboard-container {
@@ -330,17 +326,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           top: 16px;
           left: 16px;
           z-index: 140;
-          padding: 12px;
-          border-radius: 12px;
+          padding: 10px;
+          border-radius: 10px;
           background: var(--bg-secondary);
           border: 1px solid var(--border-color);
           color: var(--text-primary);
           cursor: pointer;
           display: none;
+          backdrop-filter: blur(4px);
         }
         @media (max-width: 768px) {
           .mobile-menu-btn {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
           }
         }
 
@@ -349,13 +348,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           position: fixed;
           top: 0;
           left: 0;
-          width: 280px;
+          width: 260px;
           height: 100vh;
           background: var(--bg-secondary);
           border-right: 1px solid var(--border-color);
           z-index: 130;
           transition: transform 0.3s ease;
           overflow-y: auto;
+          overflow-x: hidden;
         }
         @media (max-width: 768px) {
           .sidebar {
@@ -365,12 +365,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           }
           .sidebar.open {
             transform: translateX(0);
-            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
           }
         }
 
         .sidebar-content {
-          padding: 24px;
+          padding: 20px;
           display: flex;
           flex-direction: column;
           height: 100%;
@@ -379,35 +379,28 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         /* Logo Section */
         .logo-section {
           display: flex;
-          align-items: flex-start;
-          gap: 14px;
-          margin-bottom: 32px;
-          padding-bottom: 24px;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 24px;
+          padding-bottom: 20px;
           border-bottom: 1px solid var(--border-color);
         }
         .logo-icon {
           position: relative;
-          width: 50px;
-          height: 50px;
-          border-radius: 16px;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
           background: linear-gradient(135deg, #3fcb1b, #2e9c14);
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 4px 12px var(--accent-green-glow);
-          cursor: pointer;
           flex-shrink: 0;
           transition: all 0.3s ease;
         }
-        .logo-icon:hover {
-          transform: scale(1.05);
-          box-shadow: 0 8px 20px var(--accent-green-glow);
-        }
         .logo-icon span {
           color: #000;
-          font-size: 30px;
+          font-size: 26px;
           font-weight: bold;
-          transition: all 0.3s ease;
         }
         .logo-glow {
           position: absolute;
@@ -443,31 +436,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         .logo-image {
           object-fit: contain;
-          transition: all 0.3s ease;
-          margin-bottom: 6px;
+          width: 120px;
+          height: auto;
         }
-        .logo-image:hover {
-          transform: scale(1.02);
-          filter: brightness(1.05);
+        /* Light mode logo fix */
+        [data-theme="light"] .logo-image {
+          filter: brightness(0.8);
         }
         .logo-subtext {
-          font-size: 10px;
+          font-size: 9px;
           color: var(--accent-green);
-          margin: 0;
+          margin: 2px 0 0;
           letter-spacing: 0.5px;
           font-weight: 500;
-          transition: all 0.3s ease;
-        }
-        .logo-text-wrapper:hover .logo-subtext {
-          letter-spacing: 1px;
         }
 
         /* User Profile */
         .user-profile {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 12px;
+          gap: 10px;
+          padding: 10px;
           margin-bottom: 24px;
           border-radius: 12px;
           background: var(--hover-bg);
@@ -476,66 +465,69 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         .user-profile:hover {
           background: var(--active-bg);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
         }
         .user-avatar {
           position: relative;
-          width: 48px;
-          height: 48px;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
           background: linear-gradient(135deg, #3fcb1b, #2e9c14);
           display: flex;
           align-items: center;
           justify-content: center;
+          flex-shrink: 0;
         }
         .user-avatar span {
           color: #000;
           font-weight: bold;
-          font-size: 18px;
+          font-size: 16px;
         }
         .online-dot {
           position: absolute;
           bottom: 2px;
           right: 2px;
-          width: 10px;
-          height: 10px;
+          width: 9px;
+          height: 9px;
           border-radius: 50%;
           background: #3fcb1b;
           border: 2px solid var(--bg-secondary);
           animation: pulseDot 2s ease-in-out infinite;
         }
         @keyframes pulseDot {
-          0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.5;
-            transform: scale(0.8);
-          }
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.5; transform: scale(0.8); }
         }
         .user-info {
           flex: 1;
+          min-width: 0;
         }
         .user-name {
           color: var(--text-primary);
           font-weight: 600;
           margin: 0;
+          font-size: 13px;
         }
         .user-id {
           color: var(--text-secondary);
-          font-size: 11px;
-          margin: 0;
+          font-size: 10px;
+          margin: 2px 0 0;
         }
         .user-settings {
           background: transparent;
           border: none;
           color: var(--text-secondary);
           cursor: pointer;
+          padding: 6px;
+          border-radius: 8px;
           transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .user-settings:hover {
           color: var(--accent-green);
+          background: var(--hover-bg);
         }
 
         /* Navigation */
@@ -543,31 +535,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 4px;
         }
         .nav-section {
-          margin-bottom: 4px;
+          margin-bottom: 2px;
         }
         .nav-section-header {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           width: 100%;
-          padding: 10px 12px;
+          padding: 8px 10px;
           background: transparent;
           border: none;
-          border-radius: 10px;
+          border-radius: 8px;
           color: var(--text-secondary);
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 600;
           letter-spacing: 0.5px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
         }
         .nav-section-header:hover {
           background: var(--hover-bg);
           color: var(--accent-green);
-          transform: translateX(4px);
+          transform: translateX(2px);
         }
         .nav-section-header.has-active {
           color: var(--accent-green);
@@ -577,26 +569,27 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           text-align: left;
         }
         .nav-section-items {
-          margin-left: 28px;
+          margin-left: 26px;
           display: flex;
           flex-direction: column;
           gap: 2px;
+          margin-top: 2px;
         }
         .nav-item {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 8px 12px;
-          border-radius: 8px;
+          gap: 10px;
+          padding: 7px 10px;
+          border-radius: 6px;
           text-decoration: none;
           color: var(--text-secondary);
-          transition: all 0.3s ease;
-          font-size: 13px;
+          transition: all 0.2s ease;
+          font-size: 12px;
         }
         .nav-item:hover {
           background: var(--hover-bg);
           color: var(--accent-green);
-          transform: translateX(4px);
+          transform: translateX(2px);
         }
         .nav-item.active {
           background: var(--active-bg);
@@ -605,51 +598,41 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         .active-indicator {
           margin-left: auto;
-          width: 6px;
-          height: 6px;
+          width: 5px;
+          height: 5px;
           border-radius: 50%;
           background: var(--accent-green);
-          animation: pulseActive 2s ease-in-out infinite;
-        }
-        @keyframes pulseActive {
-          0%, 100% {
-            opacity: 1;
-            transform: scale(1);
-          }
-          50% {
-            opacity: 0.5;
-            transform: scale(0.8);
-          }
         }
 
         /* Theme Toggle */
         .theme-toggle-section {
-          margin-bottom: 16px;
+          margin-bottom: 12px;
         }
         .theme-toggle-btn {
           width: 100%;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 10px;
-          padding: 10px;
-          border-radius: 10px;
+          gap: 8px;
+          padding: 8px;
+          border-radius: 8px;
           background: var(--hover-bg);
           border: 1px solid var(--border-color);
           color: var(--accent-green);
           cursor: pointer;
           transition: all 0.3s ease;
-          font-weight: 600;
+          font-weight: 500;
+          font-size: 12px;
         }
         .theme-toggle-btn:hover {
           background: var(--active-bg);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
         }
 
         /* Logout */
         .logout-section {
           margin-top: auto;
-          padding-top: 16px;
+          padding-top: 12px;
           border-top: 1px solid var(--border-color);
         }
         .logout-btn {
@@ -657,19 +640,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 8px;
-          padding: 12px;
-          border-radius: 12px;
-          background: rgba(239,68,68,0.1);
+          gap: 6px;
+          padding: 10px;
+          border-radius: 8px;
+          background: rgba(239,68,68,0.08);
           color: #ef4444;
           border: none;
           cursor: pointer;
           transition: all 0.3s ease;
-          font-weight: 600;
+          font-weight: 500;
+          font-size: 12px;
         }
         .logout-btn:hover {
-          background: rgba(239,68,68,0.2);
-          transform: translateY(-2px);
+          background: rgba(239,68,68,0.15);
+          transform: translateY(-1px);
         }
 
         /* Backdrop */
@@ -692,7 +676,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         /* Main Content */
         .main-content {
           flex: 1;
-          margin-left: 280px;
+          margin-left: 260px;
           min-width: 0;
           transition: all 0.3s ease;
         }
@@ -721,16 +705,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 16px 24px;
+          padding: 14px 24px;
           flex-wrap: wrap;
           gap: 12px;
         }
         @media (max-width: 768px) {
           .top-bar-content {
-            padding-left: 70px;
+            padding-left: 65px;
           }
           .welcome-title {
-            font-size: 16px;
+            font-size: 15px;
           }
           .welcome-subtitle {
             font-size: 11px;
@@ -738,7 +722,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         @media (max-width: 480px) {
           .top-bar-content {
-            padding-left: 65px;
+            padding-left: 60px;
             padding-right: 12px;
           }
           .welcome-title {
@@ -749,44 +733,48 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           }
         }
         .welcome-title {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 600;
           color: var(--text-primary);
           margin: 0;
         }
         .welcome-subtitle {
-          font-size: 13px;
+          font-size: 12px;
           color: var(--text-secondary);
-          margin: 4px 0 0;
+          margin: 3px 0 0;
         }
         .top-actions {
           display: flex;
           align-items: center;
-          gap: 12px;
+          gap: 10px;
           flex-wrap: wrap;
         }
         .action-btn {
-          padding: 10px;
-          border-radius: 12px;
+          padding: 8px;
+          border-radius: 10px;
           background: var(--bg-secondary);
           border: 1px solid var(--border-color);
           color: var(--text-secondary);
           cursor: pointer;
           transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .action-btn:hover {
           background: var(--hover-bg);
           color: var(--accent-green);
-          transform: translateY(-2px);
+          transform: translateY(-1px);
         }
         .period-select {
-          padding: 10px 16px;
-          border-radius: 12px;
+          padding: 8px 14px;
+          border-radius: 10px;
           background: var(--bg-secondary);
           border: 1px solid var(--border-color);
           color: var(--text-primary);
           cursor: pointer;
           transition: all 0.3s ease;
+          font-size: 12px;
         }
         .period-select:hover {
           border-color: var(--accent-green);
@@ -794,21 +782,26 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         /* Page Content */
         .page-content {
-          padding: 24px;
+          padding: 20px;
         }
         @media (max-width: 768px) {
           .page-content {
             padding: 16px;
           }
         }
+        @media (max-width: 480px) {
+          .page-content {
+            padding: 12px;
+          }
+        }
 
         /* Floating Theme Button */
         .floating-theme-btn {
           position: fixed;
-          bottom: 24px;
-          right: 24px;
-          width: 48px;
-          height: 48px;
+          bottom: 20px;
+          right: 20px;
+          width: 42px;
+          height: 42px;
           border-radius: 50%;
           background: var(--bg-secondary);
           border: 1px solid var(--border-color);
@@ -823,20 +816,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         .floating-theme-btn:hover {
           background: var(--accent-green);
           color: #000;
-          transform: scale(1.1);
+          transform: scale(1.05);
         }
 
         /* Scrollbar */
         ::-webkit-scrollbar {
-          width: 6px;
+          width: 4px;
         }
         ::-webkit-scrollbar-track {
-          background: rgba(0, 0, 0, 0.05);
-          border-radius: 3px;
+          background: transparent;
         }
         ::-webkit-scrollbar-thumb {
           background: rgba(63,203,27,0.3);
-          border-radius: 3px;
+          border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
           background: rgba(63,203,27,0.5);
