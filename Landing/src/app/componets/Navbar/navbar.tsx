@@ -21,30 +21,30 @@ const NAV_ITEMS = [
       {
         heading: 'Accounts',
         links: [
-          { name: 'Standard Account', href: '/trading/standard', icon: LuDollarSign },
-          { name: 'Raw Spread Account', href: '/trading/raw-spread', icon: LuActivity },
-          { name: 'Swap Free Account', href: '/trading/swap-free', icon: LuShield },
-          { name: 'Demo Account', href: '/trading/demo', icon: LuMonitor },
+          { name: 'Accounts Overview', href: '/trading/accounts', icon: LuDollarSign },
+          // { name: 'Raw Spread Account', href: '/trading/raw-spread', icon: LuActivity },
+          // { name: 'Swap Free Account', href: '/trading/swap-free', icon: LuShield },
+          // { name: 'Demo Account', href: '/trading/demo', icon: LuMonitor },
         ],
       },
       {
         heading: 'Platform',
         links: [
-          { name: 'MetaTrader 5', href: '/platforms/mt5', icon: LuMonitor, badge: 'RECOMMENDED' },
-          { name: 'MetaTrader 4', href: '/platforms/mt4', icon: LuMonitor },
-          { name: 'WebTrader', href: '/platforms/web', icon: LuGlobe },
-          { name: 'Mobile App', href: '/platforms/mobile', icon: LuSmartphone },
+          { name: 'MetaTrader 5', href: '/trading/metatrader5', icon: LuMonitor, badge: '' },
+          // { name: 'MetaTrader 4', href: '/platforms/mt4', icon: LuMonitor },
+          // { name: 'WebTrader', href: '/platforms/web', icon: LuGlobe },
+          // { name: 'Mobile App', href: '/platforms/mobile', icon: LuSmartphone },
         ],
       },
-      {
-        heading: 'Learn',
-        links: [
-          { name: 'Education Center', href: '/education', icon: LuBook },
-          { name: 'Trading Basics', href: '/education/forex', icon: BiBarChart },
-          { name: 'Webinars', href: '/education/webinars', icon: LuUsers },
-          { name: 'Video Tutorials', href: '/education/videos', icon: LuMonitor },
-        ],
-      },
+      // {
+      //   heading: 'Learn',
+      //   links: [
+      //     { name: 'Education Center', href: '/education', icon: LuBook },
+      //     { name: 'Trading Basics', href: '/education/forex', icon: BiBarChart },
+      //     { name: 'Webinars', href: '/education/webinars', icon: LuUsers },
+      //     { name: 'Video Tutorials', href: '/education/videos', icon: LuMonitor },
+      //   ],
+      // },
     ],
   },
   {
