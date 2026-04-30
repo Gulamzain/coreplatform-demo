@@ -98,6 +98,31 @@ const platformFeatures = [
   { icon: <BiWallet size={22}/>,    title: 'Instant Deposits',     desc: 'Fund your account instantly via cards, e-wallets, or crypto.' },
 ];
 
+// Only Standard, Raw Spread, and Elite for compare section
+const compareAccounts = [
+  {
+    id: 'standard', name: 'Standard', badge: null,
+    tagline: 'Simple & powerful for every trader',
+    spread: '1.0 pip', commission: '$0', minDeposit: '$200',
+    leverage: '1:500', execution: 'Market', swapFree: true, hedging: true, scalping: true,
+    highlight: false, recommended: false,
+  },
+  {
+    id: 'raw', name: 'Raw Spread', badge: 'Most Popular',
+    tagline: 'Ultra-low spreads with transparent commission',
+    spread: '0.0 pips', commission: '$6/lot', minDeposit: '$500',
+    leverage: '1:500', execution: 'Market', swapFree: true, hedging: true, scalping: true,
+    highlight: true, recommended: true,
+  },
+  {
+    id: 'elite', name: 'Elite', badge: 'Premium',
+    tagline: 'Elite conditions with zero commission',
+    spread: '0.4 pips', commission: '$0', minDeposit: '$10,000',
+    leverage: '1:200', execution: 'Market', swapFree: true, hedging: true, scalping: true,
+    highlight: false, recommended: false,
+  },
+];
+
 const faqs = [
   { q: 'What is the difference between Standard and Raw Spread?', a: 'Standard accounts charge no commission but have slightly wider spreads. Raw Spread accounts offer spreads from 0.0 pips with a small per-lot commission — ideal for high-frequency or larger-volume traders.' },
   { q: 'How quickly can I open an account?', a: 'Live accounts are approved within 24 hours. Demo accounts are instant. Once verified, you can fund and begin trading immediately.' },
@@ -273,12 +298,6 @@ export default function AccountsOverviewPage() {
           <motion.div className="aov-hero__inner" style={{opacity: heroOpacity}}>
             {/* LEFT — copy */}
             <div className="aov-hero__copy">
-              <motion.div
-                className={`aov-badge h-item h-d0 ${heroReady?'ready':''}`}
-                initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{delay:.1,duration:.6}}
-              >
-                <span className="aov-badge__dot"/><span>Trading Accounts</span>
-              </motion.div>
               <motion.h1
                 className="aov-hero__title"
                 initial={{opacity:0,y:28}} animate={{opacity:1,y:0}} transition={{delay:.22,duration:.65}}
@@ -299,14 +318,7 @@ export default function AccountsOverviewPage() {
                 <Link href="/auth-signup" className="aov-btn-primary">Open Live Account <FiArrowRight/></Link>
                 <Link href="/demo"        className="aov-btn-ghost">Try Free Demo</Link>
               </motion.div>
-              <motion.div
-                className="aov-hero__chips"
-                initial={{opacity:0}} animate={{opacity:1}} transition={{delay:.7,duration:.6}}
-              >
-                {['FCA Regulated','ASIC Licensed','Instant Setup','No Joining Fee'].map((c,i) => (
-                  <span key={i} className="aov-chip"><FiCheck size={11}/>{c}</span>
-                ))}
-              </motion.div>
+
             </div>
 
             {/* RIGHT — floating dashboard graphic */}
@@ -427,286 +439,78 @@ export default function AccountsOverviewPage() {
         {/* ══════════════════════════════════════════
             ACCOUNT TYPE SELECTOR - DARK SECTION
         ══════════════════════════════════════════ */}
-        <section
-          id="accounts"
-          ref={setRef('accounts')}
-          className={`aov-section aov-reveal ${visible.has('accounts')?'on':''}`}
-        >
+        {/* ══════════════════════════════════════════
+            ACCOUNT TYPES - HOME PAGE VERSION
+        ══════════════════════════════════════════ */}
+        <section id="accounts" ref={setRef('accounts')} className={`aov-section aov-reveal ${visible.has('accounts')?'on':''}`} style={{background:'#0A0A0A'}}>
           <div className="aov-container">
-            <div className="aov-section-head">
-              <span className="aov-eyebrow">Account Types</span>
-              <h2 className="aov-h2">Find Your Perfect Account</h2>
-              <p className="aov-sub">Two account families. Six account types. One broker you can trust.</p>
+            <div className="aov-section-head" style={{textAlign:'center',marginBottom:'56px'}}>
+              <p className="aov-eyebrow" style={{color:'#3fcb1b',fontSize:'.72rem',fontWeight:700,letterSpacing:'.14em',textTransform:'uppercase',display:'block',marginBottom:'12px'}}>Account Types</p>
+              <h2 className="aov-h2" style={{color:'#fff'}}>More Choice. More Control.</h2>
+              <p className="aov-sub" style={{color:'rgba(255,255,255,.55)',fontSize:'1.05rem',maxWidth:'560px',margin:'12px auto 0',lineHeight:'1.65'}}>Transparent pricing. No hidden fees. Tailored to your trading style.</p>
             </div>
-
-            {/* Group toggle */}
-            <div className="aov-group-toggle">
-              {accountGroups.map(g => (
-                <button
-                  key={g.id}
-                  className={`aov-gtab ${activeGroup===g.id?'active':''}`}
-                  onClick={() => setActiveGroup(g.id)}
+            <div className="fx-accounts-three-grid">
+              {[
+                {
+                  name: "Standard",
+                  badge: "",
+                  featured: false,
+                  rows: [
+                    ["Min. Deposit", "$10"],
+                    ["Leverage", "1:500"],
+                    ["Spread", "From 0.9 pips"],
+                    ["Commission", "Zero"],
+                    ["Support", "24/7 Support"]
+                  ]
+                },
+                {
+                  name: "Elite",
+                  badge: "Most Popular",
+                  featured: true,
+                  rows: [
+                    ["Min. Deposit", "$500"],
+                    ["Leverage", "1:500"],
+                    ["Spread", "From 0.7 pips"],
+                    ["Commission", "Zero"],
+                    ["Support", "24/7 Support"]
+                  ]
+                },
+                {
+                  name: "Pro",
+                  badge: "Institutional",
+                  featured: false,
+                  rows: [
+                    ["Min. Deposit", "$10,000"],
+                    ["Spread", "From 0.5 pips"],
+                    ["Commission", "Zero"],
+                    ["Leverage", "1:500"],
+                    ["Dedicated", "Personal Manager"]
+                  ]
+                },
+              ].map((a, i) => (
+                <div
+                  key={i}
+                  className={`fx-account ${a.featured ? "fx-account--featured" : ""}`}
+                  style={{ transitionDelay: `${i * 80}ms` }}
                 >
-                  <span className="aov-gtab__emoji">{g.emoji}</span>
-                  <div>
-                    <strong>{g.label}</strong>
-                    <span>{g.tagline}</span>
-                  </div>
-                  {activeGroup===g.id && <motion.div className="aov-gtab__pill" layoutId="gtab-active"/>}
-                </button>
+                  {a.badge && <div className="fx-account__badge" style={{ background: '#3fcb1b', color: '#000' }}>{a.badge}</div>}
+                  <h3 className="fx-account__name">{a.name}</h3>
+                  {a.rows.map(([k, v], j) => (
+                    <div key={j} className="fx-account__row">
+                      <span className="fx-account__key">{k}</span>
+                      <span className="fx-account__val">{v}</span>
+                    </div>
+                  ))}
+                  <Link href="/auth-signup" className={`fx-btn fx-btn--sm fx-btn--full ${a.featured ? "fx-btn--green" : "fx-btn--outline-white"}`}>
+                    Open {a.name} Account
+                  </Link>
+                </div>
               ))}
             </div>
-
-            {/* Cards */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeGroup}
-                className="aov-acc-cards"
-                initial={{opacity:0,y:20}} animate={{opacity:1,y:0}}
-                exit={{opacity:0,y:-12}} transition={{duration:.38,ease:[.16,1,.3,1]}}
-              >
-                {currentGroup.accounts.map((acc, i) => (
-                  <motion.div
-                    key={acc.id}
-                    className={`aov-acc-card ${acc.highlight?'aov-acc-card--hi':''}`}
-                    initial={{opacity:0,y:28,scale:.97}}
-                    animate={{opacity:1,y:0,scale:1}}
-                    transition={{delay:i*.09,duration:.42,ease:[.16,1,.3,1]}}
-                    whileHover={{y:-7, transition:{duration:.2}}}
-                  >
-                    {acc.recommended && (
-                      <div className="aov-acc-card__recommended">
-                        <BiStar size={11}/> Recommended
-                      </div>
-                    )}
-                    {acc.badge && !acc.recommended && (
-                      <div className="aov-acc-card__badge">{acc.badge}</div>
-                    )}
-
-                    <div className="aov-acc-card__glow"/>
-
-                    {/* Decorative circuit lines SVG */}
-                    <svg className="aov-acc-card__circuit" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M0 40 H60 V80 H120 V40 H180" stroke="rgba(63,203,27,0.12)" strokeWidth="1"/>
-                      <path d="M0 100 H40 V140 H160 V100 H200" stroke="rgba(63,203,27,0.08)" strokeWidth="1"/>
-                      <circle cx="60" cy="80" r="3" fill="rgba(63,203,27,0.2)"/>
-                      <circle cx="120" cy="40" r="3" fill="rgba(63,203,27,0.2)"/>
-                      <circle cx="40" cy="140" r="3" fill="rgba(63,203,27,0.15)"/>
-                    </svg>
-
-                    <div className="aov-acc-card__head">
-                      <h3 className="aov-acc-card__name">{acc.name}</h3>
-                      <p className="aov-acc-card__tagline">{acc.tagline}</p>
-                    </div>
-
-                    {/* Price hero row */}
-                    <div className="aov-acc-card__price">
-                      <div className="aov-acc-card__price-item">
-                        <div className="aov-acc-card__price-val">{acc.spread}</div>
-                        <div className="aov-acc-card__price-lbl">Spreads From</div>
-                      </div>
-                      <div className="aov-acc-card__price-sep"/>
-                      <div className="aov-acc-card__price-item">
-                        <div className="aov-acc-card__price-val comm">{acc.commission}</div>
-                        <div className="aov-acc-card__price-lbl">Commission</div>
-                      </div>
-                    </div>
-
-                    {/* Specs */}
-                    <ul className="aov-acc-card__specs">
-                      {[
-                        {l:'Min Deposit', v:acc.minDeposit},
-                        {l:'Max Leverage',v:acc.leverage},
-                        {l:'Execution',   v:acc.execution},
-                      ].map((s,idx) => (
-                        <li key={idx}>
-                          <span>{s.l}</span><strong>{s.v}</strong>
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Feature pills */}
-                    <div className="aov-acc-card__feats">
-                      {[
-                        {l:'Swap-Free',v:acc.swapFree},
-                        {l:'Hedging',  v:acc.hedging},
-                        {l:'Scalping', v:acc.scalping},
-                      ].map((f,idx) => (
-                        <div key={idx} className={`aov-feat ${f.v?'on':'off'}`}>
-                          {f.v ? <FiCheck size={11}/> : <FiX size={11}/>}{f.l}
-                        </div>
-                      ))}
-                    </div>
-
-                    <Link
-                      href="/auth-signup"
-                      className={`aov-acc-card__cta ${acc.highlight?'hi':''}`}
-                    >
-                      Open {acc.name} Account <FiArrowRight size={14}/>
-                    </Link>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Demo CTA bar */}
-            <div className="aov-demo-bar">
-              <div className="aov-demo-bar__orb"/>
-              <div className="aov-demo-bar__left">
-                <div className="aov-demo-bar__icon">
-                  <FiActivity size={20}/>
-                </div>
-                <div>
-                  <strong>Not sure where to start?</strong>
-                  <span>Practice with $50,000 virtual funds — zero risk, full features.</span>
-                </div>
-              </div>
-              <Link href="/demo" className="aov-demo-bar__btn">
-                Open Free Demo <FiArrowRight size={13}/>
-              </Link>
-            </div>
           </div>
         </section>
 
         {/* ══════════════════════════════════════════
-            VISUAL FEATURE SHOWCASE - DARK SECTION
-        ══════════════════════════════════════════ */}
-        <section
-          id="showcase"
-          ref={setRef('showcase')}
-          className={`aov-section aov-section--alt aov-reveal ${visible.has('showcase')?'on':''}`}
-        >
-          <div className="aov-container">
-            <div className="aov-showcase">
-              {/* LEFT: platform mockup */}
-              <div className="aov-showcase__visual">
-                <div className="aov-showcase__glow"/>
-                {/* Layered platform cards */}
-                <div className="aov-platform-stack">
-                  <div className="aov-platform-stack__bg"/>
-                  <div className="aov-platform-stack__mid"/>
-                  <div className="aov-platform-card">
-                    <div className="aov-platform-card__header">
-                      <div className="aov-platform-card__dots">
-                        <span/><span/><span/>
-                      </div>
-                      <span>MT5 — Foxnance Live</span>
-                    </div>
-                    <div className="aov-platform-card__body">
-                      {/* Big chart area */}
-                      <div className="aov-platform-card__chart">
-                        <div className="aov-platform-card__chart-label">EUR/USD · M15</div>
-                        <CandleGraphic/>
-                        <ChartGraphic/>
-                      </div>
-                      {/* Order panel */}
-                      <div className="aov-platform-card__order">
-                        <div className="aov-order-panel">
-                          <div className="aov-order-panel__head">New Order</div>
-                          <div className="aov-order-panel__pair">EUR/USD</div>
-                          <div className="aov-order-panel__prices">
-                            <div className="aov-order-panel__sell">
-                              <span>SELL</span><strong>1.0842</strong>
-                            </div>
-                            <div className="aov-order-panel__spread">0.1</div>
-                            <div className="aov-order-panel__buy">
-                              <span>BUY</span><strong>1.0843</strong>
-                            </div>
-                          </div>
-                          <div className="aov-order-panel__lot">
-                            <span>Volume</span><strong>0.50 lot</strong>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Live trade feed */}
-                    <div className="aov-platform-card__feed">
-                      {[
-                        {sym:'EUR/USD',type:'Buy',lots:'0.5',pnl:'+$256'},
-                        {sym:'XAU/USD',type:'Buy',lots:'0.1',pnl:'+$156'},
-                        {sym:'GBP/USD',type:'Sell',lots:'0.3',pnl:'+$78'},
-                      ].map((t,i) => (
-                        <div key={i} className="aov-feed-row">
-                          <span className={`aov-feed-row__type ${t.type==='Buy'?'buy':'sell'}`}>{t.type}</span>
-                          <span className="aov-feed-row__sym">{t.sym}</span>
-                          <span className="aov-feed-row__lots">{t.lots}</span>
-                          <span className="aov-feed-row__pnl">{t.pnl}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating stat badge */}
-                <motion.div
-                  className="aov-stat-badge aov-stat-badge--tl"
-                  animate={{y:[0,-8,0]}} transition={{duration:3.5,repeat:Infinity,ease:'easeInOut'}}
-                >
-                  <div className="aov-stat-badge__icon"><FiZap size={16}/></div>
-                  <div>
-                    <strong>38ms</strong>
-                    <span>Avg Execution</span>
-                  </div>
-                </motion.div>
-                <motion.div
-                  className="aov-stat-badge aov-stat-badge--br"
-                  animate={{y:[0,7,0]}} transition={{duration:4.2,repeat:Infinity,ease:'easeInOut',delay:.8}}
-                >
-                  <div className="aov-stat-badge__icon g"><BiBarChartAlt2 size={16}/></div>
-                  <div>
-                    <strong>2,250+</strong>
-                    <span>Instruments</span>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* RIGHT: copy */}
-              <div className="aov-showcase__copy">
-                <span className="aov-eyebrow">Trading Platform</span>
-                <h2 className="aov-h2">Powered by<br/>MetaTrader 5</h2>
-                <p className="aov-body">
-                  Every Foxnance account includes full access to MetaTrader 5 — the world's most advanced trading platform. 21 timeframes, 80+ indicators, algorithmic trading, copy trading, and a full-featured mobile app.
-                </p>
-                <div className="aov-showcase__feats">
-                  {[
-                    {icon:<BiLineChart size={18}/>, l:'Advanced Charting', d:'21 timeframes, 80+ built-in indicators'},
-                    {icon:<BiRocket size={18}/>,    l:'Algo Trading',      d:'Full MQL5 Expert Advisor support'},
-                    {icon:<BiGroup size={18}/>,     l:'Copy Trading',      d:'Follow top traders automatically'},
-                    {icon:<BiWallet size={18}/>,    l:'Multi-Asset',       d:'Forex, stocks, crypto, indices & more'},
-                  ].map((f,i) => (
-                    <motion.div 
-                      key={i} 
-                      className="aov-showcase__feat-item"
-                      initial={{opacity:0,x:-20}}
-                      whileInView={{opacity:1,x:0}}
-                      viewport={{once:true}}
-                      transition={{delay:i*0.1,duration:0.4}}
-                    >
-                      <div className="aov-showcase__feat-icon">{f.icon}</div>
-                      <div>
-                        <strong>{f.l}</strong>
-                        <span>{f.d}</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="aov-showcase__actions">
-                  <Link href="/platforms" className="aov-btn-primary">Explore Platforms <FiArrowRight/></Link>
-                  <Link href="/auth-signup" className="aov-btn-outline">Open Account</Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        
-        ══════════════════════════════════════════ */
-       // Replace the COMPARISON TABLE section in your accounts/page.tsx with this:
-
-        {/* ══════════════════════════════════════════
-            COMPARISON TABLE - FIXED
-        ══════════════════════════════════════════ */}
-               {/* ══════════════════════════════════════════
             COMPARISON TABLE - FULLY RESPONSIVE
         ══════════════════════════════════════════ */}
         <section
@@ -729,7 +533,7 @@ export default function AccountsOverviewPage() {
 
             {/* Mobile & Tablet: Horizontal scroll cards */}
             <div className="cmp-mobile">
-              {accountGroups.flatMap(g=>g.accounts).map((acc, i) => (
+              {compareAccounts.map((acc, i) => (
                 <motion.div 
                   key={acc.id} 
                   className={`cmp-mob-card ${acc.highlight?'highlight':''}`}
@@ -790,13 +594,13 @@ export default function AccountsOverviewPage() {
                 <thead>
                   <tr>
                     <th className="cmp-feature-col">Feature</th>
-                    {accountGroups.flatMap(g=>g.accounts).map((acc, idx) => (
+                    {compareAccounts.map((acc, idx) => (
                       <th key={acc.id} className={`cmp-account-col ${acc.highlight?'highlight':''}`}>
                         <div className="cmp-account-header">
                           {acc.badge && <span className="cmp-badge">{acc.badge}</span>}
                           <span className="cmp-account-name">{acc.name}</span>
                           <span className="cmp-account-group">
-                            {accountGroups.find(g=>g.accounts.some(a=>a.id===acc.id))?.label}
+                            {acc.id === 'raw' ? 'ECN / Raw Spread' : acc.id === 'elite' ? 'Zero Commission' : 'ECN / Raw Spread'}
                           </span>
                         </div>
                       </th>
@@ -806,37 +610,37 @@ export default function AccountsOverviewPage() {
                 <tbody>
                   <tr>
                     <td className="cmp-feature">Min Deposit</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>{acc.minDeposit}</td>
                     ))}
                   </tr>
                   <tr>
                     <td className="cmp-feature">Spreads From</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>{acc.spread}</td>
                     ))}
                   </tr>
                   <tr>
                     <td className="cmp-feature">Commission</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>{acc.commission}</td>
                     ))}
                   </tr>
                   <tr>
                     <td className="cmp-feature">Max Leverage</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>{acc.leverage}</td>
                     ))}
                   </tr>
                   <tr>
                     <td className="cmp-feature">Execution</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>{acc.execution}</td>
                     ))}
                   </tr>
                   <tr>
                     <td className="cmp-feature">Swap-Free</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>
                         <span className="cmp-icon on"><FiCheck size={14}/></span>
                       </td>
@@ -844,7 +648,7 @@ export default function AccountsOverviewPage() {
                   </tr>
                   <tr>
                     <td className="cmp-feature">Hedging</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>
                         <span className="cmp-icon on"><FiCheck size={14}/></span>
                       </td>
@@ -852,7 +656,7 @@ export default function AccountsOverviewPage() {
                   </tr>
                   <tr>
                     <td className="cmp-feature">Scalping</td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-value ${acc.highlight?'highlight':''}`}>
                         <span className={`cmp-icon ${acc.scalping?'on':'off'}`}>
                           {acc.scalping ? <FiCheck size={14}/> : <FiX size={14}/>}
@@ -862,7 +666,7 @@ export default function AccountsOverviewPage() {
                   </tr>
                   <tr className="cmp-cta-row">
                     <td className="cmp-feature"></td>
-                    {accountGroups.flatMap(g=>g.accounts).map(acc => (
+                    {compareAccounts.map(acc => (
                       <td key={acc.id} className={`cmp-cta-cell ${acc.highlight?'highlight':''}`}>
                         <Link href="/auth-signup" className={`cmp-cta-btn ${acc.highlight?'highlight':''}`}>
                           Open <FiArrowRight size={12}/>
@@ -914,85 +718,77 @@ export default function AccountsOverviewPage() {
         </section>
 
         {/* ══════════════════════════════════════════
-            FAQ - LIGHT SECTION WITH ANIMATIONS
+            FAQ - MATCHING HOME PAGE LAYOUT
         ══════════════════════════════════════════ */}
         <section
           id="faq"
           ref={setRef('faq')}
-          className={`aov-section-alt aov-reveal ${visible.has('faq')?'on':''}`}
+          className={`aov-section aov-reveal ${visible.has('faq')?'on':''}`}
+          style={{background:'#fff'}}
         >
           <div className="aov-container">
-            <div className="aov-faq-layout">
-              <div className="aov-faq-head">
-                <span className="aov-eyebrow">FAQ</span>
-                <h2 className="aov-h2">Common Questions</h2>
-                <p className="aov-body">Need more help? Our support team is available 24/7.</p>
-                <Link href="/contact" className="aov-btn-outline" style={{display:'inline-flex',marginTop:'20px'}}>
-                  Talk to Support <FiArrowRight size={13}/>
-                </Link>
-              </div>
-              <div className="aov-faq-list">
-                {faqs.map((f,i) => (
-                  <motion.div 
-                    key={i} 
-                    className={`aov-faq-item ${openFaq===i?'open':''}`}
-                    onClick={() => setOpenFaq(openFaq===i?null:i)}
-                    initial={{opacity:0,y:20}}
-                    whileInView={{opacity:1,y:0}}
-                    viewport={{once:true}}
-                    transition={{delay:i*0.1,duration:0.4}}
-                  >
-                    <div className="aov-faq-item__q">
-                      <span>{f.q}</span>
-                      <div className="aov-faq-item__ico">
-                        {openFaq===i ? <FiChevronUp size={16}/> : <FiChevronDown size={16}/>}
-                      </div>
-                    </div>
-                    <AnimatePresence>
-                      {openFaq===i && (
-                        <motion.div
-                          initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}}
-                          exit={{height:0,opacity:0}} transition={{duration:.32,ease:[.16,1,.3,1]}}
-                          className="aov-faq-item__a"
-                        >
-                          <p>{f.a}</p>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                ))}
-              </div>
+            <div className="aov-section-head" style={{textAlign:'center',marginBottom:'48px'}}>
+              <span className="aov-eyebrow" style={{color:'#3fcb1b'}}>FAQ</span>
+              <h2 className="aov-h2" style={{color:'#0A0A0A'}}>Frequently Asked Questions</h2>
+            </div>
+            <div className="fx-faq">
+              {faqs.map((f,i) => (
+                <div key={i} className={`fx-faq__item ${openFaq===i?'open':''}`}>
+                  <button className="fx-faq__q" onClick={() => setOpenFaq(openFaq===i?null:i)}>
+                    <span>{f.q}</span>
+                    {openFaq===i
+                      ? <span style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#3fcb1b',color:'#000'}}><FiChevronUp size={16}/></span>
+                      : <span style={{flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'rgba(63,203,27,0.1)',color:'#3fcb1b'}}><FiChevronDown size={16}/></span>
+                    }
+                  </button>
+                  <AnimatePresence>
+                    {openFaq===i && (
+                      <motion.div
+                        initial={{height:0,opacity:0}} animate={{height:'auto',opacity:1}}
+                        exit={{height:0,opacity:0}} transition={{duration:.3,ease:[.16,1,.3,1]}}
+                        style={{overflow:'hidden'}}
+                      >
+                        <div className="fx-faq__a">{f.a}</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
             </div>
           </div>
         </section>
 
         {/* ══════════════════════════════════════════
-            FINAL CTA - DARK SECTION
+            FINAL CTA - READY TO TRADE
         ══════════════════════════════════════════ */}
         <section className="aov-cta-section">
           <div className="aov-cta-section__orb aov-cta-section__orb--1"/>
           <div className="aov-cta-section__orb aov-cta-section__orb--2"/>
           <OrbField count={10}/>
           <div className="aov-container">
-            <div className="aov-cta-section__inner">
+            <div style={{textAlign:'center',position:'relative',zIndex:1,maxWidth:'640px',margin:'0 auto'}}>
               <motion.div
                 initial={{opacity:0,y:20}}
                 whileInView={{opacity:1,y:0}}
                 viewport={{once:true}}
                 transition={{duration:.6}}
               >
-                <div className="aov-cta-section__eyebrow"><span className="aov-badge__dot"/>Ready to Trade?</div>
-                <h2 className="aov-cta-section__title">Open Your Account<br/>in Under 5 Minutes</h2>
-                <p className="aov-cta-section__desc">
+                <p className="aov-eyebrow" style={{justifyContent:'center',color:'#3fcb1b',display:'flex',gap:'7px',fontSize:'.67rem',fontWeight:700,letterSpacing:'.15em',textTransform:'uppercase',marginBottom:'18px'}}>
+                  <span className="aov-badge__dot"/>Ready to Trade?
+                </p>
+                <h2 style={{fontSize:'clamp(1.8rem,4vw,3rem)',fontWeight:900,color:'#fff',letterSpacing:'-.04em',lineHeight:1.15,margin:'0 0 16px'}}>
+                  Open Your Account<br/>in Under 5 Minutes
+                </h2>
+                <p style={{fontSize:'.94rem',color:'rgba(237,240,234,.55)',lineHeight:1.7,margin:'0 auto 30px',maxWidth:'480px'}}>
                   Join 500,000+ traders with instant account setup, no joining fee, and 24/7 expert support from day one.
                 </p>
-                <div className="aov-cta-section__actions">
+                <div style={{display:'flex',gap:'12px',justifyContent:'center',flexWrap:'wrap',marginBottom:'24px'}}>
                   <Link href="/auth-signup" className="aov-btn-primary aov-btn-primary--lg">
                     Open Live Account <FiArrowRight/>
                   </Link>
                   <Link href="/demo" className="aov-btn-ghost">Try Free Demo</Link>
                 </div>
-                <div className="aov-cta-section__chips">
+                <div style={{display:'flex',flexWrap:'wrap',gap:'9px',justifyContent:'center'}}>
                   {['No joining fee','Regulated broker','Instant deposits','24/7 support'].map((c,i) => (
                     <span key={i} className="aov-chip"><FiCheck size={11}/>{c}</span>
                   ))}
@@ -1135,6 +931,36 @@ export default function AccountsOverviewPage() {
           text-decoration:none; transition:all .25s var(--ease);
         }
         .aov-btn-outline:hover { background:var(--g-faint); transform:translateY(-2px); }
+
+        /* ─── HOME PAGE BUTTON STYLES ───────────────── */
+        .fx-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;font-size:.9rem;font-weight:700;border-radius:8px;text-decoration:none;transition:all .22s;cursor:pointer;border:none;white-space:nowrap;font-family:inherit;}
+        .fx-btn--green{background:linear-gradient(135deg,#3fcb1b 0%,#2e9c14 100%);color:#000;box-shadow:0 4px 18px rgba(63,203,27,.28);}
+        .fx-btn--green:hover{background:#2e9c14;transform:translateY(-1px);}
+        .fx-btn--outline-white{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);}
+        .fx-btn--outline-white:hover{background:rgba(255,255,255,.08);border-color:#fff;}
+        .fx-btn--sm{padding:10px 20px;font-size:.82rem;}
+        .fx-btn--full{width:100%;justify-content:center;margin-top:20px;}
+
+        /* ─── HOME PAGE ACCOUNT CARDS ────────────────── */
+        .fx-accounts-three-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;max-width:1100px;margin:0 auto;}
+        @media(max-width:1024px){.fx-accounts-three-grid{grid-template-columns:repeat(2,1fr);gap:20px;}}
+        @media(max-width:640px){.fx-accounts-three-grid{grid-template-columns:1fr;}}
+        .fx-account{position:relative;padding:40px 32px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;transition:all .3s cubic-bezier(0.16,1,0.3,1);display:flex;flex-direction:column;}
+        .fx-account:hover{transform:translateY(-8px);border-color:rgba(63,203,27,.5);background:rgba(63,203,27,.03);box-shadow:0 20px 40px rgba(0,0,0,0.4);}
+        .fx-account--featured{border:1px solid #3fcb1b!important;background:rgba(63,203,27,.06)!important;box-shadow:0 0 30px rgba(63,203,27,0.1);}
+        .fx-account__badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);padding:4px 16px;border-radius:99px;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;}
+        .fx-account__name{font-size:1.5rem;font-weight:800;color:#fff;margin-bottom:24px;text-align:center;}
+        .fx-account__row{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:.9rem;}
+        .fx-account__row:last-of-type{border-bottom:none;}
+        .fx-account__key{color:rgba(255,255,255,.5);}
+        .fx-account__val{font-weight:700;color:#fff;}
+
+        /* ─── HOME PAGE FAQ STYLES ───────────────────── */
+        .fx-faq{max-width:720px;margin:0 auto;}
+        .fx-faq__item{border-bottom:1px solid #E5E5E5;}
+        .fx-faq__q{width:100%;display:flex;align-items:center;justify-content:space-between;padding:20px 0;font-size:.95rem;font-weight:600;color:#0A0A0A;background:transparent;border:none;cursor:pointer;text-align:left;gap:16px;transition:color .2s;font-family:inherit;}
+        .fx-faq__q:hover{color:#3fcb1b;}
+        .fx-faq__a{padding:0 0 20px;font-size:.88rem;color:#6B6B6B;line-height:1.65;}
 
         /* ─── CHIPS / BADGE ──────────────────────── */
         .aov-chip {

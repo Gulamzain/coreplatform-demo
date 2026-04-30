@@ -21,6 +21,7 @@ import CookieModal from '../../componets/cookieModal';
 const MT5Page = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [visible, setVisible] = useState<Set<string>>(new Set());
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -43,12 +44,48 @@ const MT5Page = () => {
   const setRef = (id: string) => (el: HTMLElement | null) => { refs.current[id] = el; };
 
   const features = [
-    { icon: <FiBarChart2 size={24} />, title: '21 Timeframes', desc: 'From 1-minute to monthly charts for every trading style', stat: 'M1 → MN', color: '#3fcb1b' },
-    { icon: <BiBarChartAlt2 size={24} />, title: '80+ Indicators', desc: 'Built-in technical analysis tools + custom indicators', stat: '38 built-in + custom', color: '#3b82f6' },
-    { icon: <BiNetworkChart size={24} />, title: 'Depth of Market', desc: 'Full market depth with Level II pricing transparency', stat: 'Level II pricing', color: '#8b5cf6' },
-    { icon: <FiCpu size={24} />, title: 'MQL5 Algorithmic', desc: 'Build, back-test and deploy Expert Advisors with MQL5', stat: '10,000+ EAs', color: '#f59e0b' },
-    { icon: <BiCopy size={24} />, title: 'Copy Trading', desc: 'Built-in signal subscription and social trading', stat: 'Social trading', color: '#ec4899' },
-    { icon: <FiZap size={24} />, title: 'Sub-1ms Execution', desc: 'NY4/LD4 co-located servers for lightning speed', stat: 'Ultra-low latency', color: '#10b981' },
+    { title: '21 Timeframes', badge: '', featured: false, rows: [
+      ['Charts', 'M1 → MN'],
+      ['Range', '1-min to Monthly'],
+      ['Analysis', 'Full Technical'],
+      ['Styles', 'All Trading Styles'],
+      ['Updates', 'Real-time'],
+    ]},
+    { title: '80+ Indicators', badge: 'Most Used', featured: true, rows: [
+      ['Built-in', '38 Indicators'],
+      ['Custom', 'Unlimited'],
+      ['Oscillators', 'Included'],
+      ['Drawing Tools', 'Full Suite'],
+      ['Scripts', 'MQL5 Support'],
+    ]},
+    { title: 'Depth of Market', badge: '', featured: false, rows: [
+      ['Pricing', 'Level II'],
+      ['Transparency', 'Full Depth'],
+      ['Order Book', 'Live View'],
+      ['Liquidity', 'Institutional'],
+      ['Feed', 'Real-time'],
+    ]},
+    { title: 'MQL5 Algorithmic', badge: '', featured: false, rows: [
+      ['Expert Advisors', '10,000+'],
+      ['Backtesting', 'Multi-thread'],
+      ['Optimisation', 'Cloud Network'],
+      ['Marketplace', 'Built-in'],
+      ['Language', 'MQL5'],
+    ]},
+    { title: 'Copy Trading', badge: '', featured: false, rows: [
+      ['Signals', 'Built-in'],
+      ['Type', 'Social Trading'],
+      ['Providers', 'Global'],
+      ['Subscription', 'In-platform'],
+      ['Tracking', 'Real-time'],
+    ]},
+    { title: 'Sub-1ms Execution', badge: 'Fastest', featured: false, rows: [
+      ['Latency', 'Sub-1ms'],
+      ['Servers', 'NY4 / LD4'],
+      ['Co-location', 'Yes'],
+      ['Fill Rate', '99.59%'],
+      ['Dealing Desk', 'None'],
+    ]},
   ];
 
   const whyItems = [
@@ -80,15 +117,6 @@ const MT5Page = () => {
         </motion.div>
 
         <motion.div className="mt5-hero-content" style={{ opacity: opacityHero }}>
-          <motion.div 
-            className="mt5-badge"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
-          >
-            <span className="mt5-badge-dot" />
-            MetaTrader 5
-          </motion.div>
           <motion.h1 
             className="mt5-title"
             initial={{ opacity: 0, y: 30 }}
@@ -188,33 +216,36 @@ const MT5Page = () => {
       {/* FEATURES GRID - Dark Section */}
       <section id="features" ref={setRef('features')} className={`mt5-features-dark ${visible.has('features') ? 'in-view' : ''}`}>
         <div className="container">
-          <motion.div 
-            className="section-head"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="section-eyebrow">Platform Capabilities</span>
-            <h2 className="section-title">Everything You Need to Trade Like a Pro</h2>
-            <p className="section-desc">MetaTrader 5 combines professional-grade tools with institutional execution</p>
-          </motion.div>
-          <div className="features-grid">
+          <div className="ft-section-head">
+            <p className="ft-eyebrow">PLATFORM CAPABILITIES</p>
+            <h2 className="ft-h2 ft-h2--white">Everything You Need to Trade Like a Pro</h2>
+            <p className="ft-section-sub ft-section-sub--light">MetaTrader 5 combines professional-grade tools with institutional execution</p>
+          </div>
+          <div className="ft-accounts-grid">
             {features.map((feature, i) => (
-              <motion.div 
-                key={i} 
-                className="feature-card"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+              <div
+                key={i}
+                className={`ft-account ${feature.featured ? 'ft-account--featured' : ''} ${hoveredFeature === i ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredFeature(i)}
+                onMouseLeave={() => setHoveredFeature(null)}
+                style={{ transitionDelay: `${i * 60}ms` }}
               >
-                <div className="feature-icon" style={{ background: `${feature.color}15`, color: feature.color }}>{feature.icon}</div>
-                <h3 className="feature-title">{feature.title}</h3>
-                <p className="feature-desc">{feature.desc}</p>
-                <span className="feature-stat">{feature.stat}</span>
-              </motion.div>
+                {feature.badge && (
+                  <div className="ft-account__badge" style={{ background: '#3fcb1b', color: '#000' }}>
+                    {feature.badge}
+                  </div>
+                )}
+                <h3 className="ft-account__name">{feature.title}</h3>
+                {feature.rows.map(([k, v], j) => (
+                  <div key={j} className="ft-account__row">
+                    <span className="ft-account__key">{k}</span>
+                    <span className="ft-account__val">{v}</span>
+                  </div>
+                ))}
+                <Link href="/auth-signup" className={`ft-btn ft-btn--sm ft-btn--full ${feature.featured ? 'ft-btn--green' : 'ft-btn--outline-white'}`}>
+                  Start Trading
+                </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -224,6 +255,7 @@ const MT5Page = () => {
       <section id="why" ref={setRef('why')} className={`mt5-why-light ${visible.has('why') ? 'in-view' : ''}`}>
         <div className="container">
           <div className="why-grid">
+            {/* LEFT: text + stats */}
             <motion.div 
               className="why-content"
               initial={{ opacity: 0, x: -40 }}
@@ -234,35 +266,7 @@ const MT5Page = () => {
               <span className="section-eyebrow">The Foxnance Edge</span>
               <h2 className="section-title">Why Trade MT5 with Foxnance?</h2>
               <p className="section-desc">MetaTrader 5 is a great platform. Foxnance makes it exceptional with raw pricing, deep liquidity, and institutional execution.</p>
-              <div className="why-list">
-                {whyItems.map((item, i) => (
-                  <motion.div 
-                    key={i} 
-                    className="why-item"
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08, duration: 0.4 }}
-                    whileHover={{ x: 5, transition: { duration: 0.2 } }}
-                  >
-                    <div className="why-icon" style={{ background: `${item.color}15`, color: item.color }}>{item.icon}</div>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>{item.desc}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-              <Link href="/auth-signup" className="mt5-btn-primary-light">Open MT5 Account <FiArrowRight /></Link>
-            </motion.div>
-            <motion.div 
-              className="why-visual"
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="why-stats">
+              <div className="why-stats" style={{ justifyContent: 'flex-start', marginBottom: 32 }}>
                 <motion.div 
                   className="why-stat-card"
                   whileHover={{ y: -5, scale: 1.02 }}
@@ -288,6 +292,35 @@ const MT5Page = () => {
                   <span className="why-stat-label">leverage</span>
                 </motion.div>
               </div>
+              <Link href="/auth-signup" className="mt5-btn-primary-light">Open MT5 Account <FiArrowRight /></Link>
+            </motion.div>
+            {/* RIGHT: icon list */}
+            <motion.div 
+              className="why-visual"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className="why-list" style={{ margin: 0 }}>
+                {whyItems.map((item, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="why-item"
+                    initial={{ opacity: 0, x: 20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08, duration: 0.4 }}
+                    whileHover={{ x: -5, transition: { duration: 0.2 } }}
+                  >
+                    <div className={`why-icon ${i % 2 === 0 ? 'why-icon--green' : 'why-icon--black'}`}>{item.icon}</div>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <span>{item.desc}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
@@ -309,11 +342,53 @@ const MT5Page = () => {
           </motion.div>
           <div className="download-grid">
             {[
-              { platform: 'Windows', icon: <BiDesktop size={28} />, size: '~60 MB', color: '#3fcb1b' },
-              { platform: 'macOS', icon: <BiDesktop size={28} />, size: '~60 MB', color: '#3b82f6' },
-              { platform: 'iOS', icon: <BiMobile size={28} />, size: 'Free', color: '#8b5cf6' },
-              { platform: 'Android', icon: <BiMobile size={28} />, size: 'Free', color: '#f59e0b' },
-              { platform: 'WebTerminal', icon: <FiGlobe size={28} />, size: 'No install', color: '#10b981' },
+              { 
+                platform: 'Windows', 
+                icon: (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                    <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+                  </svg>
+                ), 
+                size: '~60 MB', color: '#0078D4' 
+              },
+              { 
+                platform: 'macOS', 
+                icon: (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                    <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
+                  </svg>
+                ), 
+                size: '~60 MB', color: '#c0c0c0' 
+              },
+              { 
+                platform: 'iOS', 
+                icon: (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                ), 
+                size: 'Free', color: '#c0c0c0' 
+              },
+              { 
+                platform: 'Android', 
+                icon: (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor">
+                    <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/>
+                  </svg>
+                ), 
+                size: 'Free', color: '#3DDC84' 
+              },
+              { 
+                platform: 'WebTerminal', 
+                icon: (
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                  </svg>
+                ), 
+                size: 'No install', color: '#10b981' 
+              },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -513,7 +588,7 @@ const MT5Page = () => {
           --bg-light-card: #ffffff;
           --bg-light-border: #e2e8f0;
           --text-dark: #edf0ea;
-          --text-dark-secondary: #556050;
+          --text-dark-secondary: rgba(255,255,255,0.55);
           --text-light: #1a1f36;
           --text-light-secondary: #6b7280;
           font-family: 'Inter', 'Sora', system-ui, sans-serif;
@@ -561,27 +636,95 @@ const MT5Page = () => {
         .order-buy:hover { background: rgba(63,203,27,0.25); }
         .order-spread { padding: 10px; font-size: 0.6rem; color: var(--text-dark-secondary); text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; }
         
-        .mt5-actions, .cta-actions { display: flex; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; }
+        .mt5-actions { display: flex; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; }
         .mt5-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--g); color: #000; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
         .mt5-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(63,203,27,0.3); background: #2e9c14; color: #fff; }
-        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: var(--text-dark); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-secondary:hover { border-color: var(--g); color: var(--g); transform: translateY(-2px); background: rgba(63,203,27,0.05); }
+        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: transparent; border: 1.5px solid #1a1f36; color: #1a1f36; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
+        .mt5-btn-secondary:hover { border-color: var(--g); color: var(--g); transform: translateY(-2px); background: rgba(63,203,27,0.06); }
+        .faq-head .section-title { color: #fff !important; }
+        .faq-head .section-desc { color: rgba(255,255,255,0.55) !important; }
         .mt5-btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: transparent; border: 1px solid rgba(63,203,27,0.3); color: var(--g); font-weight: 600; border-radius: 40px; text-decoration: none; transition: 0.3s; }
         .mt5-btn-outline:hover { background: rgba(63,203,27,0.1); }
 
-        /* Features - Dark */
-        .mt5-features-dark { padding: 80px 0; background: var(--bg-dark); }
-        .mt5-features-dark .section-title { color: var(--text-dark); }
-        .mt5-features-dark .section-desc { color: var(--text-dark-secondary); }
-        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
-        @media (max-width: 900px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
-        .feature-card { background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 20px; padding: 28px; transition: 0.3s; }
-        .feature-card:hover { transform: translateY(-5px); border-color: rgba(63,203,27,0.3); }
-        .feature-icon { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-        .feature-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 8px; color: var(--text-dark); }
-        .feature-desc { font-size: 0.85rem; color: var(--text-dark-secondary); line-height: 1.5; margin-bottom: 12px; }
-        .feature-stat { font-size: 0.7rem; font-weight: 700; color: var(--g); background: rgba(63,203,27,0.1); padding: 4px 10px; border-radius: 20px; display: inline-block; }
+        /* Features - Dark (exact Account Types style from home page) */
+        .mt5-features-dark { padding: 96px 0; background: #0A0A0A; }
+
+        .ft-section-head { text-align: center; margin-bottom: 56px; }
+        .ft-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #3fcb1b; display: block; margin-bottom: 12px; }
+        .ft-h2 { font-size: clamp(1.9rem, 3.5vw, 2.9rem); font-weight: 900; color: #0A0A0A; letter-spacing: -.02em; line-height: 1.12; margin: 0 0 12px; }
+        .ft-h2--white { color: #fff !important; }
+        .ft-section-sub { font-size: 1.05rem; color: #6B6B6B; max-width: 560px; margin: 0 auto; line-height: 1.65; }
+        .ft-section-sub--light { color: rgba(255,255,255,.55); }
+
+        .ft-accounts-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 30px;
+          max-width: 1100px;
+          margin: 0 auto;
+        }
+        @media (max-width: 1024px) { .ft-accounts-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
+        @media (max-width: 640px)  { .ft-accounts-grid { grid-template-columns: 1fr; } }
+
+        .ft-account {
+          position: relative;
+          padding: 40px 32px;
+          background: rgba(255, 255, 255, .05);
+          border: 1px solid rgba(255, 255, 255, .1);
+          border-radius: 12px;
+          transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+          display: flex;
+          flex-direction: column;
+        }
+        .ft-account.hovered {
+          transform: translateY(-8px);
+          border-color: rgba(63, 203, 27, .5);
+          background: rgba(63, 203, 27, .03);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .ft-account--featured {
+          border: 1px solid #3fcb1b;
+          background: rgba(63, 203, 27, .06);
+          box-shadow: 0 0 30px rgba(63, 203, 27, 0.1);
+        }
+        .ft-account__badge {
+          position: absolute;
+          top: -14px;
+          left: 50%;
+          transform: translateX(-50%);
+          padding: 4px 16px;
+          border-radius: 99px;
+          font-size: .7rem;
+          font-weight: 800;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          white-space: nowrap;
+        }
+        .ft-account__name {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: #fff;
+          margin-bottom: 24px;
+          text-align: center;
+        }
+        .ft-account__row {
+          display: flex;
+          justify-content: space-between;
+          padding: 14px 0;
+          border-bottom: 1px solid rgba(255, 255, 255, .08);
+          font-size: .9rem;
+        }
+        .ft-account__row:last-of-type { border-bottom: none; }
+        .ft-account__key { color: rgba(255, 255, 255, .5); }
+        .ft-account__val { font-weight: 700; color: #fff; }
+
+        .ft-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; font-size: .9rem; font-weight: 700; border-radius: 8px; text-decoration: none; transition: all .22s; cursor: pointer; border: none; white-space: nowrap; }
+        .ft-btn--green { background: linear-gradient(135deg, #3fcb1b 0%, #2e9c14 100%); color: #000; box-shadow: 0 4px 18px rgba(63,203,27,.28); }
+        .ft-btn--green:hover { background: #2e9c14; transform: translateY(-1px); }
+        .ft-btn--outline-white { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
+        .ft-btn--outline-white:hover { background: rgba(255,255,255,.08); border-color: #fff; }
+        .ft-btn--sm { padding: 10px 20px; font-size: .82rem; }
+        .ft-btn--full { width: 100%; justify-content: center; margin-top: 20px; }
 
         /* Download - Dark */
         .mt5-download-dark { padding: 80px 0; background: var(--bg-dark); }
@@ -592,27 +735,27 @@ const MT5Page = () => {
         @media (max-width: 500px) { .download-grid { grid-template-columns: 1fr; } }
         .download-card { display: flex; align-items: center; gap: 16px; padding: 20px; background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; text-decoration: none; transition: 0.3s; }
         .download-card:hover { transform: translateY(-3px); border-color: var(--g); }
-        .download-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
-        .download-info strong { display: block; font-size: 0.9rem; font-weight: 700; color: var(--text-dark); }
-        .download-info span { font-size: 0.7rem; color: var(--text-dark-secondary); }
-        .download-arrow { margin-left: auto; color: var(--text-dark-secondary); transition: 0.3s; }
+        .download-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .download-info strong { display: block; font-size: 0.9rem; font-weight: 700; color: #edf0ea; }
+        .download-info span { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+        .download-arrow { margin-left: auto; color: rgba(255,255,255,0.4); transition: 0.3s; flex-shrink: 0; }
         .download-card:hover .download-arrow { color: var(--g); transform: translateX(4px); }
-        .download-note { text-align: center; font-size: 0.75rem; color: var(--text-dark-secondary); }
+        .download-note { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
 
         /* FAQ - Dark */
         .mt5-faq-dark { padding: 80px 0; background: var(--bg-dark); }
-        .mt5-faq-dark .section-title { color: var(--text-dark); }
-        .mt5-faq-dark .section-desc { color: var(--text-dark-secondary); }
+        .mt5-faq-dark .section-title { color: #fff; }
+        .mt5-faq-dark .section-desc { color: rgba(255,255,255,0.55); }
         .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; }
         @media (max-width: 900px) { .faq-grid { grid-template-columns: 1fr; } }
         .faq-list { display: flex; flex-direction: column; gap: 12px; }
         .faq-item { background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; cursor: pointer; transition: 0.3s; }
         .faq-item:hover { border-color: rgba(63,203,27,0.3); }
-        .faq-item.open { border-color: var(--g); }
-        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; font-weight: 600; color: var(--text-dark); }
-        .faq-icon { color: var(--g); transition: 0.3s; display: flex; align-items: center; }
+        .faq-item.open { border-color: var(--g); background: rgba(63,203,27,0.04); }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; font-weight: 600; color: #edf0ea; font-size: 0.95rem; }
+        .faq-icon { color: var(--g); transition: 0.3s; display: flex; align-items: center; flex-shrink: 0; margin-left: 12px; }
         .faq-answer { overflow: hidden; }
-        .faq-answer p { margin: 0; padding: 0 20px 18px; font-size: 0.85rem; color: var(--text-dark-secondary); line-height: 1.6; border-top: 1px solid var(--bg-dark-border); padding-top: 14px; }
+        .faq-answer p { margin: 0; padding: 0 20px 18px; font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.7; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; }
 
         /* ========== LIGHT SECTIONS ========== */
         
@@ -625,8 +768,10 @@ const MT5Page = () => {
         .why-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 32px 0; }
         @media (max-width: 500px) { .why-list { grid-template-columns: 1fr; } }
         .why-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-light-card); border-radius: 12px; border: 1px solid var(--bg-light-border); transition: 0.2s; }
-        .why-item:hover { border-color: rgba(63,203,27,0.3); transform: translateX(5px); }
+        .why-item:hover { border-color: rgba(63,203,27,0.4); transform: translateX(-5px); box-shadow: 0 4px 16px rgba(63,203,27,0.08); }
         .why-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .why-icon--green { background: rgba(63,203,27,0.12); color: #3fcb1b; }
+        .why-icon--black { background: #0c0f0a; color: #3fcb1b; border: 1px solid rgba(63,203,27,0.2); }
         .why-item strong { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-light); }
         .why-item span { font-size: 0.7rem; color: var(--text-light-secondary); }
         .why-stats { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
@@ -657,8 +802,10 @@ const MT5Page = () => {
 
         /* CTA - Light */
         .mt5-cta-light { padding: 80px 0; text-align: center; background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); }
+        .cta-content { display: flex; flex-direction: column; align-items: center; }
         .cta-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 16px; color: var(--text-light); }
-        .cta-desc { font-size: 1rem; color: var(--text-light-secondary); max-width: 500px; margin: 0 auto 32px; }
+        .cta-desc { font-size: 1rem; color: var(--text-light-secondary); max-width: 500px; margin: 0 auto 32px; text-align: center; }
+        .cta-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; align-items: center; }
 
         @media (max-width: 768px) {
           .mt5-hero { flex-direction: column; text-align: center; gap: 48px; }
