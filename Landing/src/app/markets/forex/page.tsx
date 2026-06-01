@@ -9,18 +9,13 @@ import {
   BiPlus, BiMinus, BiChart, BiMap, BiLock
 } from 'react-icons/bi';
 import { FiArrowUpRight, FiArrowDownRight, FiArrowRight } from 'react-icons/fi';
-import { Line } from 'react-chartjs-2';
-import {
-  Chart as ChartJS, CategoryScale, LinearScale,
-  PointElement, LineElement, Title, Tooltip, Legend, Filler
-} from 'chart.js';
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler);
 
 // Components
 const Navbar = dynamic(() => import('../../componets/Navbar/navbar'));
 import Footer from '../../componets/Footer/footer';
 import CookieModal from '../../componets/cookieModal';
+
+/* ─── Data ──────────────────────────────────────────────────── */
 
 const TRADING_CATEGORIES = [
   { image: "/images/Forex.png",     title: "Forex",       desc: "60+ currency pairs with tight spreads from 0.0 pips", link: "/markets/forex" },
@@ -31,12 +26,12 @@ const TRADING_CATEGORIES = [
 ];
 
 const initialLivePrices = [
-  { pair: 'EUR/USD', bid: 1.08432, ask: 1.08435, change: 0.04, high: 1.08550, low: 1.08320, direction: 'up' as const },
-  { pair: 'GBP/USD', bid: 1.27680, ask: 1.27685, change: 0.19, high: 1.27800, low: 1.27550, direction: 'up' as const },
+  { pair: 'EUR/USD', bid: 1.08432, ask: 1.08435, change: 0.04,  high: 1.08550, low: 1.08320, direction: 'up'   as const },
+  { pair: 'GBP/USD', bid: 1.27680, ask: 1.27685, change: 0.19,  high: 1.27800, low: 1.27550, direction: 'up'   as const },
   { pair: 'USD/JPY', bid: 151.22,  ask: 151.25,  change: -0.12, high: 151.50,  low: 151.00,  direction: 'down' as const },
-  { pair: 'AUD/USD', bid: 0.65420, ask: 0.65425, change: 0.08, high: 0.65500, low: 0.65350, direction: 'up' as const },
+  { pair: 'AUD/USD', bid: 0.65420, ask: 0.65425, change: 0.08,  high: 0.65500, low: 0.65350, direction: 'up'   as const },
   { pair: 'USD/CAD', bid: 1.35840, ask: 1.35845, change: -0.05, high: 1.35900, low: 1.35780, direction: 'down' as const },
-  { pair: 'NZD/USD', bid: 0.61230, ask: 0.61235, change: 0.11, high: 0.61300, low: 0.61150, direction: 'up' as const },
+  { pair: 'NZD/USD', bid: 0.61230, ask: 0.61235, change: 0.11,  high: 0.61300, low: 0.61150, direction: 'up'   as const },
 ];
 
 const features = [
@@ -56,45 +51,36 @@ const faqItems = [
   { q: 'Is there a demo account?',     a: 'Yes, you can open a free demo account with $10,000 virtual funds to practice trading without risk.' },
 ];
 
+/* ─── Page Component ─────────────────────────────────────────── */
+
 export default function ForexPage() {
   const [hoveredCategory, setHoveredCategory] = useState<number | null>(null);
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-  const [selectedPair, setSelectedPair] = useState(initialLivePrices[0]);
-  const [livePrices, setLivePrices] = useState(initialLivePrices);
-  const [visible, setVisible] = useState<Set<string>>(new Set());
-  const [heroReady, setHeroReady] = useState(false);
-  const [tickerOffset, setTickerOffset] = useState(0);
+  const [openFaq, setOpenFaq]                 = useState<number | null>(null);
+  const [selectedPair, setSelectedPair]       = useState(initialLivePrices[0]);
+  const [livePrices, setLivePrices]           = useState(initialLivePrices);
+  const [visible, setVisible]                 = useState<Set<string>>(new Set());
+  const [heroReady, setHeroReady]             = useState(false);
+  const [tickerOffset, setTickerOffset]       = useState(0);
   const [priceAnimations, setPriceAnimations] = useState<Record<string, 'up' | 'down' | null>>({});
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
-  
-  const refs = useRef<{ [k: string]: HTMLElement | null }>({});
+  const [hoveredRow, setHoveredRow]           = useState<string | null>(null);
+
+  const refs            = useRef<{ [k: string]: HTMLElement | null }>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  /* Live price feed */
   useEffect(() => {
     const scheduleUpdate = () => {
       updateTimeoutRef.current = setTimeout(() => {
-        setLivePrices(prevPrices => 
-          prevPrices.map(price => {
-            const movement = (Math.random() - 0.5) * 0.0008;
-            const newBid = +(price.bid + movement).toFixed(5);
-            const newAsk = +(price.ask + movement).toFixed(5);
+        setLivePrices(prev =>
+          prev.map(price => {
+            const movement  = (Math.random() - 0.5) * 0.0008;
+            const newBid    = +(price.bid + movement).toFixed(5);
+            const newAsk    = +(price.ask + movement).toFixed(5);
             const newChange = +(((newBid - (price.bid - movement * 0.5)) / (price.bid - movement * 0.5)) * 100).toFixed(2);
             const direction = movement >= 0 ? 'up' : 'down';
-            
-            setPriceAnimations(prev => ({ ...prev, [price.pair]: direction }));
-            setTimeout(() => {
-              setPriceAnimations(prev => ({ ...prev, [price.pair]: null }));
-            }, 500);
-            
-            return {
-              ...price,
-              bid: newBid,
-              ask: newAsk,
-              change: newChange,
-              direction: direction,
-              high: Math.max(price.high, newBid),
-              low: Math.min(price.low, newBid),
-            };
+            setPriceAnimations(p => ({ ...p, [price.pair]: direction }));
+            setTimeout(() => setPriceAnimations(p => ({ ...p, [price.pair]: null })), 500);
+            return { ...price, bid: newBid, ask: newAsk, change: newChange, direction, high: Math.max(price.high, newBid), low: Math.min(price.low, newBid) };
           })
         );
         scheduleUpdate();
@@ -104,8 +90,9 @@ export default function ForexPage() {
     return () => { if (updateTimeoutRef.current) clearTimeout(updateTimeoutRef.current); };
   }, []);
 
+  /* Scroll reveal + hero + ticker */
   useEffect(() => {
-    const t = setTimeout(() => setHeroReady(true), 100);
+    const t  = setTimeout(() => setHeroReady(true), 100);
     const io = new IntersectionObserver(
       entries => entries.forEach(e => { if (e.isIntersecting) setVisible(p => new Set([...p, e.target.id])); }),
       { threshold: 0.12 }
@@ -116,83 +103,77 @@ export default function ForexPage() {
     let offset = 0;
     const animate = () => {
       offset -= 0.5;
-      if (offset <= -(initialLivePrices.length * 230)) { offset = 0; }
+      if (offset <= -(initialLivePrices.length * 230)) offset = 0;
       setTickerOffset(offset);
       frame = requestAnimationFrame(animate);
     };
     frame = requestAnimationFrame(animate);
-
     return () => { clearTimeout(t); io.disconnect(); cancelAnimationFrame(frame); };
   }, []);
 
   const setRef = (id: string) => (el: HTMLElement | null) => { refs.current[id] = el; };
 
+  /* ─── JSX ──────────────────────────────────────────────────── */
   return (
     <>
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
-      
-      <div id="forex-layout-wrapper">
-        {/* Hero Section */}
-        <section className="fp-hero-ref">
-          <div className="fp-hero__bg">
-            <div className="fp-hero__orb fp-hero__orb--1" />
-            <div className="fp-hero__orb fp-hero__orb--2" />
-            <div className="fp-hero__orb fp-hero__orb--3" />
-            <div className="fp-hero__grid" />
-            <div className="fp-hero__scanline" />
-          </div>
 
-          <div className="fp-particles" aria-hidden="true">
-            {Array.from({length: 18}).map((_,i) => (
-              <div key={i} className={`fp-particle fp-particle--${i % 6}`} style={{ '--pi': i } as React.CSSProperties} />
-            ))}
-          </div>
+      <div id="fx-wrapper">
 
-          <div className={`fp-hero-ref__inner ${heroReady ? 'ready' : ''}`}>
-            <div className="hero-visual h-item h-d1">
-              <div className="hero-glow-ring" />
-              <Image src="/images/MainForex.png" alt="Forex Symbols" width={1000} height={1000} className="hero-3d-asset" priority />
+        {/* ── 1 · HERO  (BLACK) ─────────────────────────────────── */}
+        <section className="fx-hero">
+          {/* subtle grid */}
+          <div className="fx-hero__grid" aria-hidden />
+          {/* glow blobs */}
+          <div className="fx-blob fx-blob--a" aria-hidden />
+          <div className="fx-blob fx-blob--b" aria-hidden />
+
+          <div className={`fx-hero__inner ${heroReady ? 'ready' : ''}`}>
+            {/* floating asset */}
+            <div className="fx-hero__visual h-item h-d1" aria-hidden>
+              <div className="fx-hero__ring" />
+              <Image src="/images/MainForex.png" alt="Forex" width={900} height={900} className="fx-hero__img" priority />
             </div>
 
-            <div className="hero-content h-item h-d2">
-              <div className="hero-badge">
-                <span className="hero-badge__dot" />
-                <span>Markets Open · Live Prices</span>
-              </div>
-              <h1 className="hero-brand">
-                FORE<span className="green-x">X</span>
-              </h1>
-              <h2 className="hero-tagline">The world's most traded market.</h2>
-              <p className="hero-description">
+            {/* copy */}
+            <div className="fx-hero__copy h-item h-d2">
+              <span className="fx-badge">
+                <span className="fx-badge__dot" />
+                Markets Open · Live Prices
+              </span>
+              <h1 className="fx-hero__title">FORE<span className="fx-accent">X</span></h1>
+              <p className="fx-hero__sub">The world's most traded market.</p>
+              <p className="fx-hero__desc">
                 Trade 70+ currency pairs with tight spreads, deep liquidity, and execution that never misses a move.
               </p>
-              <div className="hero-actions">
-                <Link href="/auth-signup" className="btn-green-ref">
-                  Start Trading <FiArrowRight />
-                </Link>
-              </div>
-              <div className="hero-stats-row">
-                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Pairs'},{v:'0.0',l:'Min Spread'}].map((s,i) => (
-                  <div key={i} className="hero-stat">
-                    <span className="hero-stat__val">{s.v}</span>
-                    <span className="hero-stat__lbl">{s.l}</span>
+              <Link href="/auth-signup" className="fx-btn fx-btn--primary">
+                Start Trading <FiArrowRight />
+              </Link>
+              <div className="fx-hero__stats">
+                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Pairs'},{v:'0.0',l:'Min Spread'}].map((s,i)=>(
+                  <div key={i} className="fx-hero__stat">
+                    <span className="fx-hero__stat-val">{s.v}</span>
+                    <span className="fx-hero__stat-lbl">{s.l}</span>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="fp-ticker">
-            <div className="fp-ticker__label">LIVE</div>
-            <div className="fp-ticker__track">
-              <div className="fp-ticker__inner" style={{ transform: `translateX(${tickerOffset}px)` }}>
+          {/* ticker bar */}
+          <div className="fx-ticker">
+            <div className="fx-ticker__live">
+              <span className="fx-ticker__dot" />LIVE
+            </div>
+            <div className="fx-ticker__track">
+              <div className="fx-ticker__inner" style={{ transform: `translateX(${tickerOffset}px)` }}>
                 {[...livePrices, ...livePrices, ...livePrices].map((p, i) => (
-                  <div key={i} className="fp-ticker__item">
-                    <span className="fp-ticker__pair">{p.pair}</span>
-                    <span className={`fp-ticker__bid ${priceAnimations[p.pair] === 'up' ? 'flash-up' : priceAnimations[p.pair] === 'down' ? 'flash-down' : ''}`}>
+                  <div key={i} className="fx-ticker__item">
+                    <span className="fx-ticker__pair">{p.pair}</span>
+                    <span className={`fx-ticker__bid ${priceAnimations[p.pair] === 'up' ? 'flash-up' : priceAnimations[p.pair] === 'down' ? 'flash-dn' : ''}`}>
                       {p.bid}
                     </span>
-                    <span className={`fp-ticker__chg ${p.direction === 'up' ? 'up' : 'dn'}`}>
+                    <span className={`fx-ticker__chg ${p.direction === 'up' ? 'up' : 'dn'}`}>
                       {p.direction === 'up' ? <FiArrowUpRight size={11}/> : <FiArrowDownRight size={11}/>}
                       {p.change >= 0 ? '+' : ''}{Math.abs(p.change)}%
                     </span>
@@ -203,66 +184,72 @@ export default function ForexPage() {
           </div>
         </section>
 
-        {/* Live Market Data */}
-        <section id="prices" ref={setRef('prices')} className={`fp-section fp-section--alt fp-reveal ${visible.has('prices')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">LIVE MARKET DATA</span>
-              <h2 className="fp-h2">Real-Time Forex Prices</h2>
-              <p className="fp-sub">Live streaming prices updated every 2 seconds</p>
+        {/* ── 2 · LIVE PRICES  (WHITE) ──────────────────────────── */}
+        <section id="prices" ref={setRef('prices')} className={`fx-section fx-section--white fx-reveal ${visible.has('prices')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-head fx-head--dark">
+              <span className="fx-eyebrow fx-eyebrow--dark">LIVE MARKET DATA</span>
+              <h2 className="fx-h2 fx-h2--dark">Real-Time Forex Prices</h2>
+              <p className="fx-sub fx-sub--dark">Live streaming prices updated every 2 seconds</p>
             </div>
-            <div className="fp-prices-single">
-              <div className="fp-prices-tbl-full">
-                <div className="fp-prices-thead">
+
+            <div className="fx-prices-wrap">
+              <div className="fx-prices-tbl">
+                <div className="fx-prices-head">
                   <span>Pair</span><span>Bid</span><span>Ask</span><span>Change</span><span>24H H/L</span>
                 </div>
-                {livePrices.map((p,i)=>(
-                  <div 
-                    key={i} 
-                    className={`fp-prow ${selectedPair.pair===p.pair?'active':''} ${hoveredRow === p.pair ? 'hovered' : ''}`} 
+                {livePrices.map((p,i) => (
+                  <div
+                    key={i}
+                    className={`fx-prow ${selectedPair.pair===p.pair?'active':''} ${hoveredRow===p.pair?'hovered':''}`}
                     onMouseEnter={() => setHoveredRow(p.pair)}
                     onMouseLeave={() => setHoveredRow(null)}
                     onClick={() => setSelectedPair(p)}
                   >
-                    <span className="fp-pr-pair">{p.pair}</span>
-                    <span className={`fp-pr-mono ${priceAnimations[p.pair] === 'up' ? 'price-up-text' : priceAnimations[p.pair] === 'down' ? 'price-down-text' : ''}`}>
+                    <span className="fx-pr-pair">{p.pair}</span>
+                    <span className={`fx-pr-mono ${priceAnimations[p.pair]==='up'?'flash-up':priceAnimations[p.pair]==='down'?'flash-dn':''}`}>
                       {p.bid}
                     </span>
-                    <span className="fp-pr-mono">{p.ask}</span>
-                    <span className={`fp-pr-chg ${p.direction === 'up'?'up':'dn'}`}>
-                      {p.direction === 'up'?<FiArrowUpRight />:<FiArrowDownRight />}{p.change>=0?'+':''}{Math.abs(p.change)}%
+                    <span className="fx-pr-mono">{p.ask}</span>
+                    <span className={`fx-pr-chg ${p.direction==='up'?'up':'dn'}`}>
+                      {p.direction==='up'?<FiArrowUpRight/>:<FiArrowDownRight/>}
+                      {p.change>=0?'+':''}{Math.abs(p.change)}%
                     </span>
-                    <span className="fp-pr-hl">{p.high}/{p.low}</span>
+                    <span className="fx-pr-hl">{p.high}/{p.low}</span>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="fx-prices-cta">
+              <Link href="/auth-signup" className="fx-btn fx-btn--primary">Open Live Account <FiArrowRight /></Link>
+              <Link href="/auth-signup" className="fx-btn fx-btn--outline-dark">Try Demo Free <FiArrowRight /></Link>
+            </div>
           </div>
         </section>
 
-        {/* What is Forex */}
-        <section id="what" ref={setRef('what')} className={`fp-section fp-reveal ${visible.has('what')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">Learn the Basics</span>
-              <h2 className="fp-h2">What is Forex Trading?</h2>
+        {/* ── 3 · WHAT IS FOREX  (BLACK) ────────────────────────── */}
+        <section id="what" ref={setRef('what')} className={`fx-section fx-section--black fx-reveal ${visible.has('what')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-head">
+              <span className="fx-eyebrow">Learn the Basics</span>
+              <h2 className="fx-h2">What is Forex Trading?</h2>
             </div>
-            <div className="fp-what-grid">
-              <div className="fp-what-text">
+            <div className="fx-what-grid">
+              <div className="fx-what-text">
                 <p>Forex (foreign exchange) trading is the buying and selling of currencies on the global market. It&apos;s the world&apos;s largest financial market, with over $6 trillion traded daily.</p>
                 <p>Unlike stock markets, Forex operates 24 hours a day, five days a week, allowing traders to respond to market movements as they happen.</p>
-                <ul className="fp-checklist">
+                <ul className="fx-checklist">
                   {['Trade major, minor, and exotic currency pairs','Leverage up to 1:500 to maximize opportunities','Access deep liquidity from top-tier banks','Trade from anywhere with mobile and web platforms'].map((t,i)=>(
-                    <li key={i} style={{ '--li': i } as React.CSSProperties}><BiCheckCircle />{t}</li>
+                    <li key={i}><BiCheckCircle className="fx-check-icon" />{t}</li>
                   ))}
                 </ul>
               </div>
-              <div className="fp-what-stats">
-                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Currency Pairs'},{v:'24/5',l:'Trading Hours'}].map((s,i)=>(
-                  <div key={i} className="fp-stat-card" style={{ '--si': i } as React.CSSProperties}>
-                    <div className="fp-stat-card__glow" />
-                    <span className="fp-sc-val">{s.v}</span>
-                    <span className="fp-sc-lbl">{s.l}</span>
+              <div className="fx-stat-grid">
+                {[{v:'$6T+',l:'Daily Volume'},{v:'70+',l:'Currency Pairs'},{v:'24/5',l:'Trading Hours'},{v:'0.0',l:'Min Spread (pips)'}].map((s,i)=>(
+                  <div key={i} className="fx-stat-card">
+                    <span className="fx-stat-val">{s.v}</span>
+                    <span className="fx-stat-lbl">{s.l}</span>
                   </div>
                 ))}
               </div>
@@ -270,402 +257,553 @@ export default function ForexPage() {
           </div>
         </section>
 
-        {/* Why Trade with Foxnance */}
-        <section id="why" ref={setRef('why')} className={`fp-section fp-section--alt fp-reveal ${visible.has('why')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">Why Choose Us</span>
-              <h2 className="fp-h2">Why Trade with Foxnance?</h2>
-              <p className="fp-sub">Experience trading with a broker that puts you first</p>
+        {/* ── 4 · WHY TRADE WITH US  (WHITE) ───────────────────── */}
+        <section id="why" ref={setRef('why')} className={`fx-section fx-section--white fx-reveal ${visible.has('why')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-head fx-head--dark">
+              <span className="fx-eyebrow fx-eyebrow--dark">Why Choose Us</span>
+              <h2 className="fx-h2 fx-h2--dark">Why Trade with Foxnance?</h2>
+              <p className="fx-sub fx-sub--dark">Experience trading with a broker that puts you first</p>
             </div>
-            <div className="fp-features-grid">
-              {features.map((f,i)=>(
-                <div key={i} className="fp-feat-card" style={{ '--fi': i } as React.CSSProperties}>
-                  <div className="fp-feat-card__shine" />
-                  <div className="fp-feat-icon"><f.icon size={28} /></div>
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
+            <div className="fx-feat-grid">
+              {features.map((f,i) => (
+                <div key={i} className="fx-feat-card">
+                  <div className="fx-feat-icon"><f.icon size={26} /></div>
+                  <h3 className="fx-feat-title">{f.title}</h3>
+                  <p className="fx-feat-desc">{f.desc}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Access Global Markets */}
-        <section id="markets" ref={setRef('markets')} className={`fp-section fp-reveal ${visible.has('markets')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">Explore Our Products</span>
-              <h2 className="fp-h2">Access Global Markets</h2>
-              <p className="fp-sub">One account. 2,250+ instruments. Real-time execution.</p>
+        {/* ── 5 · ACCESS GLOBAL MARKETS  (BLACK) ───────────────── */}
+        <section id="markets" ref={setRef('markets')} className={`fx-section fx-section--black fx-reveal ${visible.has('markets')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-head">
+              <span className="fx-eyebrow">Explore Our Products</span>
+              <h2 className="fx-h2">Access Global Markets</h2>
+              <p className="fx-sub">One account. 2,250+ instruments. Real-time execution.</p>
             </div>
-            <div className="fp-mkt-grid">
-              {TRADING_CATEGORIES.map((cat,i)=>(
+            <div className="fx-mkt-grid">
+              {TRADING_CATEGORIES.map((cat,i) => (
                 <div
                   key={i}
-                  className={`fp-mkt-card ${hoveredCategory===i?'hovered':''}`}
-                  onMouseEnter={()=>setHoveredCategory(i)}
-                  onMouseLeave={()=>setHoveredCategory(null)}
-                  onClick={()=>window.location.href=cat.link}
-                  style={{ '--mi': i } as React.CSSProperties}
+                  className={`fx-mkt-card ${hoveredCategory===i?'hovered':''}`}
+                  onMouseEnter={() => setHoveredCategory(i)}
+                  onMouseLeave={() => setHoveredCategory(null)}
+                  onClick={() => window.location.href = cat.link}
                 >
-                  <div className="fp-mkt-card__glow" />
-                  <div className="fx-trade-category-image">
-  <Image 
-    src={cat.image} 
-    alt={cat.title} 
-    width={140} 
-    height={140} 
-    className="fx-category-img" 
-    /* This allows us to target ONLY Indices in CSS */
-    data-category={cat.title} 
-    priority 
-  />
-</div>
-                 
-                  <h3 className="fp-mkt-title">{cat.title}</h3>
-                  <p className="fp-mkt-desc">{cat.desc}</p>
-                  <div className="fp-mkt-overlay"><span>TRADE {cat.title.toUpperCase()} <FiArrowRight size={12}/></span></div>
+                  <div className="fx-mkt-img-wrap">
+                    <Image
+                      src={cat.image}
+                      alt={cat.title}
+                      width={170}
+                      height={170}
+                      className="fx-mkt-img"
+                      data-category={cat.title}
+                      priority
+                    />
+                  </div>
+                  <h3 className="fx-mkt-title">{cat.title}</h3>
+                  <p className="fx-mkt-desc">{cat.desc}</p>
+                  <div className="fx-mkt-overlay">
+                    <span>TRADE {cat.title.toUpperCase()} <FiArrowRight size={12}/></span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Open Account */}
-        <section id="open" ref={setRef('open')} className={`fp-section fp-section--dark fp-reveal ${visible.has('open')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-open-card">
-              <div className="fp-open-card__decoration" aria-hidden="true">
-                <div className="fp-open-card__ring fp-open-card__ring--1" />
-                <div className="fp-open-card__ring fp-open-card__ring--2" />
-              </div>
-              <div className="fp-open-left">
-                <span className="fp-eyebrow fp-eyebrow--lt">Get Started</span>
-                <h2 className="fp-h2 fp-h2--w">Open a Foxnance Account Now</h2>
-                <div className="fp-spacer"></div>
-                <div className="fp-steps">
-                  {[{n:'1',t:'Register',d:'Quick and easy account opening process.'},{n:'2',t:'Fund',d:'Fund your account with multiple deposit methods.'},{n:'3',t:'Trade',d:'Trade with spreads from 0.0 pips.'}].map((s,i)=>(
-                    <div key={i} className="fp-step" style={{ '--sti': i } as React.CSSProperties}>
-                      <div className="fp-step-num">{s.n}</div>
-                      <div><h4>{s.t}</h4><p>{s.d}</p></div>
+        {/* ── 6 · OPEN ACCOUNT  (WHITE) ─────────────────────────── */}
+        <section id="open" ref={setRef('open')} className={`fx-section fx-section--white fx-reveal ${visible.has('open')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-open-card">
+              <div className="fx-open-left">
+                <span className="fx-eyebrow fx-eyebrow--dark">Get Started</span>
+                <h2 className="fx-h2 fx-h2--dark">Open a Foxnance Account Now</h2>
+                <div className="fx-steps">
+                  {[
+                    {n:'1',t:'Register',  d:'Quick and easy account opening process.'},
+                    {n:'2',t:'Fund',      d:'Fund your account with multiple deposit methods.'},
+                    {n:'3',t:'Trade',     d:'Trade with spreads from 0.0 pips.'},
+                  ].map((s,i)=>(
+                    <div key={i} className="fx-step">
+                      <div className="fx-step-num">{s.n}</div>
+                      <div>
+                        <h4 className="fx-step-title">{s.t}</h4>
+                        <p  className="fx-step-desc">{s.d}</p>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <Link href="/auth-signup" className="fp-btn fp-btn--green fp-btn--lg">Open Account <FiArrowRight /></Link>
+                <Link href="/auth-signup" className="fx-btn fx-btn--primary">
+                  Open Account <FiArrowRight />
+                </Link>
               </div>
-              <div className="fp-open-right">
+              <div className="fx-open-right">
                 {['No Hidden Fees','Instant Deposits','Fast Withdrawals','24/7 Support','FCA Regulated','Segregated Funds'].map((b,i)=>(
-                  <div key={i} className="fp-benefit" style={{ '--bi': i } as React.CSSProperties}><BiCheckCircle size={18}/>{b}</div>
+                  <div key={i} className="fx-benefit">
+                    <BiCheckCircle className="fx-benefit-icon" />{b}
+                  </div>
                 ))}
               </div>
             </div>
           </div>
         </section>
 
-        {/* FAQ */}
-        <section id="faq" ref={setRef('faq')} className={`fp-section fp-reveal ${visible.has('faq')?'on':''}`}>
-          <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">FAQ</span>
-              <h2 className="fp-h2">Frequently Asked Questions</h2>
-              <p className="fp-sub">Everything you need to know about Forex trading</p>
+        {/* ── 7 · FAQ  (BLACK) ──────────────────────────────────── */}
+        <section id="faq" ref={setRef('faq')} className={`fx-section fx-section--black fx-reveal ${visible.has('faq')?'on':''}`}>
+          <div className="fx-container">
+            <div className="fx-head">
+              <span className="fx-eyebrow">FAQ</span>
+              <h2 className="fx-h2">Frequently Asked Questions</h2>
+              <p className="fx-sub">Everything you need to know about Forex trading</p>
             </div>
-            <div className="fp-faq">
-              {faqItems.map((item,i)=>(
-                <div key={i} className={`fp-faq__item ${openFaq===i?'open':''}`}>
-                  <button className="fp-faq__q" onClick={()=>setOpenFaq(openFaq===i?null:i)}>
+            <div className="fx-faq">
+              {faqItems.map((item,i) => (
+                <div key={i} className={`fx-faq__item ${openFaq===i?'open':''}`}>
+                  <button className="fx-faq__q" onClick={() => setOpenFaq(openFaq===i?null:i)}>
                     <span>{item.q}</span>
-                    <span className="fp-faq__icon">{openFaq===i?<BiMinus size={18}/>:<BiPlus size={18}/>}</span>
+                    <span className="fx-faq__icon">{openFaq===i?<BiMinus size={18}/>:<BiPlus size={18}/>}</span>
                   </button>
-                  <div className="fp-faq__a"><p>{item.a}</p></div>
+                  <div className="fx-faq__a"><p>{item.a}</p></div>
                 </div>
               ))}
             </div>
           </div>
         </section>
-      </div>
+
+      </div>{/* end #fx-wrapper */}
 
       <Footer />
       <CookieModal />
 
+      {/* ── GLOBAL STYLES ──────────────────────────────────────── */}
       <style jsx global>{`
-        #forex-layout-wrapper {
-          --green:      #3fcb1b;
-          --green-dk:   #2e9c14;
-          --green-glow: rgba(63,203,27,0.25);
-          --bg:         #ffffff;
-          --bg-alt:     #f7f8f5;
-          --bg-card:    #ffffff;
-          --bg-dark:    #0A0A0A;
-          --border:     #e5e7eb;
-          --text:       #0A0A0A;
-          --text2:      #6b7280;
-          --radius:     16px;
-          --nav-h:      80px;
-          --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-          --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
-          background: var(--bg);
-          color: var(--text);
-        }
-        @media(prefers-color-scheme:dark){
-          #forex-layout-wrapper {
-            --bg:      #0A0A0A;
-            --bg-alt:  #111111;
-            --bg-card: #181818;
-            --border:  rgba(255,255,255,0.09);
-            --text:    #f0f0f0;
-            --text2:   rgba(255,255,255,0.5);
-          }
+        /* ── Design tokens ──────────────────────────── */
+        #fx-wrapper {
+          --green:       #3fcb1b;
+          --green-dk:    #2e9c14;
+          --green-glow:  rgba(63,203,27,0.28);
+          --black:       #080808;
+          --white:       #ffffff;
+          --off-white:   #f5f5f2;
+          --text-on-black: #f0f0ee;
+          --text-dim-black: rgba(240,240,238,0.55);
+          --text-on-white: #0a0a0a;
+          --text-dim-white: #6b7280;
+          --border-black: rgba(255,255,255,0.09);
+          --border-white: rgba(0,0,0,0.10);
+          --radius:  14px;
+          --radius-lg: 22px;
+          --ease-spring: cubic-bezier(0.16,1,0.3,1);
+          --ease-out:    cubic-bezier(0.22,1,0.36,1);
         }
 
-        #forex-layout-wrapper .fp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
-        @media(min-width:1024px){ #forex-layout-wrapper .fp-container { padding: 0 64px; } }
+        /* ── Section shells ─────────────────────────── */
+        .fx-section         { padding: 100px 0; }
+        .fx-section--black  { background: var(--black); color: var(--text-on-black); }
+        .fx-section--white  { background: var(--white); color: var(--text-on-white); }
 
-        .fp-section { padding: 96px 0; }
-        .fp-section--alt  { background: var(--bg-alt); }
-        .fp-section--dark { background: var(--bg-dark); }
+        /* FAQ gets a lighter dark bg so it reads distinctly from the footer */
+        #faq.fx-section--black {
+          background: #111113;
+          border-top: 1px solid rgba(255,255,255,0.07);
+          padding-bottom: 120px;
+        }
+        /* Decorative rule above FAQ container */
+        #faq .fx-container::before {
+          content: '';
+          display: block;
+          width: 80px;
+          height: 3px;
+          background: linear-gradient(90deg, var(--green), var(--green-dk));
+          border-radius: 2px;
+          margin: 0 auto 56px;
+        }
+        /* Ensure footer gets a clear black baseline */
+        #fx-wrapper + footer,
+        #fx-wrapper ~ footer {
+          border-top: 2px solid rgba(255,255,255,.06) !important;
+        }
 
-        .fp-reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s var(--ease-spring), transform 0.9s var(--ease-spring); }
-        .fp-reveal.on { opacity: 1; transform: translateY(0); }
+        /* Scroll reveal */
+        .fx-reveal     { opacity: 0; transform: translateY(36px); transition: opacity .9s var(--ease-spring), transform .9s var(--ease-spring); }
+        .fx-reveal.on  { opacity: 1; transform: translateY(0); }
 
-        .fp-head { text-align: center; margin-bottom: 56px; }
-        .fp-eyebrow {
-          font-size: .72rem; font-weight: 700; letter-spacing: .16em;
-          text-transform: uppercase; color: var(--green);
-          display: inline-flex; align-items: center; gap: 8px;
-          margin-bottom: 14px;
-        }
-        .fp-eyebrow::before, .fp-eyebrow::after {
-          content: ''; display: block; width: 24px; height: 1px;
-          background: var(--green); opacity: 0.5;
-        }
-        .fp-eyebrow--lt { color: rgba(255,255,255,.6); }
-        .fp-eyebrow--lt::before, .fp-eyebrow--lt::after { background: rgba(255,255,255,.4); }
-        .fp-h2 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; color: var(--text); letter-spacing: -.03em; line-height: 1.1; }
-        .fp-h2--w { color: #fff !important; }
-        .fp-sub { font-size: 1rem; color: var(--text2); max-width: 540px; margin: 14px auto 0; line-height: 1.7; }
+        .fx-container  { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+        @media(min-width:1024px){ .fx-container { padding: 0 64px; } }
 
-        .fp-btn {
-          display: inline-flex; align-items: center; gap: 8px;
-          padding: 13px 28px; font-size: .9rem; font-weight: 700;
-          border-radius: 8px; text-decoration: none;
-          transition: all .25s var(--ease-out);
-          cursor: pointer; border: none;
+        /* ── Typography helpers ─────────────────────── */
+        .fx-head        { text-align: center; margin-bottom: 56px; }
+        .fx-head--dark  { }   /* used for white-bg heads */
+
+        .fx-eyebrow {
+          display: inline-flex; align-items: center; gap: 10px;
+          font-size: .68rem; font-weight: 700; letter-spacing: .18em;
+          text-transform: uppercase; color: var(--green); margin-bottom: 14px;
         }
-        .fp-btn--green {
-          background: linear-gradient(135deg, var(--green), var(--green-dk));
-          color: #000;
-          box-shadow: 0 4px 18px rgba(63,203,27,.3);
+        .fx-eyebrow::before, .fx-eyebrow::after {
+          content:''; display:block; width:22px; height:1px;
+          background: var(--green); opacity:.5;
         }
-        .fp-btn--green:hover {
+        .fx-eyebrow--dark { color: var(--green); }
+
+        .fx-h2            { font-size: clamp(1.9rem,4vw,2.9rem); font-weight: 900; letter-spacing:-.03em; line-height:1.1; color: var(--text-on-black); }
+        .fx-h2--dark      { color: var(--text-on-white); }
+        .fx-sub           { font-size: .95rem; color: var(--text-dim-black); max-width:520px; margin: 14px auto 0; line-height:1.7; }
+        .fx-sub--dark     { color: var(--text-dim-white); }
+
+        /* ── Unified Button System ──────────────────── */
+        .fx-btn {
+          display: inline-flex; align-items: center; gap: 9px;
+          padding: 14px 30px;
+          font-size: .88rem; font-weight: 700; letter-spacing: .02em;
+          border-radius: 8px; text-decoration: none; border: 2px solid transparent;
+          transition: transform .25s var(--ease-out), box-shadow .25s var(--ease-out),
+                      background .25s, color .25s, border-color .25s;
+          cursor: pointer;
+        }
+        /* Primary – green fill (works on both black and white bg) */
+        .fx-btn--primary {
+          background: var(--green);
+          color: #fff;
+          border-color: var(--green);
+          box-shadow: 0 4px 18px var(--green-glow);
+        }
+        .fx-btn--primary:hover {
           transform: translateY(-3px) scale(1.02);
-          box-shadow: 0 12px 30px rgba(63,203,27,.45), 0 0 0 6px rgba(63,203,27,.08);
+          box-shadow: 0 12px 32px rgba(63,203,27,.5);
+          background: var(--green-dk);
+          border-color: var(--green-dk);
         }
-        .fp-btn--lg { padding: 16px 36px; font-size: 1rem; }
-
-        /* Hero Section */
-        .fp-hero-ref {
-          position: relative;
-          height: 660px;
-          min-height: 600px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          background: #000;
-          padding-top: 80px;
-          overflow: hidden;
+        /* Outline for white bg */
+        .fx-btn--outline-dark {
+          background: transparent;
+          color: var(--text-on-white);
+          border-color: rgba(0,0,0,0.18);
         }
-        .fp-hero__bg { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-        .fp-hero__orb { position: absolute; border-radius: 50%; filter: blur(90px); }
-        .fp-hero__orb--1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(63,203,27,.22), transparent 70%); top: -140px; right: -80px; animation: orbF 9s ease-in-out infinite; }
-        .fp-hero__orb--2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(59,130,246,.15), transparent 70%); bottom: -80px; left: -60px; animation: orbF 11s ease-in-out infinite reverse; }
-        .fp-hero__orb--3 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(63,203,27,.1), transparent 70%); top: 40%; left: 40%; animation: orbF 14s ease-in-out infinite 3s; }
-        @keyframes orbF { 0%,100%{transform:translate(0,0);} 50%{transform:translate(18px,-18px);} }
-        .fp-hero__grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(63,203,27,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(63,203,27,.05) 1px, transparent 1px); background-size: 52px 52px; }
-        .fp-hero__scanline { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(63,203,27,.012) 2px, rgba(63,203,27,.012) 4px); pointer-events: none; }
-        .fp-particles { position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-        .fp-particle { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: var(--green); opacity: 0; animation: particleFly var(--pd, 8s) ease-in-out infinite var(--pdl, 0s); left: calc(var(--pi, 0) * 5.88% + 5%); bottom: -10px; }
-        .fp-hero-ref__inner { display: flex; justify-content: flex-end; align-items: center; width: 100%; max-width: 1280px; margin: 0 auto; padding: 0 64px; position: relative; z-index: 1; flex: 1; }
-        @media(max-width:968px){ .fp-hero-ref__inner { justify-content: center; text-align: center; padding: 0 24px; } }
-        .hero-visual { position: absolute; left: -120px; top: 50%; transform: translateY(-50%); width: 45%; display: flex; justify-content: center; pointer-events: none; animation: floatAsset 6s ease-in-out infinite; }
-        .hero-glow-ring { position: absolute; width: 420px; height: 420px; border-radius: 50%; border: 1px solid rgba(63,203,27,.15); top: 50%; left: 50%; transform: translate(-50%, -50%); animation: ringPulse 4s ease-in-out infinite; }
-        @keyframes ringPulse { 0%,100%{ opacity: 0.4; transform: translate(-50%,-50%) scale(1); } 50%{ opacity: 0.8; transform: translate(-50%,-50%) scale(1.04); } }
-        .hero-3d-asset { width: 100%; height: auto; max-width: 600px; object-fit: contain; filter: drop-shadow(0 0 80px rgba(63,203,27,.3)); position: relative; z-index: 1; }
-        @keyframes floatAsset { 0%,100%{ transform: translateY(-50%) translateY(0px); } 50%{ transform: translateY(-50%) translateY(-20px); } }
-        .hero-content { width: 100%; max-width: 490px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; color: white; position: relative; z-index: 2; }
-        @media(max-width:968px){ .hero-content { text-align: center; align-items: center; max-width: 100%; } .hero-visual { display: none; } }
-        .hero-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(63,203,27,.12); border: 1px solid rgba(63,203,27,.25); border-radius: 100px; font-size: .72rem; font-weight: 600; color: var(--green); margin-bottom: 20px; backdrop-filter: blur(8px); }
-        .hero-badge__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: dotPulse 2s ease-in-out infinite; }
-        @keyframes dotPulse { 0%,100%{ box-shadow: 0 0 0 0 rgba(63,203,27,.4); } 50%{ box-shadow: 0 0 0 5px rgba(63,203,27,0); } }
-        .hero-brand { font-size: clamp(3rem,6vw,5rem); font-weight: 900; line-height: 1; margin: 0 0 16px; letter-spacing: -.04em; }
-        .green-x { color: #3fcb1b; text-shadow: 0 0 30px rgba(63,203,27,.6); }
-        .hero-tagline { font-size: clamp(1.1rem,2.5vw,1.6rem); font-weight: 700; color: white; margin-bottom: 18px; }
-        .hero-description { color: rgba(255,255,255,.65); max-width: 420px; line-height: 1.65; margin-bottom: 28px; font-size: 1rem; }
-        .hero-actions { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 28px; }
-        .btn-green-ref { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: linear-gradient(135deg, #3fcb1b, #2e9c14); color: white; font-weight: 700; border-radius: 40px; text-decoration: none; transition: all 0.3s var(--ease-out); box-shadow: 0 4px 20px rgba(63,203,27,.3); }
-        .btn-green-ref:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 32px rgba(63,203,27,.5); }
-        .hero-stats-row { display: flex; gap: 24px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.1); width: 100%; justify-content: flex-end; }
-        @media(max-width:968px){ .hero-stats-row { justify-content: center; } }
-        .hero-stat { display: flex; flex-direction: column; align-items: flex-end; }
-        @media(max-width:968px){ .hero-stat { align-items: center; } }
-        .hero-stat__val { font-size: 1.35rem; font-weight: 900; color: var(--green); }
-        .hero-stat__lbl { font-size: .68rem; color: rgba(255,255,255,.45); font-weight: 600; margin-top: 3px; }
-        .h-item { opacity: 0; transform: translateY(44px); transition: opacity 0.8s var(--ease-spring), transform 0.8s var(--ease-spring); }
-        .ready .h-item { opacity: 1; transform: translateY(0); }
-        .h-d1 { transition-delay: 0.1s; }
-        .h-d2 { transition-delay: 0.28s; }
+        .fx-btn--outline-dark:hover {
+          border-color: var(--green);
+          color: var(--green);
+          transform: translateY(-3px);
+        }
+        /* Outline for black bg */
+        .fx-btn--outline-light {
+          background: transparent;
+          color: var(--text-on-black);
+          border-color: rgba(255,255,255,0.18);
+        }
+        .fx-btn--outline-light:hover {
+          border-color: var(--green);
+          color: var(--green);
+          transform: translateY(-3px);
+        }
 
-        /* Ticker Bar */
-        .fp-ticker { position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: rgba(63,203,27,.08); border-top: 1px solid rgba(63,203,27,.15); display: flex; align-items: center; overflow: hidden; z-index: 5; backdrop-filter: blur(8px); }
-        .fp-ticker__label { flex-shrink: 0; padding: 0 14px; font-size: .65rem; font-weight: 900; color: var(--green); border-right: 1px solid rgba(63,203,27,.2); background: rgba(63,203,27,.08); height: 100%; display: flex; align-items: center; padding-left: 22px; position: relative; }
-        .fp-ticker__label::before { content: ''; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: dotPulse 1.5s ease-in-out infinite; }
-        .fp-ticker__track { flex: 1; overflow: hidden; }
-        .fp-ticker__inner { display: flex; gap: 0; white-space: nowrap; will-change: transform; }
-        .fp-ticker__item { display: inline-flex; align-items: center; gap: 10px; padding: 0 20px; border-right: 1px solid rgba(255,255,255,.06); min-width: 220px; }
-        .fp-ticker__pair { font-size: .75rem; font-weight: 700; color: rgba(255,255,255,.8); }
-        .fp-ticker__bid { font-family: monospace; font-size: .72rem; color: rgba(255,255,255,.55); transition: color 0.2s; }
-        .fp-ticker__bid.flash-up { color: #10b981; text-shadow: 0 0 4px #10b981; }
-        .fp-ticker__bid.flash-down { color: #ef4444; text-shadow: 0 0 4px #ef4444; }
-        .fp-ticker__chg { display: inline-flex; align-items: center; gap: 2px; font-size: .7rem; font-weight: 700; }
-        .fp-ticker__chg.up { color: #10b981; }
-        .fp-ticker__chg.dn { color: #ef4444; }
+        /* ── Badge ──────────────────────────────────── */
+        .fx-badge {
+          display: inline-flex; align-items: center; gap: 8px;
+          padding: 6px 14px; background: rgba(63,203,27,.12);
+          border: 1px solid rgba(63,203,27,.25); border-radius: 100px;
+          font-size: .7rem; font-weight: 600; color: var(--green); margin-bottom: 22px;
+        }
+        .fx-badge__dot {
+          width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+          animation: dotPulse 2s ease-in-out infinite;
+        }
+        @keyframes dotPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(63,203,27,.4); } 50%{ box-shadow:0 0 0 5px rgba(63,203,27,0); } }
 
-        /* Live Prices */
-        .fp-prices-single { width: 100%; max-width: 1000px; margin: 0 auto; }
-        .fp-prices-tbl-full { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; width: 100%; }
-        .fp-prices-thead { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; padding: 16px 24px; background: rgba(63,203,27,.05); border-bottom: 1px solid var(--border); font-size: .8rem; font-weight: 700; color: var(--text2); letter-spacing: .04em; }
-        .fp-prow { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1.2fr; padding: 16px 24px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.3s ease; align-items: center; position: relative; }
-        .fp-prow:hover { background: rgba(63,203,27,.08); transform: translateX(4px); }
-        .fp-prow.hovered { background: rgba(63,203,27,.1); transform: translateX(4px); box-shadow: -4px 0 0 var(--green); }
-        .fp-prow.active { background: rgba(63,203,27,.12); border-left: 3px solid var(--green); }
-        .fp-pr-pair { font-weight: 700; font-size: .88rem; color: var(--text); transition: color 0.2s; }
-        .fp-prow.hovered .fp-pr-pair { color: var(--green); }
-        .fp-pr-mono { font-family: monospace; font-size: .85rem; color: var(--text2); transition: all 0.2s; }
-        .fp-pr-mono.price-up-text { color: #10b981; animation: priceFlash 0.5s ease; }
-        .fp-pr-mono.price-down-text { color: #ef4444; animation: priceFlash 0.5s ease; }
-        @keyframes priceFlash { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .fp-pr-chg { display: flex; align-items: center; gap: 3px; font-size: .82rem; font-weight: 600; }
-        .fp-prow.hovered .fp-pr-chg { transform: translateX(2px); }
-        .fp-pr-chg.up { color: #10b981; }
-        .fp-pr-chg.dn { color: #ef4444; }
-        .fp-pr-hl { font-size: .78rem; color: var(--text2); }
+        /* ── HERO ───────────────────────────────────── */
+        .fx-hero {
+          position: relative; min-height: 660px; background: var(--black);
+          display: flex; flex-direction: column; align-items: center;
+          padding-top: 80px; overflow: hidden;
+        }
+        .fx-hero__grid {
+          position: absolute; inset: 0; pointer-events: none;
+          background-image:
+            linear-gradient(rgba(63,203,27,.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(63,203,27,.05) 1px, transparent 1px);
+          background-size: 54px 54px;
+        }
+        .fx-blob { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+        .fx-blob--a { width:600px; height:600px; background:radial-gradient(circle,rgba(63,203,27,.2),transparent 70%); top:-140px; right:-80px; animation:blobDrift 9s ease-in-out infinite; }
+        .fx-blob--b { width:400px; height:400px; background:radial-gradient(circle,rgba(59,130,246,.14),transparent 70%); bottom:-80px; left:-60px; animation:blobDrift 11s ease-in-out infinite reverse; }
+        @keyframes blobDrift { 0%,100%{transform:translate(0,0);} 50%{transform:translate(18px,-18px);} }
 
-        /* What is Forex */
-        .fp-what-grid { display: grid; grid-template-columns: 1fr .85fr; gap: 56px; align-items: center; }
-        @media(max-width:900px){ .fp-what-grid { grid-template-columns: 1fr; } }
-        .fp-what-text p { color: var(--text2); line-height: 1.75; margin-bottom: 18px; font-size: .95rem; }
-        .fp-checklist { list-style: none; margin-top: 24px; }
-        .fp-checklist li { display: flex; align-items: center; gap: 12px; color: var(--text); font-size: .92rem; padding: 10px 14px; border-radius: 10px; transition: all 0.3s; cursor: pointer; }
-        .fp-checklist li:hover { background: rgba(63,203,27,.08); transform: translateX(6px); }
-        .fp-checklist li svg { color: var(--green); flex-shrink: 0; }
-        .fp-what-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .fp-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; text-align: center; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
-        .fp-stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(63,203,27,.15); border-color: var(--green); }
-        .fp-stat-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .4s; }
-        .fp-stat-card:hover .fp-stat-card__glow { opacity: 1; }
-        .fp-sc-val { font-size: 2.2rem; font-weight: 900; color: var(--green); display: block; margin-bottom: 8px; transition: transform 0.3s; }
-        .fp-stat-card:hover .fp-sc-val { transform: scale(1.05); }
-        .fp-sc-lbl { font-size: .8rem; color: var(--text2); font-weight: 600; }
+        .fx-hero__inner {
+          display: flex; justify-content: flex-end; align-items: center;
+          width: 100%; max-width: 1280px; margin: 0 auto;
+          padding: 0 64px; position: relative; z-index: 1; flex: 1;
+        }
+        @media(max-width:968px){ .fx-hero__inner { justify-content: center; text-align: center; padding: 0 24px; } }
 
-        /* Features */
-        .fp-features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .fp-feat-card { background: var(--bg-card); border: 1px solid var(--green); border-radius: 20px; padding: 32px 28px; text-align: center; transition: all 0.35s ease; position: relative; overflow: hidden; cursor: pointer; }
-        .fp-feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(63,203,27,.12); background: rgba(63,203,27,.02); }
-        .fp-feat-card__shine { position: absolute; top: -60%; left: -60%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(63,203,27,.04), transparent 60%); transition: transform .5s; pointer-events: none; }
-        .fp-feat-card:hover .fp-feat-card__shine { transform: translate(130%, 130%); }
-        .fp-feat-icon { width: 64px; height: 64px; background: var(--green); color: #fff; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; transition: all 0.3s; }
-        .fp-feat-card:hover .fp-feat-icon { transform: scale(1.08); box-shadow: 0 8px 20px rgba(63,203,27,.3); }
-        .fp-feat-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
-        .fp-feat-card p { font-size: .85rem; color: var(--text2); line-height: 1.6; }
+        .fx-hero__visual {
+          position: absolute; left: -100px; top: 50%; transform: translateY(-50%);
+          width: 46%; pointer-events: none; animation: floatImg 6s ease-in-out infinite;
+        }
+        @keyframes floatImg { 0%,100%{ transform:translateY(-50%) translateY(0); } 50%{ transform:translateY(-50%) translateY(-20px); } }
 
-        /* Access Global Markets */
-        .fp-mkt-grid { display: flex; justify-content: space-between; gap: 16px; flex-wrap: nowrap; }
-        @media(max-width:1100px){ .fp-mkt-grid { flex-wrap: wrap; justify-content: center; } }
-        .fp-mkt-card { flex: 1; min-width: 180px; max-width: 240px; text-align: center; padding: 28px 16px 0; border-radius: var(--radius); background: var(--bg-card); border: 1px solid var(--border); cursor: pointer; position: relative; overflow: hidden; transition: all 0.4s; min-height: 260px; }
-        .fp-mkt-card:hover { transform: translateY(-2px); border-color: rgba(63,203,27,.4); box-shadow: 0 20px 40px rgba(63,203,27,.15); }
-        .fp-mkt-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .35s; pointer-events: none; }
-        .fp-mkt-card:hover .fp-mkt-card__glow { opacity: 1; }
-        .fp-mkt-img { height: 130px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; transition: transform 0.3s; }
-        .fp-mkt-card:hover .fp-mkt-img { transform: scale(1.05); }
-        .fp-mkt-title { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 8px; position: relative; z-index: 2; transition: transform .4s; }
-        .fp-mkt-desc { font-size: .72rem; color: var(--text2); line-height: 1.5; padding-bottom: 24px; position: relative; z-index: 2; transition: transform .4s; }
-        .fp-mkt-card:hover .fp-mkt-title, .fp-mkt-card:hover .fp-mkt-desc { transform: translateY(-30px); }
-        .fp-mkt-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 56px; background: linear-gradient(135deg, var(--green), var(--green-dk)); transform: translateY(100%); transition: transform .4s; display: flex; align-items: center; justify-content: center; z-index: 1; }
-        .fp-mkt-card:hover .fp-mkt-overlay { transform: translateY(0); }
-        .fp-mkt-overlay span { font-size: .75rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; }
-/* Keep all category images at default size */
-.fx-category-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-}
+        .fx-hero__ring {
+          position: absolute; width: 420px; height: 420px; border-radius: 50%;
+          border: 1px solid rgba(63,203,27,.15); top:50%; left:50%;
+          transform: translate(-50%,-50%); animation: ringPulse 4s ease-in-out infinite;
+        }
+        @keyframes ringPulse { 0%,100%{ opacity:.4; transform:translate(-50%,-50%) scale(1); } 50%{ opacity:.8; transform:translate(-50%,-50%) scale(1.04); } }
 
-/* ONLY target the Indices icon to reduce its height */
-.fx-category-img[data-category="Indices"] {
-  height: 75% !important; /* Adjust this percentage to your liking */
-  width: auto !important;
-  margin: 0 auto;
-}
+        .fx-hero__img {
+          width:100%; height:auto; max-width:580px; object-fit:contain;
+          filter: drop-shadow(0 0 80px rgba(63,203,27,.3)); position:relative; z-index:1;
+        }
+        .fx-hero__copy {
+          width:100%; max-width:490px; text-align:right;
+          display:flex; flex-direction:column; align-items:flex-end;
+          color: var(--text-on-black); position:relative; z-index:2;
+        }
+        @media(max-width:968px){
+          .fx-hero__copy  { text-align:center; align-items:center; max-width:100%; }
+          .fx-hero__visual { display:none; }
+        }
+        .fx-hero__title  { font-size:clamp(3rem,6vw,5rem); font-weight:900; line-height:1; margin:0 0 16px; letter-spacing:-.04em; color:#fff; }
+        .fx-accent       { color:var(--green); text-shadow:0 0 30px rgba(63,203,27,.6); }
+        .fx-hero__sub    { font-size:clamp(1.1rem,2.5vw,1.5rem); font-weight:700; color:#fff; margin-bottom:16px; }
+        .fx-hero__desc   { color:var(--text-dim-black); max-width:420px; line-height:1.65; margin-bottom:28px; font-size:.95rem; }
+        .fx-hero__stats  { display:flex; gap:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,.1); width:100%; justify-content:flex-end; margin-top:20px; }
+        @media(max-width:968px){ .fx-hero__stats { justify-content:center; } }
+        .fx-hero__stat   { display:flex; flex-direction:column; align-items:flex-end; }
+        @media(max-width:968px){ .fx-hero__stat { align-items:center; } }
+        .fx-hero__stat-val { font-size:1.3rem; font-weight:900; color:var(--green); }
+        .fx-hero__stat-lbl { font-size:.65rem; color:var(--text-dim-black); font-weight:600; margin-top:3px; letter-spacing:.05em; text-transform:uppercase; }
 
-/* Ensure the container height remains stable for alignment */
-.fx-trade-category-image {
-  width: 100%;
-  height: 200px;
-  margin-bottom: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-}
+        /* hero reveal animation */
+        .h-item { opacity:0; transform:translateY(44px); transition:opacity .8s var(--ease-spring), transform .8s var(--ease-spring); }
+        .ready .h-item { opacity:1; transform:translateY(0); }
+        .h-d1 { transition-delay:.1s; }
+        .h-d2 { transition-delay:.28s; }
 
-        
-        /* Open Account */
-        .fp-open-card { background: linear-gradient(135deg, rgba(63,203,27,.08), rgba(0,0,0,.25)); border: 1px solid rgba(63,203,27,.15); border-radius: 28px; padding: 56px; display: grid; grid-template-columns: 1fr .8fr; gap: 56px; position: relative; overflow: hidden; }
-        @media(max-width:900px){ .fp-open-card { grid-template-columns: 1fr; padding: 32px 24px; } }
-        .fp-open-card__decoration { position: absolute; inset: 0; pointer-events: none; }
-        .fp-open-card__ring { position: absolute; border-radius: 50%; border: 1px solid rgba(63,203,27,.08); animation: ringPulse 6s ease-in-out infinite; }
-        .fp-open-card__ring--1 { width: 400px; height: 400px; top: -100px; right: -100px; }
-        .fp-open-card__ring--2 { width: 280px; height: 280px; top: -40px; right: -40px; animation-delay: 1s; }
-        .fp-spacer { height: 16px; }
-        .fp-steps { display: flex; flex-direction: column; gap: 20px; margin-bottom: 36px; }
-        .fp-step { display: flex; gap: 18px; align-items: flex-start; transition: transform 0.3s; }
-        .fp-step:hover { transform: translateX(6px); }
-        .fp-step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #000; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 20px rgba(63,203,27,.35); transition: all 0.3s; }
-        .fp-step:hover .fp-step-num { transform: scale(1.05); box-shadow: 0 0 30px rgba(63,203,27,.5); }
-        .fp-step h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .fp-step p { font-size: .85rem; color: rgba(255,255,255,.5); }
-        .fp-open-right { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-content: center; }
-        .fp-benefit { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: rgba(255,255,255,.8); padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); transition: all 0.25s; cursor: pointer; }
-        .fp-benefit:hover { background: rgba(63,203,27,0.12); border-color: var(--green); transform: translateY(-3px) scale(1.02); }
-        .fp-benefit svg { color: var(--green); }
+        /* ── Ticker ─────────────────────────────────── */
+        .fx-ticker {
+          position:absolute; bottom:0; left:0; right:0; height:40px;
+          background:rgba(63,203,27,.07); border-top:1px solid rgba(63,203,27,.15);
+          display:flex; align-items:center; overflow:hidden; z-index:5; backdrop-filter:blur(8px);
+        }
+        .fx-ticker__live {
+          flex-shrink:0; padding:0 14px 0 22px; font-size:.63rem; font-weight:900;
+          color:var(--green); border-right:1px solid rgba(63,203,27,.2);
+          height:100%; display:flex; align-items:center; gap:6px;
+          background:rgba(63,203,27,.07);
+        }
+        .fx-ticker__dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:dotPulse 1.5s ease-in-out infinite; }
+        .fx-ticker__track   { flex:1; overflow:hidden; }
+        .fx-ticker__inner   { display:flex; white-space:nowrap; will-change:transform; }
+        .fx-ticker__item    { display:inline-flex; align-items:center; gap:10px; padding:0 20px; border-right:1px solid rgba(255,255,255,.06); min-width:220px; }
+        .fx-ticker__pair    { font-family:'DM Mono',monospace; font-size:.72rem; font-weight:500; color:rgba(255,255,255,.8); }
+        .fx-ticker__bid     { font-family:'DM Mono',monospace; font-size:.7rem; color:rgba(255,255,255,.5); transition:color .2s; }
+        .fx-ticker__bid.flash-up   { color:#10b981; text-shadow:0 0 4px #10b981; }
+        .fx-ticker__bid.flash-dn   { color:#ef4444; text-shadow:0 0 4px #ef4444; }
+        .fx-ticker__chg     { display:inline-flex; align-items:center; gap:2px; font-family:'DM Mono',monospace; font-size:.68rem; font-weight:500; }
+        .fx-ticker__chg.up  { color:#10b981; }
+        .fx-ticker__chg.dn  { color:#ef4444; }
 
-        /* FAQ */
-        .fp-faq { max-width: 760px; margin: 0 auto; }
-        .fp-faq__item { border-bottom: 1px solid var(--border); transition: all 0.3s; }
-        .fp-faq__item.open { border-color: rgba(63,203,27,.3); }
-        .fp-faq__q { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 22px 0; font-size: .95rem; font-weight: 600; color: var(--text); background: none; border: none; cursor: pointer; text-align: left; gap: 16px; transition: all 0.2s; }
-        .fp-faq__q:hover { color: var(--green); padding-left: 4px; }
-        .fp-faq__item.open .fp-faq__q { color: var(--green); }
-        .fp-faq__icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(63,203,27,.08); border: 1px solid rgba(63,203,27,.2); flex-shrink: 0; transition: all 0.3s; color: var(--green); }
-        .fp-faq__q:hover .fp-faq__icon { background: rgba(63,203,27,.15); transform: scale(1.05); }
-        .fp-faq__item.open .fp-faq__icon { transform: rotate(180deg); background: rgba(63,203,27,.15); }
-        .fp-faq__a { max-height: 0; overflow: hidden; transition: max-height .4s, padding .4s; }
-        .fp-faq__item.open .fp-faq__a { max-height: 200px; padding-bottom: 20px; }
-        .fp-faq__a p { font-size: .88rem; color: var(--text2); line-height: 1.7; }
+        /* ── LIVE PRICES (white bg) ──────────────────── */
+        .fx-prices-wrap { max-width:1000px; margin:0 auto; }
+        .fx-prices-tbl  {
+          border:1px solid var(--border-white); border-radius:var(--radius-lg);
+          overflow:hidden; background:#fff;
+          box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+        }
+        .fx-prices-head {
+          display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1.2fr;
+          padding:14px 24px;
+          background:var(--off-white);
+          border-bottom:1px solid var(--border-white);
+          font-size:.74rem; font-weight:700; color:var(--text-dim-white);
+          letter-spacing:.06em; text-transform:uppercase;
+        }
+        .fx-prow {
+          display:grid; grid-template-columns:1fr 1fr 1fr 1fr 1.2fr;
+          padding:15px 24px; border-bottom:1px solid var(--border-white);
+          cursor:pointer; transition:all .25s ease; align-items:center;
+        }
+        .fx-prow:last-child { border-bottom:none; }
+        .fx-prow:hover      { background:rgba(63,203,27,.05); transform:translateX(4px); }
+        .fx-prow.hovered    { background:rgba(63,203,27,.07); transform:translateX(4px); box-shadow:-3px 0 0 var(--green); }
+        .fx-prow.active     { background:rgba(63,203,27,.1); border-left:3px solid var(--green); }
+        .fx-pr-pair  { font-weight:800; font-size:.88rem; color:var(--text-on-white); }
+        .fx-prow.hovered .fx-pr-pair { color:var(--green); }
+        .fx-pr-mono  { font-family:'DM Mono',monospace; font-size:.84rem; color:var(--text-dim-white); transition:all .2s; }
+        .fx-pr-mono.flash-up { color:#10b981; animation:priceFlash .5s ease; }
+        .fx-pr-mono.flash-dn { color:#ef4444; animation:priceFlash .5s ease; }
+        @keyframes priceFlash { 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.05); } }
+        .fx-pr-chg   { display:flex; align-items:center; gap:3px; font-family:'DM Mono',monospace; font-size:.8rem; font-weight:500; }
+        .fx-pr-chg.up { color:#10b981; }
+        .fx-pr-chg.dn { color:#ef4444; }
+        .fx-pr-hl    { font-family:'DM Mono',monospace; font-size:.74rem; color:var(--text-dim-white); }
+        .fx-prices-cta { display:flex; gap:14px; justify-content:center; margin-top:36px; flex-wrap:wrap; }
 
         @media(max-width:640px){
-          .fp-section { padding: 64px 0; }
-          .fp-prices-thead { display: none; }
-          .fp-prow { grid-template-columns: 1fr 1fr 1fr; }
-          .fp-prow .fp-pr-hl { display: none; }
-          .fp-what-stats { grid-template-columns: 1fr; }
-          .fp-open-right { grid-template-columns: 1fr; }
-          .fp-mkt-card { min-width: 150px; min-height: 240px; }
-          .fp-mkt-img { height: 100px; }
+          .fx-prices-head { display:none; }
+          .fx-prow { grid-template-columns:1fr 1fr 1fr; }
+          .fx-prow .fx-pr-hl { display:none; }
         }
+
+        /* ── WHAT IS FOREX (black bg) ───────────────── */
+        .fx-what-grid { display:grid; grid-template-columns:1fr .9fr; gap:56px; align-items:center; }
+        @media(max-width:900px){ .fx-what-grid { grid-template-columns:1fr; } }
+        .fx-what-text p { color:var(--text-dim-black); line-height:1.75; margin-bottom:18px; font-size:.95rem; }
+        .fx-checklist   { list-style:none; margin-top:20px; display:flex; flex-direction:column; gap:4px; }
+        .fx-checklist li {
+          display:flex; align-items:center; gap:12px; color:var(--text-on-black);
+          font-size:.9rem; padding:10px 14px; border-radius:10px;
+          transition:all .3s; cursor:default;
+          border:1px solid transparent;
+        }
+        .fx-checklist li:hover { background:rgba(63,203,27,.08); border-color:rgba(63,203,27,.15); transform:translateX(6px); }
+        .fx-check-icon { color:var(--green); flex-shrink:0; width:18px; height:18px; }
+
+        .fx-stat-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+        .fx-stat-card {
+          background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.1);
+          border-radius:var(--radius-lg); padding:28px; text-align:center;
+          transition:all .4s; position:relative; overflow:hidden; cursor:default;
+        }
+        .fx-stat-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(63,203,27,.15); border-color:var(--green); }
+        .fx-stat-val { font-size:2.2rem; font-weight:900; color:var(--green); display:block; margin-bottom:8px; }
+        .fx-stat-lbl { font-size:.75rem; color:var(--text-dim-black); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+
+        /* ── FEATURES (white bg) ────────────────────── */
+        .fx-feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:22px; }
+        .fx-feat-card {
+          border:1px solid var(--border-white); border-radius:var(--radius-lg);
+          padding:32px 26px; text-align:center; transition:all .35s ease;
+          position:relative; overflow:hidden; cursor:default;
+          background:#fff; box-shadow:0 1px 8px rgba(0,0,0,.04);
+        }
+        .fx-feat-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(63,203,27,.12); border-color:var(--green); }
+        .fx-feat-icon {
+          width:60px; height:60px; background:var(--green); color:#fff;
+          border-radius:14px; display:flex; align-items:center; justify-content:center;
+          margin:0 auto 18px; transition:all .3s;
+        }
+        .fx-feat-card:hover .fx-feat-icon { transform:scale(1.08); box-shadow:0 8px 20px rgba(63,203,27,.3); }
+        .fx-feat-title { font-size:1rem; font-weight:800; color:var(--text-on-white); margin-bottom:10px; }
+        .fx-feat-desc  { font-size:.84rem; color:var(--text-dim-white); line-height:1.65; }
+
+        /* ── MARKET CARDS (black bg) ────────────────── */
+        .fx-mkt-grid { display:flex; justify-content:space-between; gap:16px; flex-wrap:nowrap; }
+        @media(max-width:1100px){ .fx-mkt-grid { flex-wrap:wrap; justify-content:center; } }
+        .fx-mkt-card {
+          flex:1; min-width:170px; max-width:230px; text-align:center;
+          padding:26px 14px 0; border-radius:var(--radius); cursor:pointer;
+          position:relative; overflow:hidden;
+          transition: transform .35s var(--ease-out), border-color .35s, box-shadow .35s, background .35s;
+          min-height:270px;
+          background: rgba(255,255,255,.04);
+          border: 1px solid rgba(255,255,255,.28);
+        }
+        /* Hover: strong green border + glow + card lifts */
+        .fx-mkt-card:hover {
+          transform: translateY(-8px) scale(1.02);
+          border-color: var(--green);
+          background: rgba(63,203,27,.06);
+          box-shadow: 0 0 0 1px var(--green), 0 24px 48px rgba(63,203,27,.25), 0 8px 16px rgba(0,0,0,.4);
+        }
+        /* Image scales up */
+        .fx-mkt-img-wrap {
+          height:165px; display:flex; align-items:center; justify-content:center;
+          margin-bottom:14px; transition:transform .35s var(--ease-out);
+          position:relative; z-index:2;
+        }
+        .fx-mkt-card:hover .fx-mkt-img-wrap { transform:scale(1.08) translateY(-4px); }
+        .fx-mkt-img { width:100%; height:100%; object-fit:contain; }
+        .fx-mkt-img[data-category="Indices"] { height:75% !important; width:auto !important; margin:0 auto; }
+
+        /* Title + desc slide up to make room for overlay */
+        .fx-mkt-title {
+          font-size:.95rem; font-weight:800; color:var(--text-on-black);
+          margin-bottom:6px; position:relative; z-index:2;
+          transition: transform .35s var(--ease-out), color .2s;
+        }
+        .fx-mkt-desc {
+          font-size:.7rem; color:var(--text-dim-black); line-height:1.55;
+          padding-bottom:22px; position:relative; z-index:2;
+          transition: transform .35s var(--ease-out);
+        }
+        .fx-mkt-card:hover .fx-mkt-title { transform:translateY(-32px); color: var(--green); }
+        .fx-mkt-card:hover .fx-mkt-desc  { transform:translateY(-32px); }
+
+        /* Overlay slides up from bottom — tall enough to read */
+        .fx-mkt-overlay {
+          position:absolute; bottom:0; left:0; right:0; height:60px;
+          background: linear-gradient(135deg, var(--green), var(--green-dk));
+          transform: translateY(100%);
+          transition: transform .35s var(--ease-out);
+          display:flex; align-items:center; justify-content:center; z-index:3;
+        }
+        .fx-mkt-card:hover .fx-mkt-overlay { transform:translateY(0); }
+        .fx-mkt-overlay span {
+          font-size:.75rem; font-weight:800; color:#fff;
+          display:flex; align-items:center; gap:6px; letter-spacing:.04em;
+        }
+        @media(max-width:640px){ .fx-mkt-card { min-width:150px; min-height:240px; } .fx-mkt-img-wrap { height:100px; } }
+
+        /* ── OPEN ACCOUNT (white bg) ────────────────── */
+        .fx-open-card {
+          border:1px solid var(--border-white); border-radius:28px; padding:56px;
+          display:grid; grid-template-columns:1fr .85fr; gap:56px;
+          background:linear-gradient(135deg, rgba(63,203,27,.04), rgba(255,255,255,0));
+          box-shadow:0 4px 24px rgba(0,0,0,.06);
+        }
+        @media(max-width:900px){ .fx-open-card { grid-template-columns:1fr; padding:32px 24px; } }
+        .fx-steps { display:flex; flex-direction:column; gap:20px; margin:28px 0 36px; }
+        .fx-step  { display:flex; gap:18px; align-items:flex-start; transition:transform .3s; }
+        .fx-step:hover { transform:translateX(6px); }
+        .fx-step-num {
+          width:40px; height:40px; border-radius:50%; background:var(--green); color:#fff;
+          font-weight:900; display:flex; align-items:center; justify-content:center;
+          flex-shrink:0; box-shadow:0 0 20px rgba(63,203,27,.3); transition:all .3s;
+        }
+        .fx-step:hover .fx-step-num { box-shadow:0 0 30px rgba(63,203,27,.5); }
+        .fx-step-title { font-size:.95rem; font-weight:700; color:var(--text-on-white); margin-bottom:4px; }
+        .fx-step-desc  { font-size:.84rem; color:var(--text-dim-white); }
+
+        .fx-open-right { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; align-content:center; }
+        @media(max-width:640px){ .fx-open-right { grid-template-columns:1fr; } }
+        .fx-benefit {
+          display:flex; align-items:center; gap:10px; font-size:.86rem;
+          color:var(--text-on-white); padding:10px 14px; border-radius:10px;
+          background:rgba(63,203,27,.04); border:1px solid rgba(63,203,27,.12);
+          transition:all .25s; cursor:default; font-weight:600;
+        }
+        .fx-benefit:hover { background:rgba(63,203,27,.1); border-color:var(--green); transform:translateY(-3px) scale(1.02); }
+        .fx-benefit-icon { color:var(--green); flex-shrink:0; width:18px; height:18px; }
+
+        /* ── FAQ (black bg) ─────────────────────────── */
+        .fx-faq        { max-width:760px; margin:0 auto; }
+        #faq .fx-head  { margin-bottom: 48px; }
+        .fx-faq__item  { border-bottom:1px solid rgba(255,255,255,.1); transition:all .3s; }
+        .fx-faq__item.open { border-color:rgba(63,203,27,.3); }
+        .fx-faq__q {
+          width:100%; display:flex; justify-content:space-between; align-items:center;
+          padding:22px 0; font-size:.92rem; font-weight:600;
+          color:var(--text-on-black); background:none; border:none; cursor:pointer;
+          text-align:left; gap:16px; transition:all .2s;
+        }
+        .fx-faq__q:hover { color:var(--green); padding-left:4px; }
+        .fx-faq__item.open .fx-faq__q { color:var(--green); }
+        .fx-faq__icon {
+          display:flex; align-items:center; justify-content:center;
+          width:28px; height:28px; border-radius:50%;
+          background:rgba(63,203,27,.08); border:1px solid rgba(63,203,27,.2);
+          flex-shrink:0; transition:all .3s; color:var(--green);
+        }
+        .fx-faq__q:hover .fx-faq__icon { background:rgba(63,203,27,.15); transform:scale(1.05); }
+        .fx-faq__item.open .fx-faq__icon { transform:rotate(180deg); background:rgba(63,203,27,.15); }
+        .fx-faq__a { max-height:0; overflow:hidden; transition:max-height .4s, padding .4s; }
+        .fx-faq__item.open .fx-faq__a { max-height:200px; padding-bottom:20px; }
+        .fx-faq__a p { font-size:.87rem; color:var(--text-dim-black); line-height:1.75; }
       `}</style>
     </>
   );

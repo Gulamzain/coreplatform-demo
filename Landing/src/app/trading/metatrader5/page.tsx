@@ -5,13 +5,11 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
-  FiZap, FiShield, FiDownload, FiActivity, FiArrowRight,
-  FiChevronDown, FiChevronUp, FiCpu, FiLayers, FiTrendingUp,
-  FiBarChart2, FiClock, FiGlobe, FiCheck
+  FiZap, FiDownload, FiArrowRight, FiChevronDown, FiCpu, 
+  FiBarChart2, FiClock, FiCheck
 } from 'react-icons/fi';
 import {
-  BiDesktop, BiMobile, BiServer, BiNetworkChart,
-  BiBarChartAlt2, BiCode, BiCopy, BiSignal1, BiRocket
+  BiNetworkChart, BiCode, BiCopy, BiRocket
 } from 'react-icons/bi';
 
 const Navbar = dynamic(() => import('../../componets/Navbar/navbar'));
@@ -21,9 +19,9 @@ import CookieModal from '../../componets/cookieModal';
 const MT5Page = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [visible, setVisible] = useState<Set<string>>(new Set());
-  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
+  
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -43,58 +41,22 @@ const MT5Page = () => {
 
   const setRef = (id: string) => (el: HTMLElement | null) => { refs.current[id] = el; };
 
-  const features = [
-    { title: '21 Timeframes', badge: '', featured: false, rows: [
-      ['Charts', 'M1 → MN'],
-      ['Range', '1-min to Monthly'],
-      ['Analysis', 'Full Technical'],
-      ['Styles', 'All Trading Styles'],
-      ['Updates', 'Real-time'],
-    ]},
-    { title: '80+ Indicators', badge: 'Most Used', featured: true, rows: [
-      ['Built-in', '38 Indicators'],
-      ['Custom', 'Unlimited'],
-      ['Oscillators', 'Included'],
-      ['Drawing Tools', 'Full Suite'],
-      ['Scripts', 'MQL5 Support'],
-    ]},
-    { title: 'Depth of Market', badge: '', featured: false, rows: [
-      ['Pricing', 'Level II'],
-      ['Transparency', 'Full Depth'],
-      ['Order Book', 'Live View'],
-      ['Liquidity', 'Institutional'],
-      ['Feed', 'Real-time'],
-    ]},
-    { title: 'MQL5 Algorithmic', badge: '', featured: false, rows: [
-      ['Expert Advisors', '10,000+'],
-      ['Backtesting', 'Multi-thread'],
-      ['Optimisation', 'Cloud Network'],
-      ['Marketplace', 'Built-in'],
-      ['Language', 'MQL5'],
-    ]},
-    { title: 'Copy Trading', badge: '', featured: false, rows: [
-      ['Signals', 'Built-in'],
-      ['Type', 'Social Trading'],
-      ['Providers', 'Global'],
-      ['Subscription', 'In-platform'],
-      ['Tracking', 'Real-time'],
-    ]},
-    { title: 'Sub-1ms Execution', badge: 'Fastest', featured: false, rows: [
-      ['Latency', 'Sub-1ms'],
-      ['Servers', 'NY4 / LD4'],
-      ['Co-location', 'Yes'],
-      ['Fill Rate', '99.59%'],
-      ['Dealing Desk', 'None'],
-    ]},
+  const coreFeatures = [
+    { title: '21 Timeframes', icon: <FiClock size={24} />, desc: 'From 1-minute to monthly charts', color: '#3fcb1b' },
+    { title: '80+ Indicators', icon: <FiBarChart2 size={24} />, desc: 'Technical & custom indicators', color: '#3b82f6' },
+    { title: 'Depth of Market', icon: <BiNetworkChart size={24} />, desc: 'Level II pricing & order book', color: '#8b5cf6' },
+    { title: 'MQL5 Algorithmic', icon: <BiCode size={24} />, desc: 'EAs & automated strategies', color: '#f59e0b' },
+    { title: 'Copy Trading', icon: <BiCopy size={24} />, desc: 'Built-in social trading', color: '#ec4899' },
+    { title: 'Sub-1ms Execution', icon: <FiZap size={24} />, desc: 'Ultra-low latency fills', color: '#10b981' },
   ];
 
-  const whyItems = [
-    { icon: <FiZap size={20} />, title: 'Raw Pricing', desc: 'Spreads from 0.0 pips on major pairs', color: '#3fcb1b' },
-    { icon: <BiServer size={20} />, title: 'Low Latency', desc: 'Sub-1ms execution in NY4 data centre', color: '#3b82f6' },
-    { icon: <FiGlobe size={20} />, title: 'Multi-Asset', desc: '2,250+ instruments across all markets', color: '#8b5cf6' },
-    { icon: <FiShield size={20} />, title: 'FCA & ASIC', desc: 'Fully regulated in multiple jurisdictions', color: '#f59e0b' },
-    { icon: <BiSignal1 size={20} />, title: 'Copy Trading', desc: 'Built-in signals and social trading', color: '#ec4899' },
-    { icon: <BiRocket size={20} />, title: 'Scalping Allowed', desc: 'No restrictions on trading strategies', color: '#10b981' },
+  const advancedFeatures = [
+    { name: 'Multi-Asset', value: '2,250+ Instruments' },
+    { name: 'Order Types', value: '6 Types' },
+    { name: 'Execution', value: 'Market/Stop/Limit' },
+    { name: 'Charting', value: 'Interactive' },
+    { name: 'Backtesting', value: 'Multi-threaded' },
+    { name: 'Mobile Apps', value: 'iOS & Android' },
   ];
 
   const faqs = [
@@ -105,228 +67,117 @@ const MT5Page = () => {
     { q: 'What are the system requirements?', a: 'Windows 7 or higher (64-bit recommended), 2GB RAM, 500MB free disk space, and an internet connection. macOS users can use our web platform.' },
   ];
 
+  const downloadLinks = {
+    Windows: 'https://download.mql5.com/cdn/web/1582/mt5/foxnance5setup.exe',
+    macOS: 'https://download.mql5.com/cdn/web/1582/mt5/foxnance5.dmg',
+    iOS: 'https://apps.apple.com/app/metatrader-5/id413251709',
+    Android: 'https://play.google.com/store/apps/details?id=com.metaquotes.metatrader5',
+    WebTerminal: 'https://trade.foxnance.com',
+  };
+
   return (
     <div ref={containerRef} className="mt5-page">
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
 
-      {/* HERO SECTION - Dark */}
+      {/* 1. HERO SECTION - Dark Background */}
       <section className="mt5-hero">
         <motion.div className="mt5-hero-bg" style={{ y: heroY }}>
           <div className="mt5-hero-gradient" />
           <div className="mt5-hero-particles" />
         </motion.div>
 
-        <motion.div className="mt5-hero-content" style={{ opacity: opacityHero }}>
-          <motion.h1 
-            className="mt5-title"
+        <div className="mt5-hero-inner">
+          <motion.div className="mt5-hero-content" style={{ opacity: opacityHero }}>
+            <motion.h1 
+              className="mt5-title"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.7 }}
+            >
+              Trade Global Markets<br />
+              <span className="mt5-title-accent">with MetaTrader 5</span>
+            </motion.h1>
+            <motion.p 
+              className="mt5-description"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
+            >
+              The ultimate multi-asset trading platform. Forex, Stocks, Indices, Commodities, and Futures — 
+              all from a single interface with advanced charting and algorithmic trading.
+            </motion.p>
+            <motion.div 
+              className="mt5-actions"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+            >
+              <Link href="/auth-signup" className="mt5-btn-primary">
+                Open MT5 Account <FiArrowRight />
+              </Link>
+              <Link href="#download" className="mt5-btn-secondary">
+                <FiDownload /> Download Platform
+              </Link>
+            </motion.div>
+          </motion.div>
+
+          <motion.div 
+            className="mt5-hero-visual"
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+          >
+            <img 
+              src="/images/MT5-Hero.png" 
+              alt="MetaTrader 5 Platform" 
+              className="mt5-hero-image"
+            />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 2. PLATFORM CAPABILITIES SECTION - White Background */}
+      <section id="features" ref={setRef('features')} className={`mt5-features-light ${visible.has('features') ? 'in-view' : ''}`}>
+        <div className="container">
+          <motion.div 
+            className="features-header"
             initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.7 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            Trade Global Markets<br />
-            <span className="mt5-title-accent">with MetaTrader 5</span>
-          </motion.h1>
-          <motion.p 
-            className="mt5-description"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.6 }}
-          >
-            The ultimate multi-asset trading platform. Forex, Stocks, Indices, Commodities, and Futures — 
-            all from a single interface with advanced charting and algorithmic trading.
-          </motion.p>
-          <motion.div 
-            className="mt5-actions"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.6 }}
-          >
-            <Link href="/auth-signup" className="mt5-btn-primary">
-              Open MT5 Account <FiArrowRight />
-            </Link>
-            <Link href="#download" className="mt5-btn-secondary">
-              <FiDownload /> Download Platform
-            </Link>
+            <span className="section-badge">Platform Capabilities</span>
+            <h2 className="features-title">Everything You Need to Trade Like a Pro</h2>
+            <p className="features-subtitle">MetaTrader 5 combines professional-grade tools with institutional execution</p>
           </motion.div>
-          <motion.div 
-            className="mt5-stats"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.65, duration: 0.6 }}
-          >
-            {[
-              { value: '<1ms', label: 'Execution' },
-              { value: '21', label: 'Timeframes' },
-              { value: '80+', label: 'Indicators' },
-              { value: '2,250+', label: 'Instruments' },
-            ].map((stat, i) => (
-              <div key={i} className="mt5-stat">
-                <span className="mt5-stat-value">{stat.value}</span>
-                <span className="mt5-stat-label">{stat.label}</span>
-              </div>
-            ))}
-          </motion.div>
-        </motion.div>
 
-        <motion.div 
-          className="mt5-hero-visual"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.4, duration: 0.8 }}
-        >
-          <div className="mt5-terminal-preview">
-            <div className="terminal-header">
-              <div className="terminal-dots">
-                <span /><span /><span />
-              </div>
-              <span>MetaTrader 5 — Foxnance</span>
-              <span className="terminal-badge">LIVE</span>
-            </div>
-            <div className="terminal-body">
-              <div className="terminal-chart">
-                <svg viewBox="0 0 400 160" className="terminal-svg">
-                  <defs>
-                    <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3fcb1b" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#3fcb1b" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M0,130 L30,110 L60,120 L90,95 L120,105 L150,75 L180,85 L210,50 L240,60 L270,35 L300,45 L330,25 L360,30 L390,15 L400,10" 
-                    fill="none" stroke="#3fcb1b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                  <path d="M0,130 L30,110 L60,120 L90,95 L120,105 L150,75 L180,85 L210,50 L240,60 L270,35 L300,45 L330,25 L360,30 L390,15 L400,10 L400,160 L0,160Z" 
-                    fill="url(#lineGrad)" />
-                  <circle cx="400" cy="10" r="4" fill="#3fcb1b">
-                    <animate attributeName="r" values="3;6;3" dur="2s" repeatCount="indefinite" />
-                    <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite" />
-                  </circle>
-                </svg>
-              </div>
-              <div className="terminal-order">
-                <div className="order-row">
-                  <button className="order-sell">SELL 1.08430</button>
-                  <div className="order-spread">SPREAD 0.2</div>
-                  <button className="order-buy">BUY 1.08432</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </section>
-
-      {/* FEATURES GRID - Dark Section */}
-      <section id="features" ref={setRef('features')} className={`mt5-features-dark ${visible.has('features') ? 'in-view' : ''}`}>
-        <div className="container">
-          <div className="ft-section-head">
-            <p className="ft-eyebrow">PLATFORM CAPABILITIES</p>
-            <h2 className="ft-h2 ft-h2--white">Everything You Need to Trade Like a Pro</h2>
-            <p className="ft-section-sub ft-section-sub--light">MetaTrader 5 combines professional-grade tools with institutional execution</p>
-          </div>
-          <div className="ft-accounts-grid">
-            {features.map((feature, i) => (
-              <div
+          <div className="core-features-grid">
+            {coreFeatures.map((feature, i) => (
+              <motion.div
                 key={i}
-                className={`ft-account ${feature.featured ? 'ft-account--featured' : ''} ${hoveredFeature === i ? 'hovered' : ''}`}
-                onMouseEnter={() => setHoveredFeature(i)}
-                onMouseLeave={() => setHoveredFeature(null)}
-                style={{ transitionDelay: `${i * 60}ms` }}
+                className="core-feature-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08, duration: 0.5 }}
+                whileHover={{ y: -8, transition: { duration: 0.2 } }}
+                style={{ '--feature-color': feature.color } as React.CSSProperties}
               >
-                {feature.badge && (
-                  <div className="ft-account__badge" style={{ background: '#3fcb1b', color: '#000' }}>
-                    {feature.badge}
-                  </div>
-                )}
-                <h3 className="ft-account__name">{feature.title}</h3>
-                {feature.rows.map(([k, v], j) => (
-                  <div key={j} className="ft-account__row">
-                    <span className="ft-account__key">{k}</span>
-                    <span className="ft-account__val">{v}</span>
-                  </div>
-                ))}
-                <Link href="/auth-signup" className={`ft-btn ft-btn--sm ft-btn--full ${feature.featured ? 'ft-btn--green' : 'ft-btn--outline-white'}`}>
-                  Start Trading
-                </Link>
-              </div>
+                <div className="core-feature-icon" style={{ color: feature.color, background: `${feature.color}15` }}>
+                  {feature.icon}
+                </div>
+                <h3 className="core-feature-title">{feature.title}</h3>
+                <p className="core-feature-desc">{feature.desc}</p>
+                <div className="core-feature-glow" style={{ background: `radial-gradient(circle, ${feature.color}30, transparent)` }} />
+              </motion.div>
             ))}
           </div>
+
+  
         </div>
       </section>
 
-      {/* WHY FOXNANCE - Light Section (alternating) */}
-      <section id="why" ref={setRef('why')} className={`mt5-why-light ${visible.has('why') ? 'in-view' : ''}`}>
-        <div className="container">
-          <div className="why-grid">
-            {/* LEFT: text + stats */}
-            <motion.div 
-              className="why-content"
-              initial={{ opacity: 0, x: -40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
-              <span className="section-eyebrow">The Foxnance Edge</span>
-              <h2 className="section-title">Why Trade MT5 with Foxnance?</h2>
-              <p className="section-desc">MetaTrader 5 is a great platform. Foxnance makes it exceptional with raw pricing, deep liquidity, and institutional execution.</p>
-              <div className="why-stats" style={{ justifyContent: 'flex-start', marginBottom: 32 }}>
-                <motion.div 
-                  className="why-stat-card"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span className="why-stat-value">0.0</span>
-                  <span className="why-stat-label">pips spreads</span>
-                </motion.div>
-                <motion.div 
-                  className="why-stat-card"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span className="why-stat-value">&lt;1ms</span>
-                  <span className="why-stat-label">latency</span>
-                </motion.div>
-                <motion.div 
-                  className="why-stat-card"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <span className="why-stat-value">1:500</span>
-                  <span className="why-stat-label">leverage</span>
-                </motion.div>
-              </div>
-              <Link href="/auth-signup" className="mt5-btn-primary-light">Open MT5 Account <FiArrowRight /></Link>
-            </motion.div>
-            {/* RIGHT: icon list */}
-            <motion.div 
-              className="why-visual"
-              initial={{ opacity: 0, x: 40 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="why-list" style={{ margin: 0 }}>
-                {whyItems.map((item, i) => (
-                  <motion.div 
-                    key={i} 
-                    className="why-item"
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08, duration: 0.4 }}
-                    whileHover={{ x: -5, transition: { duration: 0.2 } }}
-                  >
-                    <div className={`why-icon ${i % 2 === 0 ? 'why-icon--green' : 'why-icon--black'}`}>{item.icon}</div>
-                    <div>
-                      <strong>{item.title}</strong>
-                      <span>{item.desc}</span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* DOWNLOAD SECTION - Dark */}
+      {/* 3. DOWNLOAD SECTION - Black Background */}
       <section id="download" ref={setRef('download')} className={`mt5-download-dark ${visible.has('download') ? 'in-view' : ''}`}>
         <div className="container">
           <motion.div 
@@ -349,7 +200,8 @@ const MT5Page = () => {
                     <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
                   </svg>
                 ), 
-                size: '~60 MB', color: '#0078D4' 
+                color: '#0078D4',
+                url: downloadLinks.Windows
               },
               { 
                 platform: 'macOS', 
@@ -358,7 +210,8 @@ const MT5Page = () => {
                     <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
                   </svg>
                 ), 
-                size: '~60 MB', color: '#c0c0c0' 
+                color: '#c0c0c0',
+                url: downloadLinks.macOS
               },
               { 
                 platform: 'iOS', 
@@ -367,7 +220,8 @@ const MT5Page = () => {
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
                   </svg>
                 ), 
-                size: 'Free', color: '#c0c0c0' 
+                color: '#c0c0c0',
+                url: downloadLinks.iOS
               },
               { 
                 platform: 'Android', 
@@ -376,7 +230,8 @@ const MT5Page = () => {
                     <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993.0001.5511-.4482.9997-.9993.9997m-11.046 0c-.5511 0-.9993-.4486-.9993-.9997s.4482-.9993.9993-.9993c.5511 0 .9993.4482.9993.9993 0 .5511-.4482.9997-.9993.9997m11.4045-6.02l1.9973-3.4592a.416.416 0 00-.1521-.5676.416.416 0 00-.5676.1521l-2.0223 3.503C15.5902 8.2439 13.8533 7.8508 12 7.8508s-3.5902.3931-5.1367 1.0989L4.841 5.4467a.4161.4161 0 00-.5677-.1521.4157.4157 0 00-.1521.5676l1.9973 3.4592C2.6889 11.1867.3432 14.6589 0 18.761h24c-.3435-4.1021-2.6892-7.5743-6.1185-9.4396"/>
                   </svg>
                 ), 
-                size: 'Free', color: '#3DDC84' 
+                color: '#3DDC84',
+                url: downloadLinks.Android
               },
               { 
                 platform: 'WebTerminal', 
@@ -387,7 +242,8 @@ const MT5Page = () => {
                     <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                   </svg>
                 ), 
-                size: 'No install', color: '#10b981' 
+                color: '#10b981',
+                url: downloadLinks.WebTerminal
               },
             ].map((item, i) => (
               <motion.div
@@ -398,13 +254,18 @@ const MT5Page = () => {
                 transition={{ delay: i * 0.1, duration: 0.5 }}
                 whileHover={{ y: -5 }}
               >
-                <Link href="#" className="download-card">
-                  <div className="download-icon" style={{ background: `${item.color}15`, color: item.color }}>{item.icon}</div>
+                <Link 
+                  href={item.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="download-card"
+                >
+                  <div className="download-icon" style={{ background: `${item.color}15`, color: item.color }}>
+                    {item.icon}
+                  </div>
                   <div className="download-info">
                     <strong>{item.platform}</strong>
-                    <span>{item.size}</span>
                   </div>
-                  <FiDownload className="download-arrow" />
                 </Link>
               </motion.div>
             ))}
@@ -421,7 +282,7 @@ const MT5Page = () => {
         </div>
       </section>
 
-      {/* ALGO TRADING - Light Section */}
+      {/* 4. ALGO TRADING SECTION - White Background */}
       <section id="algo" ref={setRef('algo')} className={`mt5-algo-light ${visible.has('algo') ? 'in-view' : ''}`}>
         <div className="container">
           <div className="algo-grid">
@@ -496,7 +357,7 @@ const MT5Page = () => {
         </div>
       </section>
 
-      {/* FAQ SECTION - Dark */}
+      {/* 5. FAQ SECTION - Black Background */}
       <section id="faq" ref={setRef('faq')} className={`mt5-faq-dark ${visible.has('faq') ? 'in-view' : ''}`}>
         <div className="container">
           <div className="faq-grid">
@@ -554,23 +415,47 @@ const MT5Page = () => {
         </div>
       </section>
 
-      {/* CTA SECTION - Light */}
-      <section className="mt5-cta-light">
+      {/* 6. START TRADING SECTION - White Background */}
+      <section className="mt5-start-trading">
         <div className="container">
-          <motion.div 
-            className="cta-content"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 className="cta-title">Start Trading on MT5 Today</h2>
-            <p className="cta-desc">Join 500,000+ traders already using Foxnance MT5. Open your account in minutes.</p>
-            <div className="cta-actions">
-              <Link href="/auth-signup" className="mt5-btn-primary">Open MT5 Account <FiArrowRight /></Link>
-              <Link href="#download" className="mt5-btn-secondary"><FiDownload /> Download MT5</Link>
-            </div>
-          </motion.div>
+          <div className="start-trading-grid">
+            <motion.div 
+              className="start-trading-content"
+              initial={{ opacity: 0, x: -40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <span className="section-eyebrow">Start Trading</span>
+              <h2 className="start-trading-title">Start Trading on MT5 Today</h2>
+              <p className="start-trading-desc">Join 500,000+ traders already using Foxnance MT5. Open your account in minutes and get access to institutional-grade trading conditions.</p>
+              <div className="start-trading-features">
+                <div className="start-feature"><FiCheck size={16} /> Raw spreads from 0.0 pips</div>
+                <div className="start-feature"><FiCheck size={16} /> No dealing desk execution</div>
+                <div className="start-feature"><FiCheck size={16} /> 24/7 dedicated support</div>
+                <div className="start-feature"><FiCheck size={16} /> Instant deposits & withdrawals</div>
+              </div>
+              <div className="start-trading-actions">
+                <Link href="/auth-signup" className="mt5-btn-primary">Open MT5 Account <FiArrowRight /></Link>
+                <Link href="#download" className="mt5-btn-secondary-light"><FiDownload /> Download MT5</Link>
+              </div>
+            </motion.div>
+            <motion.div 
+              className="start-trading-visual"
+              initial={{ opacity: 0, x: 40 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
+            >
+              <div className="start-trading-image-wrapper">
+                <img 
+                  src="/images/MT5-Extra.png" 
+                  alt="MetaTrader 5 Trading Platform" 
+                  className="start-trading-image"
+                />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -581,237 +466,201 @@ const MT5Page = () => {
         .mt5-page {
           --g: #3fcb1b;
           --g-dark: #2e9c14;
-          --bg-dark: #0c0f0a;
-          --bg-dark-card: #141914;
-          --bg-dark-border: rgba(255,255,255,0.08);
-          --bg-light: #f8fafc;
+          --bg-dark: #000000;
+          --bg-dark-card: #0a0a0a;
+          --bg-dark-border: rgba(255,255,255,0.1);
+          --bg-light: #FFFFFF;
           --bg-light-card: #ffffff;
           --bg-light-border: #e2e8f0;
-          --text-dark: #edf0ea;
-          --text-dark-secondary: rgba(255,255,255,0.55);
-          --text-light: #1a1f36;
-          --text-light-secondary: #6b7280;
+          --text-dark: #ffffff;
+          --text-dark-secondary: rgba(255,255,255,0.65);
+          --text-light: #0f172a;
+          --text-light-secondary: #475569;
           font-family: 'Inter', 'Sora', system-ui, sans-serif;
         }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         .section-head { text-align: center; margin-bottom: 64px; }
-        .section-eyebrow { display: inline-block; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g); margin-bottom: 16px; }
+        .section-eyebrow { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g); margin-bottom: 16px; }
         .section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
         .section-desc { font-size: 1rem; max-width: 600px; margin: 0 auto; }
 
-        /* ========== DARK SECTIONS ========== */
-        
-        /* Hero - Dark */
-        .mt5-hero { position: relative; min-height: 90vh; display: flex; align-items: center; justify-content: space-between; padding: 120px 5% 80px; overflow: hidden; background: var(--bg-dark); }
-        .mt5-hero-bg { position: absolute; inset: 0; z-index: 0; }
-        .mt5-hero-gradient { position: absolute; inset: 0; background: radial-gradient(ellipse at 70% 30%, rgba(63,203,27,0.12), transparent 60%); }
-        .mt5-hero-particles { position: absolute; inset: 0; background-image: radial-gradient(rgba(63,203,27,0.1) 1px, transparent 1px); background-size: 40px 40px; }
-        .mt5-hero-content { max-width: 550px; position: relative; z-index: 1; }
-        .mt5-badge { display: inline-flex; align-items: center; gap: 8px; padding: 4px 12px 4px 8px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.25); border-radius: 100px; font-size: 0.7rem; font-weight: 600; color: var(--g); margin-bottom: 24px; }
-        .mt5-badge-dot { width: 6px; height: 6px; background: var(--g); border-radius: 50%; }
-        .mt5-title { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.2; margin-bottom: 20px; color: var(--text-dark); }
-        .mt5-title-accent { background: linear-gradient(135deg, #3fcb1b, #7de84a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .mt5-description { font-size: 1rem; color: var(--text-dark-secondary); line-height: 1.6; margin-bottom: 32px; }
-        .mt5-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--g); }
-        .mt5-stat-label { font-size: 0.7rem; color: var(--text-dark-secondary); text-transform: uppercase; }
-        .mt5-stats { display: flex; gap: 32px; }
-        .mt5-stat { display: flex; flex-direction: column; }
-        
-        .mt5-terminal-preview { background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; overflow: hidden; }
-        .terminal-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--bg-dark-border); }
-        .terminal-dots { display: flex; gap: 6px; }
-        .terminal-dots span { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
-        .terminal-dots span:nth-child(2) { background: #febc2e; }
-        .terminal-dots span:nth-child(3) { background: #28c840; }
-        .terminal-badge { font-size: 0.6rem; padding: 2px 8px; background: rgba(63,203,27,0.15); border-radius: 20px; color: var(--g); }
-        .terminal-body { padding: 20px; }
-        .terminal-chart { margin-bottom: 16px; }
-        .terminal-svg { width: 100%; height: auto; }
-        .order-row { display: flex; gap: 8px; }
-        .order-sell, .order-buy { flex: 1; padding: 10px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; border: none; cursor: pointer; transition: 0.2s; }
-        .order-sell { background: rgba(239,68,68,0.15); color: #ef4444; }
-        .order-sell:hover { background: rgba(239,68,68,0.25); }
-        .order-buy { background: rgba(63,203,27,0.15); color: var(--g); }
-        .order-buy:hover { background: rgba(63,203,27,0.25); }
-        .order-spread { padding: 10px; font-size: 0.6rem; color: var(--text-dark-secondary); text-align: center; background: rgba(255,255,255,0.03); border-radius: 8px; }
-        
-        .mt5-actions { display: flex; gap: 16px; margin-bottom: 48px; flex-wrap: wrap; }
-        .mt5-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--g); color: #000; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(63,203,27,0.3); background: #2e9c14; color: #fff; }
-        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: transparent; border: 1.5px solid #1a1f36; color: #1a1f36; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-secondary:hover { border-color: var(--g); color: var(--g); transform: translateY(-2px); background: rgba(63,203,27,0.06); }
-        .faq-head .section-title { color: #fff !important; }
-        .faq-head .section-desc { color: rgba(255,255,255,0.55) !important; }
-        .mt5-btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: transparent; border: 1px solid rgba(63,203,27,0.3); color: var(--g); font-weight: 600; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-outline:hover { background: rgba(63,203,27,0.1); }
-
-        /* Features - Dark (exact Account Types style from home page) */
-        .mt5-features-dark { padding: 96px 0; background: #0A0A0A; }
-
-        .ft-section-head { text-align: center; margin-bottom: 56px; }
-        .ft-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: #3fcb1b; display: block; margin-bottom: 12px; }
-        .ft-h2 { font-size: clamp(1.9rem, 3.5vw, 2.9rem); font-weight: 900; color: #0A0A0A; letter-spacing: -.02em; line-height: 1.12; margin: 0 0 12px; }
-        .ft-h2--white { color: #fff !important; }
-        .ft-section-sub { font-size: 1.05rem; color: #6B6B6B; max-width: 560px; margin: 0 auto; line-height: 1.65; }
-        .ft-section-sub--light { color: rgba(255,255,255,.55); }
-
-        .ft-accounts-grid {
+        /* ========== HERO SECTION ========== */
+        .mt5-hero { 
+          position: relative; 
+          min-height: 90vh; 
+          background: var(--bg-dark); 
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+        }
+        .mt5-hero-inner {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 30px;
-          max-width: 1100px;
-          margin: 0 auto;
-        }
-        @media (max-width: 1024px) { .ft-accounts-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; } }
-        @media (max-width: 640px)  { .ft-accounts-grid { grid-template-columns: 1fr; } }
-
-        .ft-account {
+          grid-template-columns: 1fr 1fr;
+          align-items: center;
+          width: 100%;
           position: relative;
-          padding: 40px 32px;
-          background: rgba(255, 255, 255, .05);
-          border: 1px solid rgba(255, 255, 255, .1);
-          border-radius: 12px;
-          transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 2;
+        }
+        .mt5-hero-bg { position: absolute; inset: 0; z-index: 0; }
+        .mt5-hero-gradient { position: absolute; inset: 0; background: radial-gradient(circle at 80% 40%, rgba(63,203,27,0.15), transparent 70%); }
+        .mt5-hero-particles { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 32px 32px; }
+        
+        .mt5-hero-content { 
+          padding: 80px 40px 80px max(24px, calc((100vw - 1200px) / 2 + 24px)); 
+          z-index: 1; 
+        }
+        .mt5-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: var(--text-dark); letter-spacing: -0.03em; }
+        .mt5-title-accent { background: linear-gradient(135deg, #3fcb1b, #84f05b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .mt5-description { font-size: 1.1rem; color: var(--text-dark-secondary); line-height: 1.6; margin-bottom: 36px; }
+        .mt5-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+        
+        .mt5-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--g); color: #000; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
+        .mt5-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(63,203,27,0.35); background: #4ae024; color: #000; }
+        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(255,255,255,0.25); color: var(--text-dark); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
+        .mt5-btn-secondary:hover { border-color: var(--g); color: var(--g); background: rgba(63,203,27,0.05); transform: translateY(-2px); }
+        .mt5-btn-secondary-light { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(0,0,0,0.15); color: var(--text-light); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
+        .mt5-btn-secondary-light:hover { border-color: #000; background: rgba(0,0,0,0.02); transform: translateY(-2px); }
+        
+        .mt5-hero-visual { 
+          width: 100%;
+          height: 100%;
           display: flex;
-          flex-direction: column;
+          align-items: center;
+          justify-content: flex-end;
+          position: relative;
         }
-        .ft-account.hovered {
-          transform: translateY(-8px);
-          border-color: rgba(63, 203, 27, .5);
-          background: rgba(63, 203, 27, .03);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        .mt5-hero-image { 
+          width: 100%; 
+          height: 100%; 
+          object-fit: cover;
+          display: block;
         }
-        .ft-account--featured {
-          border: 1px solid #3fcb1b;
-          background: rgba(63, 203, 27, .06);
-          box-shadow: 0 0 30px rgba(63, 203, 27, 0.1);
-        }
-        .ft-account__badge {
-          position: absolute;
-          top: -14px;
-          left: 50%;
-          transform: translateX(-50%);
-          padding: 4px 16px;
-          border-radius: 99px;
-          font-size: .7rem;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          white-space: nowrap;
-        }
-        .ft-account__name {
-          font-size: 1.5rem;
-          font-weight: 800;
-          color: #fff;
-          margin-bottom: 24px;
-          text-align: center;
-        }
-        .ft-account__row {
-          display: flex;
-          justify-content: space-between;
-          padding: 14px 0;
-          border-bottom: 1px solid rgba(255, 255, 255, .08);
-          font-size: .9rem;
-        }
-        .ft-account__row:last-of-type { border-bottom: none; }
-        .ft-account__key { color: rgba(255, 255, 255, .5); }
-        .ft-account__val { font-weight: 700; color: #fff; }
 
-        .ft-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; font-size: .9rem; font-weight: 700; border-radius: 8px; text-decoration: none; transition: all .22s; cursor: pointer; border: none; white-space: nowrap; }
-        .ft-btn--green { background: linear-gradient(135deg, #3fcb1b 0%, #2e9c14 100%); color: #000; box-shadow: 0 4px 18px rgba(63,203,27,.28); }
-        .ft-btn--green:hover { background: #2e9c14; transform: translateY(-1px); }
-        .ft-btn--outline-white { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.4); }
-        .ft-btn--outline-white:hover { background: rgba(255,255,255,.08); border-color: #fff; }
-        .ft-btn--sm { padding: 10px 20px; font-size: .82rem; }
-        .ft-btn--full { width: 100%; justify-content: center; margin-top: 20px; }
+        /* ========== PLATFORM CAPABILITIES - WHITE BACKGROUND ========== */
+        .mt5-features-light { padding: 100px 0; background: var(--bg-light); }
+        .features-header { text-align: center; margin-bottom: 64px; }
+        .section-badge { display: inline-block; padding: 6px 18px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); border-radius: 40px; font-size: 0.75rem; font-weight: 700; color: var(--g-dark); letter-spacing: 0.05em; margin-bottom: 20px; }
+        .features-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 16px; }
+        .features-subtitle { font-size: 1.05rem; color: var(--text-light-secondary); max-width: 560px; margin: 0 auto; }
+        
+        .core-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 48px; }
+        .core-feature-card { position: relative; background: var(--bg-light-card); border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 36px 28px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .core-feature-card:hover { border-color: var(--feature-color); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
+        .core-feature-glow { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        .core-feature-card:hover .core-feature-glow { opacity: 0.4; }
+        .core-feature-icon { width: 56px; height: 56px; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-bottom: 24px; transition: 0.3s; }
+        .core-feature-card:hover .core-feature-icon { transform: scale(1.05); }
+        .core-feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text-light); margin-bottom: 12px; }
+        .core-feature-desc { font-size: 0.95rem; color: var(--text-light-secondary); line-height: 1.55; margin: 0; }
+        
+        .advanced-features-bar { background: #f8fafc; border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 32px; }
+        .advanced-features-inner { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; text-align: center; }
+        .advanced-feature-item { border-right: 1px solid var(--bg-light-border); }
+        .advanced-feature-item:last-child { border-right: none; }
+        .advanced-feature-value { display: block; font-size: 1.15rem; font-weight: 800; color: var(--g-dark); margin-bottom: 6px; }
+        .advanced-feature-name { font-size: 0.75rem; color: var(--text-light-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
-        /* Download - Dark */
-        .mt5-download-dark { padding: 80px 0; background: var(--bg-dark); }
+        /* ========== DOWNLOAD SECTION - BLACK BACKGROUND ========== */
+        .mt5-download-dark { padding: 100px 0; background: var(--bg-dark); }
         .mt5-download-dark .section-title { color: var(--text-dark); }
         .mt5-download-dark .section-desc { color: var(--text-dark-secondary); }
-        .download-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
-        @media (max-width: 900px) { .download-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 500px) { .download-grid { grid-template-columns: 1fr; } }
-        .download-card { display: flex; align-items: center; gap: 16px; padding: 20px; background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; text-decoration: none; transition: 0.3s; }
-        .download-card:hover { transform: translateY(-3px); border-color: var(--g); }
+        .download-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 36px; }
+        .download-card { display: flex; align-items: center; gap: 16px; padding: 22px; background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; text-decoration: none; transition: 0.3s; }
+        .download-card:hover { transform: translateY(-3px); border-color: var(--g); background: rgba(63,203,27,0.05); }
         .download-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .download-info strong { display: block; font-size: 0.9rem; font-weight: 700; color: #edf0ea; }
-        .download-info span { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
-        .download-arrow { margin-left: auto; color: rgba(255,255,255,0.4); transition: 0.3s; flex-shrink: 0; }
-        .download-card:hover .download-arrow { color: var(--g); transform: translateX(4px); }
-        .download-note { text-align: center; font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+        .download-info strong { display: block; font-size: 0.95rem; font-weight: 700; color: #fff; }
+        .download-note { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
 
-        /* FAQ - Dark */
-        .mt5-faq-dark { padding: 80px 0; background: var(--bg-dark); }
-        .mt5-faq-dark .section-title { color: #fff; }
-        .mt5-faq-dark .section-desc { color: rgba(255,255,255,0.55); }
-        .faq-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 60px; }
-        @media (max-width: 900px) { .faq-grid { grid-template-columns: 1fr; } }
-        .faq-list { display: flex; flex-direction: column; gap: 12px; }
+        /* ========== ALGO SECTION - WHITE BACKGROUND ========== */
+        .mt5-algo-light { padding: 100px 0; background: var(--bg-light); border-top: 1px solid var(--bg-light-border); }
+        .mt5-algo-light .section-title { color: var(--text-light); }
+        .mt5-algo-light .section-desc { color: var(--text-light-secondary); font-size: 1.05rem; line-height: 1.6; }
+        .algo-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: center; }
+        .algo-list { list-style: none; margin: 32px 0; padding: 0; }
+        .algo-list li { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; margin-bottom: 16px; color: var(--text-light-secondary); }
+        .algo-list li svg { color: var(--g-dark); flex-shrink: 0; }
+        .algo-stats-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .algo-stat-card { background: #f8fafc; border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 28px; display: flex; align-items: center; gap: 24px; transition: 0.3s; }
+        .algo-stat-card:hover { border-color: var(--g); box-shadow: 0 15px 25px -12px rgba(0,0,0,0.1); }
+        .algo-stat-icon { color: var(--g-dark); flex-shrink: 0; }
+        .algo-stat-value { display: block; font-size: 1.4rem; font-weight: 800; color: var(--text-light); margin-bottom: 2px; }
+        .algo-stat-label { font-size: 0.85rem; color: var(--text-light-secondary); }
+        .mt5-btn-outline-light { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid var(--g-dark); color: var(--g-dark); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
+        .mt5-btn-outline-light:hover { background: rgba(63,203,27,0.06); transform: translateY(-2px); }
+
+        /* ========== FAQ SECTION - BLACK BACKGROUND ========== */
+        .mt5-faq-dark { padding: 100px 0; background: var(--bg-dark); }
+        .faq-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 80px; }
+        .faq-head .section-title { color: #fff; }
+        .faq-head .section-desc { color: var(--text-dark-secondary); margin-bottom: 32px; font-size: 1.05rem; }
+        .faq-list { display: flex; flex-direction: column; gap: 16px; }
         .faq-item { background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; cursor: pointer; transition: 0.3s; }
         .faq-item:hover { border-color: rgba(63,203,27,0.3); }
         .faq-item.open { border-color: var(--g); background: rgba(63,203,27,0.04); }
-        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px; font-weight: 600; color: #edf0ea; font-size: 0.95rem; }
-        .faq-icon { color: var(--g); transition: 0.3s; display: flex; align-items: center; flex-shrink: 0; margin-left: 12px; }
-        .faq-answer { overflow: hidden; }
-        .faq-answer p { margin: 0; padding: 0 20px 18px; font-size: 0.85rem; color: rgba(255,255,255,0.55); line-height: 1.7; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 14px; }
+        .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; font-weight: 600; color: #fff; font-size: 1.05rem; gap: 16px; }
+        .faq-icon { color: var(--g); display: flex; align-items: center; flex-shrink: 0; }
+        .faq-answer p { margin: 0; padding: 0 24px 24px; font-size: 0.95rem; color: var(--text-dark-secondary); line-height: 1.65; border-top: 1px solid var(--bg-dark-border); padding-top: 18px; }
+        .mt5-btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(63,203,27,0.3); color: var(--g); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
+        .mt5-btn-outline:hover { background: rgba(63,203,27,0.1); transform: translateY(-2px); }
 
-        /* ========== LIGHT SECTIONS ========== */
-        
-        /* Why - Light */
-        .mt5-why-light { padding: 80px 0; background: var(--bg-light); }
-        .mt5-why-light .section-title { color: var(--text-light); }
-        .mt5-why-light .section-desc { color: var(--text-light-secondary); }
-        .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        @media (max-width: 900px) { .why-grid { grid-template-columns: 1fr; } }
-        .why-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 32px 0; }
-        @media (max-width: 500px) { .why-list { grid-template-columns: 1fr; } }
-        .why-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-light-card); border-radius: 12px; border: 1px solid var(--bg-light-border); transition: 0.2s; }
-        .why-item:hover { border-color: rgba(63,203,27,0.4); transform: translateX(-5px); box-shadow: 0 4px 16px rgba(63,203,27,0.08); }
-        .why-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .why-icon--green { background: rgba(63,203,27,0.12); color: #3fcb1b; }
-        .why-icon--black { background: #0c0f0a; color: #3fcb1b; border: 1px solid rgba(63,203,27,0.2); }
-        .why-item strong { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-light); }
-        .why-item span { font-size: 0.7rem; color: var(--text-light-secondary); }
-        .why-stats { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .why-stat-card { background: var(--bg-light-card); border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 28px 24px; text-align: center; min-width: 120px; transition: 0.3s; }
-        .why-stat-card:hover { transform: translateY(-5px); border-color: var(--g); box-shadow: 0 15px 25px -12px rgba(0,0,0,0.1); }
-        .why-stat-value { display: block; font-size: 2rem; font-weight: 800; color: var(--g); }
-        .why-stat-label { font-size: 0.7rem; color: var(--text-light-secondary); }
-        .mt5-btn-primary-light { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--g); color: #fff; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-primary-light:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(63,203,27,0.3); background: #2e9c14; }
+        /* ========== START TRADING SECTION - WHITE BACKGROUND ========== */
+        .mt5-start-trading { padding: 120px 0; background: var(--bg-light); border-top: 1px solid var(--bg-light-border); }
+        .start-trading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
+        .start-trading-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 20px; line-height: 1.2; }
+        .start-trading-desc { font-size: 1.05rem; color: var(--text-light-secondary); line-height: 1.65; margin-bottom: 32px; }
+        .start-trading-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 40px; }
+        .start-feature { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: var(--text-light-secondary); }
+        .start-feature svg { color: var(--g-dark); flex-shrink: 0; }
+        .start-trading-actions { display: flex; gap: 16px; flex-wrap: wrap; }
+        .start-trading-visual { display: flex; justify-content: center; align-items: center; }
+        .start-trading-image-wrapper { width: 100%; display: flex; justify-content: center; }
+        .start-trading-image { max-width: 100%; height: auto; display: block; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08)); }
 
-        /* Algo - Light */
-        .mt5-algo-light { padding: 80px 0; background: var(--bg-light); }
-        .mt5-algo-light .section-title { color: var(--text-light); }
-        .mt5-algo-light .section-desc { color: var(--text-light-secondary); }
-        .algo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
-        @media (max-width: 900px) { .algo-grid { grid-template-columns: 1fr; } }
-        .algo-list { list-style: none; margin: 24px 0; }
-        .algo-list li { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; margin-bottom: 12px; color: var(--text-light-secondary); }
-        .algo-list li svg { color: var(--g); }
-        .algo-stats-grid { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-        .algo-stat-card { background: var(--bg-light-card); border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 32px 28px; text-align: center; transition: 0.3s; }
-        .algo-stat-card:hover { transform: translateY(-5px); border-color: var(--g); box-shadow: 0 15px 25px -12px rgba(0,0,0,0.1); }
-        .algo-stat-icon { color: var(--g); margin-bottom: 16px; }
-        .algo-stat-value { display: block; font-size: 1.3rem; font-weight: 800; color: var(--text-light); margin-bottom: 4px; }
-        .algo-stat-label { font-size: 0.75rem; color: var(--text-light-secondary); }
-        .mt5-btn-outline-light { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: transparent; border: 1px solid rgba(63,203,27,0.3); color: var(--g); font-weight: 600; border-radius: 40px; text-decoration: none; transition: 0.3s; }
-        .mt5-btn-outline-light:hover { background: rgba(63,203,27,0.1); }
+        /* ==================== SCREEN RESPONSIVENESS ==================== */
+        @media (max-width: 1100px) {
+          .mt5-hero-inner { grid-template-columns: 1.2fr 0.8fr; }
+          .start-trading-grid { gap: 48px; }
+          .faq-grid, .algo-grid { gap: 40px; }
+        }
 
-        /* CTA - Light */
-        .mt5-cta-light { padding: 80px 0; text-align: center; background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%); }
-        .cta-content { display: flex; flex-direction: column; align-items: center; }
-        .cta-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; margin-bottom: 16px; color: var(--text-light); }
-        .cta-desc { font-size: 1rem; color: var(--text-light-secondary); max-width: 500px; margin: 0 auto 32px; text-align: center; }
-        .cta-actions { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; align-items: center; }
+        @media (max-width: 968px) {
+          .mt5-hero-inner { grid-template-columns: 1fr; text-align: center; }
+          .mt5-hero-content { padding: 100px 24px 60px; max-width: 700px; margin: 0 auto; }
+          .mt5-actions { justify-content: center; }
+          .mt5-hero-visual { display: none; } 
+          
+          .core-features-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+          .advanced-features-inner { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+          .advanced-feature-item { border-right: none; }
+          
+          .download-grid { grid-template-columns: repeat(3, 1fr); }
+          
+          .algo-grid, .faq-grid, .start-trading-grid { grid-template-columns: 1fr; text-align: center; }
+          .algo-list, .start-trading-features { justify-content: center; display: inline-block; text-align: left; }
+          .algo-list li, .start-feature { margin-bottom: 12px; }
+          .algo-stats-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+          .algo-stat-card { flex-direction: column; text-align: center; padding: 20px 12px; gap: 12px; }
+          
+          .start-trading-features { display: grid; grid-template-columns: repeat(2, 1fr); max-width: 500px; margin: 0 auto 32px; }
+          .start-trading-actions { justify-content: center; }
+          .start-trading-visual { order: -1; } 
+        }
 
         @media (max-width: 768px) {
-          .mt5-hero { flex-direction: column; text-align: center; gap: 48px; }
-          .mt5-stats { justify-content: center; }
-          .mt5-actions, .cta-actions { justify-content: center; }
-          .section-title { font-size: 1.8rem; }
+          .features-header, .section-head { margin-bottom: 40px; }
+          .mt5-features-light, .mt5-download-dark, .mt5-algo-light, .mt5-faq-dark, .mt5-start-trading { padding: 70px 0; }
+          .download-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 560px) {
+          .core-features-grid, .download-grid, .algo-stats-grid { grid-template-columns: 1fr; }
+          .advanced-features-inner { grid-template-columns: repeat(2, 1fr); }
+          .start-trading-features { grid-template-columns: 1fr; }
+          .mt5-actions, .start-trading-actions { flex-direction: column; align-items: stretch; }
+          .mt5-btn-primary, .mt5-btn-secondary, .mt5-btn-secondary-light, .mt5-btn-outline, .mt5-btn-outline-light { justify-content: center; }
+          .faq-question { font-size: 0.95rem; padding: 18px 20px; }
+          .faq-answer p { padding: 0 20px 20px; }
         }
       `}</style>
     </div>

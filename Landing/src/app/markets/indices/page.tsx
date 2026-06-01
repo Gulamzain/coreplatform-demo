@@ -33,7 +33,7 @@ const initialLivePrices = [
   { pair: 'JPN225', name: 'Nikkei 225', bid: 39200.50, ask: 39201.50, change: 0.68, high: 39300.00, low: 39100.00, direction: 'up' as const },
 ];
 
-// Indices specific features - White icons, green outline
+// Indices specific features
 const indicesFeatures = [
   { icon: BiLineChart, title: 'Major Global Indices', desc: 'Trade S&P 500, NASDAQ, FTSE 100, DAX 40, CAC 40, Nikkei 225 and more' },
   { icon: BiDollar, title: 'Tight Spreads', desc: 'From 0.4 points on major indices' },
@@ -208,13 +208,13 @@ export default function IndicesPage() {
           </div>
         </section>
 
-        {/* Live Index Prices - Single Table Full Width */}
-        <section id="prices" ref={setRef('prices')} className={`fp-section fp-section--alt fp-reveal ${visible.has('prices')?'on':''}`}>
+        {/* Live Index Prices - White Background */}
+        <section id="prices" ref={setRef('prices')} className={`fp-section fp-section--white fp-reveal ${visible.has('prices')?'on':''}`}>
           <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">LIVE MARKET DATA</span>
-              <h2 className="fp-h2">Real-Time Index Prices</h2>
-              <p className="fp-sub">Live streaming prices from global index markets</p>
+            <div className="fp-head fp-head--dark">
+              <span className="fp-eyebrow fp-eyebrow--dark">LIVE MARKET DATA</span>
+              <h2 className="fp-h2 fp-h2--dark">Real-Time Index Prices</h2>
+              <p className="fp-sub fp-sub--dark">Live streaming prices from global index markets</p>
             </div>
             <div className="fp-prices-single">
               <div className="fp-prices-tbl-full">
@@ -242,11 +242,15 @@ export default function IndicesPage() {
                 ))}
               </div>
             </div>
+            <div className="fp-prices-cta">
+              <Link href="/auth-signup" className="fp-btn fp-btn--green">Open Live Account <FiArrowRight /></Link>
+              <Link href="/auth-signup" className="fp-btn fp-btn--outline-dark">Try Demo Free <FiArrowRight /></Link>
+            </div>
           </div>
         </section>
 
-        {/* What is Index Trading */}
-        <section id="what" ref={setRef('what')} className={`fp-section fp-reveal ${visible.has('what')?'on':''}`}>
+        {/* What is Index Trading - Dark/Black Background */}
+        <section id="what" ref={setRef('what')} className={`fp-section fp-section--black fp-reveal ${visible.has('what')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
               <span className="fp-eyebrow">Learn the Basics</span>
@@ -263,7 +267,7 @@ export default function IndicesPage() {
                 </ul>
               </div>
               <div className="fp-what-stats">
-                {[{v:'10+',l:'Global Indices'},{v:'0.4',l:'Min Spread'},{v:'24/5',l:'Trading Hours'}].map((s,i)=>(
+                {[{v:'10+',l:'Global Indices'},{v:'0.4',l:'Min Spread'},{v:'24/5',l:'Trading Hours'},{v:'1:200',l:'Max Leverage'}].map((s,i)=>(
                   <div key={i} className="fp-stat-card" style={{ '--si': i } as React.CSSProperties}>
                     <div className="fp-stat-card__glow" />
                     <span className="fp-sc-val">{s.v}</span>
@@ -275,13 +279,13 @@ export default function IndicesPage() {
           </div>
         </section>
 
-        {/* Why Trade Indices */}
-        <section id="why" ref={setRef('why')} className={`fp-section fp-section--alt fp-reveal ${visible.has('why')?'on':''}`}>
+        {/* Why Trade Indices - White Background */}
+        <section id="why" ref={setRef('why')} className={`fp-section fp-section--white fp-reveal ${visible.has('why')?'on':''}`}>
           <div className="fp-container">
-            <div className="fp-head">
-              <span className="fp-eyebrow">Why Trade Indices</span>
-              <h2 className="fp-h2">Why Trade Indices with Foxnance?</h2>
-              <p className="fp-sub">Experience index trading with a broker that puts you first</p>
+            <div className="fp-head fp-head--dark">
+              <span className="fp-eyebrow fp-eyebrow--dark">Why Trade Indices</span>
+              <h2 className="fp-h2 fp-h2--dark">Why Trade Indices with Foxnance?</h2>
+              <p className="fp-sub fp-sub--dark">Experience index trading with a broker that puts you first</p>
             </div>
             <div className="fp-features-grid">
               {indicesFeatures.map((f,i)=>(
@@ -296,8 +300,8 @@ export default function IndicesPage() {
           </div>
         </section>
 
-        {/* Access Global Markets */}
-        <section id="markets" ref={setRef('markets')} className={`fp-section fp-reveal ${visible.has('markets')?'on':''}`}>
+        {/* Access Global Markets - Dark/Black Background */}
+        <section id="markets" ref={setRef('markets')} className={`fp-section fp-section--black fp-reveal ${visible.has('markets')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
               <span className="fp-eyebrow">Explore Our Products</span>
@@ -335,8 +339,8 @@ export default function IndicesPage() {
           </div>
         </section>
 
-        {/* Open Account */}
-        <section id="open" ref={setRef('open')} className={`fp-section fp-section--dark fp-reveal ${visible.has('open')?'on':''}`}>
+        {/* Open Account - White Background with gradient accent */}
+        <section id="open" ref={setRef('open')} className={`fp-section fp-section--white fp-reveal ${visible.has('open')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-open-card">
               <div className="fp-open-card__decoration" aria-hidden="true">
@@ -344,8 +348,8 @@ export default function IndicesPage() {
                 <div className="fp-open-card__ring fp-open-card__ring--2" />
               </div>
               <div className="fp-open-left">
-                <span className="fp-eyebrow fp-eyebrow--lt">Get Started</span>
-                <h2 className="fp-h2 fp-h2--w">Open a Foxnance Account Now</h2>
+                <span className="fp-eyebrow fp-eyebrow--dark">Get Started</span>
+                <h2 className="fp-h2 fp-h2--dark">Open a Foxnance Account Now</h2>
                 <div className="fp-spacer"></div>
                 <div className="fp-steps">
                   {[{n:'1',t:'Register',d:'Quick and easy account opening process.'},{n:'2',t:'Fund',d:'Fund your account with multiple deposit methods.'},{n:'3',t:'Trade',d:'Trade indices with spreads from 0.4 points.'}].map((s,i)=>(
@@ -366,13 +370,13 @@ export default function IndicesPage() {
           </div>
         </section>
 
-        {/* FAQ */}
-        <section id="faq" ref={setRef('faq')} className={`fp-section fp-reveal ${visible.has('faq')?'on':''}`}>
+        {/* FAQ - Light Gray Background to separate from dark footer */}
+        <section id="faq" ref={setRef('faq')} className={`fp-section fp-section--faq-light fp-reveal ${visible.has('faq')?'on':''}`}>
           <div className="fp-container">
             <div className="fp-head">
-              <span className="fp-eyebrow">FAQ</span>
-              <h2 className="fp-h2">Frequently Asked Questions</h2>
-              <p className="fp-sub">Everything you need to know about index trading</p>
+              <span className="fp-eyebrow fp-eyebrow--dark">FAQ</span>
+              <h2 className="fp-h2 fp-h2--dark">Frequently Asked Questions</h2>
+              <p className="fp-sub fp-sub--dark">Everything you need to know about index trading</p>
             </div>
             <div className="fp-faq">
               {faqItems.map((item,i)=>(
@@ -402,10 +406,12 @@ export default function IndicesPage() {
           --bg-alt:     #f7f8f5;
           --bg-card:    #ffffff;
           --bg-dark:    #0A0A0A;
+          --bg-faq-light: #f5f5f0;
           --border:     #e5e7eb;
           --text:       #0A0A0A;
           --text2:      #6b7280;
           --radius:     16px;
+          --radius-lg:  22px;
           --nav-h:      80px;
           --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
           --ease-out:   cubic-bezier(0.22, 1, 0.36, 1);
@@ -417,6 +423,7 @@ export default function IndicesPage() {
             --bg:      #0A0A0A;
             --bg-alt:  #111111;
             --bg-card: #181818;
+            --bg-faq-light: #1a1a1a;
             --border:  rgba(255,255,255,0.09);
             --text:    #f0f0f0;
             --text2:   rgba(255,255,255,0.5);
@@ -427,13 +434,20 @@ export default function IndicesPage() {
         @media(min-width:1024px){ #indices-layout-wrapper .fp-container { padding: 0 64px; } }
 
         .fp-section { padding: 96px 0; }
-        .fp-section--alt  { background: var(--bg-alt); }
-        .fp-section--dark { background: var(--bg-dark); }
+        .fp-section--white { background: var(--bg); color: var(--text); }
+        .fp-section--black { background: var(--bg-dark); color: #f0f0f0; }
+        .fp-section--faq-light { 
+          background: var(--bg-faq-light); 
+          color: var(--text);
+          border-top: 1px solid var(--border);
+          border-bottom: 1px solid var(--border);
+        }
 
         .fp-reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.9s var(--ease-spring), transform 0.9s var(--ease-spring); }
         .fp-reveal.on { opacity: 1; transform: translateY(0); }
 
         .fp-head { text-align: center; margin-bottom: 56px; }
+        .fp-head--dark { }
         .fp-eyebrow {
           font-size: .72rem; font-weight: 700; letter-spacing: .16em;
           text-transform: uppercase; color: var(--green);
@@ -444,27 +458,41 @@ export default function IndicesPage() {
           content: ''; display: block; width: 24px; height: 1px;
           background: var(--green); opacity: 0.5;
         }
-        .fp-eyebrow--lt { color: rgba(255,255,255,.6); }
-        .fp-eyebrow--lt::before, .fp-eyebrow--lt::after { background: rgba(255,255,255,.4); }
+        .fp-eyebrow--dark { color: var(--green); }
+        .fp-eyebrow--dark::before, .fp-eyebrow--dark::after { background: var(--green); }
         .fp-h2 { font-size: clamp(1.8rem,4vw,2.8rem); font-weight: 900; color: var(--text); letter-spacing: -.03em; line-height: 1.1; }
-        .fp-h2--w { color: #fff !important; }
+        .fp-section--black .fp-h2 { color: #fff; }
+        .fp-h2--dark { color: var(--text); }
         .fp-sub { font-size: 1rem; color: var(--text2); max-width: 540px; margin: 14px auto 0; line-height: 1.7; }
+        .fp-sub--dark { color: var(--text2); }
+        .fp-section--black .fp-sub { color: rgba(255,255,255,0.55); }
 
+        /* Button System */
         .fp-btn {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 13px 28px; font-size: .9rem; font-weight: 700;
           border-radius: 8px; text-decoration: none;
           transition: all .25s var(--ease-out);
-          cursor: pointer; border: none;
+          cursor: pointer; border: 2px solid transparent;
         }
         .fp-btn--green {
           background: linear-gradient(135deg, var(--green), var(--green-dk));
-          color: #000;
+          color: #fff;
           box-shadow: 0 4px 18px rgba(63,203,27,.3);
         }
         .fp-btn--green:hover {
           transform: translateY(-3px) scale(1.02);
           box-shadow: 0 12px 30px rgba(63,203,27,.45), 0 0 0 6px rgba(63,203,27,.08);
+        }
+        .fp-btn--outline-dark {
+          background: transparent;
+          color: var(--text);
+          border-color: rgba(0,0,0,0.18);
+        }
+        .fp-btn--outline-dark:hover {
+          border-color: var(--green);
+          color: var(--green);
+          transform: translateY(-3px);
         }
         .fp-btn--lg { padding: 16px 36px; font-size: 1rem; }
 
@@ -535,14 +563,14 @@ export default function IndicesPage() {
         .fp-ticker__chg.up { color: #10b981; }
         .fp-ticker__chg.dn { color: #ef4444; }
 
-        /* Live Prices - Single Table Full Width */
+        /* Live Prices - Single Table Full Width (White Background) */
         .fp-prices-single { width: 100%; max-width: 1000px; margin: 0 auto; }
-        .fp-prices-tbl-full { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden; width: 100%; }
-        .fp-prices-thead { display: grid; grid-template-columns: 0.8fr 1.2fr 0.8fr 0.8fr 1fr; padding: 16px 24px; background: rgba(63,203,27,.05); border-bottom: 1px solid var(--border); font-size: .8rem; font-weight: 700; color: var(--text2); letter-spacing: .04em; }
+        .fp-prices-tbl-full { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; width: 100%; box-shadow: 0 2px 16px rgba(0,0,0,0.06); }
+        .fp-prices-thead { display: grid; grid-template-columns: 0.8fr 1.2fr 0.8fr 0.8fr 1fr; padding: 16px 24px; background: rgba(63,203,27,.05); border-bottom: 1px solid var(--border); font-size: .8rem; font-weight: 700; color: var(--text2); letter-spacing: .04em; text-transform: uppercase; }
         .fp-prow { display: grid; grid-template-columns: 0.8fr 1.2fr 0.8fr 0.8fr 1fr; padding: 16px 24px; border-bottom: 1px solid var(--border); cursor: pointer; transition: all 0.3s ease; align-items: center; position: relative; }
-        .fp-prow:hover { background: rgba(63,203,27,.08); transform: translateX(4px); }
-        .fp-prow.hovered { background: rgba(63,203,27,.1); transform: translateX(4px); box-shadow: -4px 0 0 var(--green); }
-        .fp-prow.active { background: rgba(63,203,27,.12); border-left: 3px solid var(--green); }
+        .fp-prow:hover { background: rgba(63,203,27,.05); transform: translateX(4px); }
+        .fp-prow.hovered { background: rgba(63,203,27,.07); transform: translateX(4px); box-shadow: -4px 0 0 var(--green); }
+        .fp-prow.active { background: rgba(63,203,27,.1); border-left: 3px solid var(--green); }
         .fp-pr-pair { font-weight: 700; font-size: .88rem; color: var(--text); transition: color 0.2s; }
         .fp-pr-name { font-size: .75rem; color: var(--text2); }
         .fp-prow.hovered .fp-pr-pair { color: var(--green); }
@@ -555,29 +583,30 @@ export default function IndicesPage() {
         .fp-pr-chg.up { color: #10b981; }
         .fp-pr-chg.dn { color: #ef4444; }
         .fp-pr-hl { font-size: .78rem; color: var(--text2); }
+        .fp-prices-cta { display: flex; gap: 14px; justify-content: center; margin-top: 36px; flex-wrap: wrap; }
 
-        /* What is Index Trading - Green theme */
+        /* What is Index Trading - Dark theme */
         .fp-what-grid { display: grid; grid-template-columns: 1fr .85fr; gap: 56px; align-items: center; }
         @media(max-width:900px){ .fp-what-grid { grid-template-columns: 1fr; } }
-        .fp-what-text p { color: var(--text2); line-height: 1.75; margin-bottom: 18px; font-size: .95rem; }
+        .fp-what-text p { color: rgba(255,255,255,0.65); line-height: 1.75; margin-bottom: 18px; font-size: .95rem; }
         .fp-checklist { list-style: none; margin-top: 24px; }
-        .fp-checklist li { display: flex; align-items: center; gap: 12px; color: var(--text); font-size: .92rem; padding: 10px 14px; border-radius: 10px; transition: all 0.3s; cursor: pointer; }
+        .fp-checklist li { display: flex; align-items: center; gap: 12px; color: #f0f0f0; font-size: .92rem; padding: 10px 14px; border-radius: 10px; transition: all 0.3s; cursor: pointer; }
         .fp-checklist li:hover { background: rgba(63,203,27,.08); transform: translateX(6px); }
         .fp-checklist li svg { color: var(--green); flex-shrink: 0; }
 
         .fp-what-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-        .fp-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; padding: 28px; text-align: center; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
+        .fp-stat-card { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); border-radius: var(--radius-lg); padding: 28px; text-align: center; transition: all 0.4s; position: relative; overflow: hidden; cursor: pointer; }
         .fp-stat-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(63,203,27,.15); border-color: var(--green); }
         .fp-stat-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .4s; }
         .fp-stat-card:hover .fp-stat-card__glow { opacity: 1; }
         .fp-sc-val { font-size: 2.2rem; font-weight: 900; color: var(--green); display: block; margin-bottom: 8px; transition: transform 0.3s; }
         .fp-stat-card:hover .fp-sc-val { transform: scale(1.05); }
-        .fp-sc-lbl { font-size: .8rem; color: var(--text2); font-weight: 600; }
+        .fp-sc-lbl { font-size: .8rem; color: rgba(255,255,255,0.55); font-weight: 600; }
 
-        /* Features - White icons, green outline only */
+        /* Features - White theme */
         .fp-features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-        .fp-feat-card { background: var(--bg-card); border: 1px solid var(--green); border-radius: 20px; padding: 32px 28px; text-align: center; transition: all 0.35s ease; position: relative; overflow: hidden; cursor: pointer; }
-        .fp-feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(63,203,27,.12); background: rgba(63,203,27,.02); }
+        .fp-feat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 32px 28px; text-align: center; transition: all 0.35s ease; position: relative; overflow: hidden; cursor: pointer; }
+        .fp-feat-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(63,203,27,.12); border-color: var(--green); background: rgba(63,203,27,.02); }
         .fp-feat-card__shine { position: absolute; top: -60%; left: -60%; width: 80%; height: 80%; background: radial-gradient(circle, rgba(63,203,27,.04), transparent 60%); transition: transform .5s; pointer-events: none; }
         .fp-feat-card:hover .fp-feat-card__shine { transform: translate(130%, 130%); }
         .fp-feat-icon { width: 64px; height: 64px; background: var(--green); color: #fff; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; transition: all 0.3s; }
@@ -585,18 +614,19 @@ export default function IndicesPage() {
         .fp-feat-card h3 { font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 12px; }
         .fp-feat-card p { font-size: .85rem; color: var(--text2); line-height: 1.6; }
 
-        /* Access Global Markets */
+        /* Access Global Markets - Dark theme */
         .fp-mkt-grid { display: flex; justify-content: space-between; gap: 16px; flex-wrap: nowrap; }
         @media(max-width:1100px){ .fp-mkt-grid { flex-wrap: wrap; justify-content: center; } }
-        .fp-mkt-card { flex: 1; min-width: 180px; max-width: 240px; text-align: center; padding: 28px 16px 0; border-radius: var(--radius); background: var(--bg-card); border: 1px solid var(--border); cursor: pointer; position: relative; overflow: hidden; transition: all 0.4s; min-height: 260px; }
-        .fp-mkt-card:hover { transform: translateY(-2px); border-color: rgba(63,203,27,.4); box-shadow: 0 20px 40px rgba(63,203,27,.15); }
+        .fp-mkt-card { flex: 1; min-width: 180px; max-width: 240px; text-align: center; padding: 28px 16px 0; border-radius: var(--radius); background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.28); cursor: pointer; position: relative; overflow: hidden; transition: all 0.4s; min-height: 260px; }
+        .fp-mkt-card:hover { transform: translateY(-8px) scale(1.02); border-color: var(--green); background: rgba(63,203,27,.06); box-shadow: 0 0 0 1px var(--green), 0 24px 48px rgba(63,203,27,.25); }
         .fp-mkt-card__glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 30%, rgba(63,203,27,.08), transparent 60%); opacity: 0; transition: opacity .35s; pointer-events: none; }
         .fp-mkt-card:hover .fp-mkt-card__glow { opacity: 1; }
         .fp-mkt-img { height: 130px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; transition: transform 0.3s; }
         .fp-mkt-card:hover .fp-mkt-img { transform: scale(1.05); }
-        .fp-mkt-title { font-size: 1rem; font-weight: 800; color: var(--text); margin-bottom: 8px; position: relative; z-index: 2; transition: transform .4s; }
-        .fp-mkt-desc { font-size: .72rem; color: var(--text2); line-height: 1.5; padding-bottom: 24px; position: relative; z-index: 2; transition: transform .4s; }
+        .fp-mkt-title { font-size: 1rem; font-weight: 800; color: #f0f0f0; margin-bottom: 8px; position: relative; z-index: 2; transition: transform .4s, color .2s; }
+        .fp-mkt-desc { font-size: .72rem; color: rgba(255,255,255,0.55); line-height: 1.5; padding-bottom: 24px; position: relative; z-index: 2; transition: transform .4s; }
         .fp-mkt-card:hover .fp-mkt-title, .fp-mkt-card:hover .fp-mkt-desc { transform: translateY(-30px); }
+        .fp-mkt-card:hover .fp-mkt-title { color: var(--green); }
         .fp-mkt-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 56px; background: linear-gradient(135deg, var(--green), var(--green-dk)); transform: translateY(100%); transition: transform .4s; display: flex; align-items: center; justify-content: center; z-index: 1; }
         .fp-mkt-card:hover .fp-mkt-overlay { transform: translateY(0); }
         .fp-mkt-overlay span { font-size: .75rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px; }
@@ -605,8 +635,8 @@ export default function IndicesPage() {
         .fx-category-img[data-category="Indices"] { height: 75% !important; width: auto !important; margin: 0 auto; }
         .fx-trade-category-image { width: 100%; height: 200px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; }
 
-        /* Open Account */
-        .fp-open-card { background: linear-gradient(135deg, rgba(63,203,27,.08), rgba(0,0,0,.25)); border: 1px solid rgba(63,203,27,.15); border-radius: 28px; padding: 56px; display: grid; grid-template-columns: 1fr .8fr; gap: 56px; position: relative; overflow: hidden; }
+        /* Open Account - White theme */
+        .fp-open-card { background: linear-gradient(135deg, rgba(63,203,27,.04), rgba(0,0,0,.02)); border: 1px solid var(--border); border-radius: 28px; padding: 56px; display: grid; grid-template-columns: 1fr .8fr; gap: 56px; position: relative; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
         @media(max-width:900px){ .fp-open-card { grid-template-columns: 1fr; padding: 32px 24px; } }
         .fp-open-card__decoration { position: absolute; inset: 0; pointer-events: none; }
         .fp-open-card__ring { position: absolute; border-radius: 50%; border: 1px solid rgba(63,203,27,.08); animation: ringPulse 6s ease-in-out infinite; }
@@ -618,23 +648,47 @@ export default function IndicesPage() {
         .fp-step:hover { transform: translateX(6px); }
         .fp-step-num { width: 40px; height: 40px; border-radius: 50%; background: var(--green); color: #000; font-weight: 900; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 0 20px rgba(63,203,27,.35); transition: all 0.3s; }
         .fp-step:hover .fp-step-num { transform: scale(1.05); box-shadow: 0 0 30px rgba(63,203,27,.5); }
-        .fp-step h4 { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
-        .fp-step p { font-size: .85rem; color: rgba(255,255,255,.5); }
+        .fp-step h4 { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .fp-step p { font-size: .85rem; color: var(--text2); }
         .fp-open-right { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; align-content: center; }
-        .fp-benefit { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: rgba(255,255,255,.8); padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06); transition: all 0.25s; cursor: pointer; }
-        .fp-benefit:hover { background: rgba(63,203,27,0.12); border-color: var(--green); transform: translateY(-3px) scale(1.02); }
+        .fp-benefit { display: flex; align-items: center; gap: 10px; font-size: .88rem; color: var(--text); padding: 10px 14px; border-radius: 10px; background: rgba(63,203,27,.04); border: 1px solid rgba(63,203,27,.12); transition: all 0.25s; cursor: pointer; font-weight: 600; }
+        .fp-benefit:hover { background: rgba(63,203,27,0.1); border-color: var(--green); transform: translateY(-3px) scale(1.02); }
         .fp-benefit svg { color: var(--green); }
 
-        /* FAQ */
+        /* FAQ - Light background with distinct styling */
         .fp-faq { max-width: 760px; margin: 0 auto; }
-        .fp-faq__item { border-bottom: 1px solid var(--border); transition: all 0.3s; }
-        .fp-faq__item.open { border-color: rgba(63,203,27,.3); }
-        .fp-faq__q { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 22px 0; font-size: .95rem; font-weight: 600; color: var(--text); background: none; border: none; cursor: pointer; text-align: left; gap: 16px; transition: all 0.2s; }
+        .fp-faq::before {
+          content: '';
+          display: block;
+          width: 80px;
+          height: 3px;
+          background: linear-gradient(90deg, var(--green), var(--green-dk));
+          border-radius: 2px;
+          margin: 0 auto 56px;
+        }
+        .fp-faq__item { 
+          border-bottom: 1px solid var(--border); 
+          transition: all 0.3s;
+          background: transparent;
+        }
+        .fp-faq__item.open { border-color: var(--green); }
+        .fp-faq__q { 
+          width: 100%; display: flex; justify-content: space-between; align-items: center;
+          padding: 22px 0; font-size: .95rem; font-weight: 600;
+          background: none; border: none; cursor: pointer;
+          text-align: left; gap: 16px; transition: all 0.2s;
+          color: var(--text);
+        }
         .fp-faq__q:hover { color: var(--green); padding-left: 4px; }
         .fp-faq__item.open .fp-faq__q { color: var(--green); }
-        .fp-faq__icon { display: flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(63,203,27,.08); border: 1px solid rgba(63,203,27,.2); flex-shrink: 0; transition: all 0.3s; color: var(--green); }
-        .fp-faq__q:hover .fp-faq__icon { background: rgba(63,203,27,.15); transform: scale(1.05); }
-        .fp-faq__item.open .fp-faq__icon { transform: rotate(180deg); background: rgba(63,203,27,.15); }
+        .fp-faq__icon {
+          display: flex; align-items: center; justify-content: center;
+          width: 28px; height: 28px; border-radius: 50%;
+          background: rgba(63,203,27,.1); border: 1px solid rgba(63,203,27,.2);
+          flex-shrink: 0; transition: all 0.3s; color: var(--green);
+        }
+        .fp-faq__q:hover .fp-faq__icon { background: rgba(63,203,27,.2); transform: scale(1.05); }
+        .fp-faq__item.open .fp-faq__icon { transform: rotate(180deg); background: rgba(63,203,27,.2); }
         .fp-faq__a { max-height: 0; overflow: hidden; transition: max-height .4s, padding .4s; }
         .fp-faq__item.open .fp-faq__a { max-height: 200px; padding-bottom: 20px; }
         .fp-faq__a p { font-size: .88rem; color: var(--text2); line-height: 1.7; }
@@ -647,7 +701,7 @@ export default function IndicesPage() {
           .fp-what-stats { grid-template-columns: 1fr; }
           .fp-open-right { grid-template-columns: 1fr; }
           .fp-mkt-card { min-width: 150px; min-height: 240px; }
-          .fp-mkt-img { height: 100px; }
+          .fx-trade-category-image { height: 100px; }
         }
       `}</style>
     </>

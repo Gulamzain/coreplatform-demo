@@ -7,7 +7,6 @@ import {
   Mail, Lock, Eye, EyeOff, ArrowRight,
   Shield, Zap, Globe, Users, Activity,
   CheckCircle, User, Phone,
-  TrendingUp, TrendingDown,
 } from 'react-feather'
 
 /* ── Same green theme as main page ── */
@@ -26,14 +25,6 @@ const BENEFITS = [
   { icon: <Globe       size={14} strokeWidth={1.8}/>, label: '170+ Markets'          },
   { icon: <Shield      size={14} strokeWidth={1.8}/>, label: 'FCA & ASIC Regulated'  },
   { icon: <Users       size={14} strokeWidth={1.8}/>, label: '24/7 Support'          },
-]
-
-const TICKERS = [
-  { n:'EUR/USD', v:'1.08432', up:true,  c:'+0.04%' },
-  { n:'GBP/USD', v:'1.27680', up:true,  c:'+0.19%' },
-  { n:'XAU/USD', v:'2341.20', up:true,  c:'+0.35%' },
-  { n:'BTC/USD', v:'68,200',  up:true,  c:'+1.23%' },
-  { n:'USD/JPY', v:'151.22',  up:false, c:'-0.12%' },
 ]
 
 export default function SignupPage() {
@@ -119,35 +110,6 @@ export default function SignupPage() {
                   <span className="fs__benefit-lbl">{b.label}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Stats strip with hover effects */}
-            <div className="fs__stats hero-float hero-float--5">
-              {[
-                { val:'0.0',  sub:'pip spreads' },
-                { val:'170+', sub:'markets'     },
-                { val:'1:500',sub:'leverage'    },
-              ].map((s, i) => (
-                <div key={i} className="fs__stat">
-                  <div className="fs__stat-val">{s.val}</div>
-                  <div className="fs__stat-sub">{s.sub}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Testimonial with floating animation */}
-            <div className="fs__quote hero-float hero-float--6">
-              <p className="fs__quote-text">
-                "Foxnance transformed my trading. Platform is intuitive, support is
-                excellent, and spreads are the best I've found anywhere."
-              </p>
-              <div className="fs__quote-author">
-                <div className="fs__quote-avatar">MC</div>
-                <div>
-                  <div className="fs__quote-name">Michael Chen</div>
-                  <div className="fs__quote-role">Professional Trader · 5 years</div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -633,9 +595,8 @@ export default function SignupPage() {
         }
         
         .fs__card:hover {
-          box-shadow: 0 24px 48px rgba(63,203,27,0.12);
-          border-color: rgba(63,203,27,0.2);
-          transform: translateY(-2px);
+          box-shadow: 0 24px 48px rgba(63,203,27,0.10);
+          border-color: rgba(63,203,27,0.18);
         }
 
         .fs__card-top {
@@ -643,12 +604,16 @@ export default function SignupPage() {
           border-bottom: 1px solid rgba(0,0,0,0.08);
         }
         
+        /* Card logo — rendered full black so it reads hard on the white card.
+           No hover effect — purely decorative. */
         .fs__card-logo-img {
-          transition: all 0.3s ease;
+          filter: brightness(0) saturate(100%);
         }
-        
-        .fs__card-logo:hover .fs__card-logo-img {
-          transform: scale(1.02);
+
+        .fs__card-logo {
+          display: inline-block;
+          cursor: default;
+          pointer-events: none;
         }
         
         .fs__card-h2 {
@@ -718,22 +683,23 @@ export default function SignupPage() {
         .fs__tlink { color: var(--green); font-weight:600; text-decoration:none; }
         .fs__tlink:hover { text-decoration:underline; }
 
-        /* Submit button with gradient */
+        /* Submit / Create Account button */
         .fs__submit {
-          width:100%; padding:12px 18px;
-          display:flex; align-items:center; justify-content:center; gap:8px;
+          width:100%; padding:13px 18px;
+          display:flex; align-items:center; justify-content:center; gap:9px;
           background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
-          color: #000;
-          font-size:.9rem; font-weight:800;
+          color: #ffffff;
+          font-size:.92rem; font-weight:800; letter-spacing:.01em;
           border:none; border-radius:10px; cursor:pointer;
-          box-shadow: 0 4px 18px rgba(63,203,27,0.28);
-          transition: all 0.3s ease;
+          box-shadow: 0 4px 18px rgba(63,203,27,0.32);
+          transition: all 0.25s ease;
         }
         .fs__submit:hover:not(.off) {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(63,203,27,0.35);
+          box-shadow: 0 10px 28px rgba(63,203,27,0.45);
+          background: linear-gradient(135deg, #47e01f 0%, var(--green) 100%);
         }
-        .fs__submit.off { opacity:.45; cursor:not-allowed; }
+        .fs__submit.off { opacity:.42; cursor:not-allowed; filter: grayscale(0.2); }
         .fs__spinner {
           width:17px; height:17px; border-radius:50%;
           border:2.5px solid rgba(0,0,0,0.3); border-top-color:#000;
@@ -784,11 +750,70 @@ export default function SignupPage() {
           font-size:.7rem; color:#9ca3af; justify-content:center;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-          .fs__left-inner { padding: 40px 24px; }
-          .fs__card { margin: 0 16px; }
-          .fs__form { padding: 18px 20px; }
+        /* ── Responsive ─────────────────────────────── */
+
+        /* Tiny phones (<380px) */
+        @media (max-width: 380px) {
+          .fs__card { margin: 0 10px; border-radius: 16px; }
+          .fs__card-top { padding: 20px 16px 14px; }
+          .fs__form { padding: 14px 16px 22px; gap: 10px; }
+          .fs__card-h2 { font-size: 1.1rem; }
+          .fs__row { grid-template-columns: 1fr; }
+          .fs__socials { grid-template-columns: 1fr; }
+          .fs__soc-lbl { display: inline; }
+          .fs__form-wrap { padding: 20px 8px; }
+        }
+
+        /* Phones (381px–767px) */
+        @media (max-width: 767px) {
+          .fs {
+            position: relative;
+            overflow-y: auto;
+            min-height: 100vh;
+          }
+          .fs__right {
+            min-height: 100vh;
+          }
+          .fs__form-wrap {
+            padding: 28px 14px 40px;
+            justify-content: flex-start;
+            padding-top: 40px;
+          }
+          .fs__card { margin: 0 12px; }
+          .fs__card-top { padding: 24px 20px 16px; }
+          .fs__form { padding: 16px 20px 24px; gap: 11px; }
+          .fs__card-h2 { font-size: 1.2rem; }
+          .fs__row { grid-template-columns: 1fr 1fr; gap: 8px; }
+          .fs__submit { padding: 12px 16px; font-size: .88rem; }
+          .fs__benefits { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Small tablets (480px–767px) — wider card */
+        @media (min-width: 480px) and (max-width: 767px) {
+          .fs__card { max-width: 460px; margin: 0 auto; }
+        }
+
+        /* Tablet (768px–1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .fs__form-wrap { padding: 40px 24px; }
+          .fs__card { max-width: 500px; }
+          .fs__card-top { padding: 28px 28px 20px; }
+          .fs__form { padding: 20px 28px 32px; }
+        }
+
+        /* Desktop (≥1024px) — two-column split */
+        @media (min-width: 1024px) {
+          .fs__left-inner { padding: 48px 48px; }
+          .fs__right { overflow-y: auto; }
+          .fs__form-wrap { padding: 36px 28px; }
+          .fs__card { max-width: 480px; }
+        }
+
+        /* Large desktop */
+        @media (min-width: 1440px) {
+          .fs__left-inner { padding: 64px 56px; }
+          .fs__card { max-width: 500px; }
+          .fs__form { padding: 22px 28px 32px; }
         }
       `}</style>
     </>

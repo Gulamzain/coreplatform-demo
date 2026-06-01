@@ -187,13 +187,15 @@ export default function FoxnanceBroker() {
                 onMouseEnter={() => setHoveredFeature(i)}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
-                <div className="fx-upgrade-content">
-                  <h3 className="fx-upgrade-title">{feat.title}</h3>
-                  <p className="fx-upgrade-desc">{feat.desc}</p>
-                </div>
-                <div className="fx-upgrade-visual">
-                  <img src={feat.floatingIcon} className="fx-floating-icon" alt="icon" />
-                  <img src={feat.icon} className="fx-main-device" alt={feat.title} />
+                <img src={feat.floatingIcon} className="fx-floating-icon" alt="icon" />
+                <div className="fx-upgrade-row">
+                  <div className="fx-upgrade-content">
+                    <h3 className="fx-upgrade-title">{feat.title}</h3>
+                    <p className="fx-upgrade-desc">{feat.desc}</p>
+                  </div>
+                  <div className="fx-upgrade-visual">
+                    <img src={feat.icon} className="fx-main-device" alt={feat.title} />
+                  </div>
                 </div>
               </div>
             ))}
@@ -738,18 +740,102 @@ export default function FoxnanceBroker() {
 @media(max-width: 768px) {
   .fx-trade-hover-text { font-size: 0.7rem; }
 }
-        /* UPGRADE SECTION - Larger images */
-        .fx-upgrade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px;}
+        /* UPGRADE SECTION - Exact reference: title+desc top-left | image center-right large | icon top-right */
+        .fx-upgrade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px;}
         @media(max-width:1024px){.fx-upgrade-grid{grid-template-columns:repeat(2,1fr);}}
         @media(max-width:640px){.fx-upgrade-grid{grid-template-columns:1fr;}}
-        .fx-upgrade-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:30px;display:flex;align-items:center;justify-content:space-between;gap:20px;transition:all 0.3s ease;min-height:240px;}
+
+        .fx-upgrade-card{
+          background:rgba(255,255,255,0.04);
+          border:1px solid rgba(255,255,255,0.08);
+          border-radius:20px;
+          padding:0;
+          display:flex;
+          flex-direction:column;
+          transition:all 0.3s ease;
+          position:relative;
+          overflow:hidden;
+          min-height:280px;
+        }
         .fx-upgrade-card.hovered{transform:translateY(-6px);border-color:rgba(63,203,27,0.5);box-shadow:0 20px 40px rgba(63,203,27,0.12);background:rgba(255,255,255,0.08);}
-        .fx-upgrade-content{flex:1;}
-        .fx-upgrade-title{font-size:1.25rem;font-weight:800;color:#fff;margin-bottom:10px;}
-        .fx-upgrade-desc{font-size:0.85rem;color:rgba(255,255,255,0.6);line-height:1.4;}
-        .fx-upgrade-visual{position:relative;width:180px;height:180px;display:flex;align-items:center;justify-content:center;}
-        .fx-main-device{width:200px;height:auto;object-fit:contain;z-index:1;}
-        .fx-floating-icon{position:absolute;top:-10px;right:-15px;width:60px;height:60px;z-index:2;filter:invert(61%) sepia(85%) saturate(1219%) hue-rotate(63deg) brightness(96%) contrast(90%);}
+
+        /* Horizontal row: text left | image right, both filling height */
+        .fx-upgrade-row{
+          display:flex;
+          flex-direction:row;
+          align-items:stretch;
+          flex:1;
+          height:100%;
+          min-height:280px;
+        }
+
+        /* LEFT: title + desc - top aligned with padding */
+        .fx-upgrade-content{
+          flex:0 0 45%;
+          padding:26px 0 26px 26px;
+          display:flex;
+          flex-direction:column;
+          justify-content:flex-start;
+          z-index:2;
+        }
+        .fx-upgrade-title{
+          font-size:1.1rem;
+          font-weight:800;
+          color:#fff;
+          margin-bottom:10px;
+          line-height:1.25;
+        }
+        .fx-upgrade-desc{
+          font-size:0.78rem;
+          color:rgba(255,255,255,0.55);
+          line-height:1.5;
+        }
+
+        /* RIGHT: device image - fills right half, anchored to bottom */
+        .fx-upgrade-visual{
+          flex:1;
+          position:relative;
+          display:flex;
+          align-items:flex-end;
+          justify-content:center;
+          overflow:hidden;
+          padding-bottom:0;
+        }
+        .fx-main-device{
+          display:block;
+          width:100%;
+          height:auto;
+          max-height:260px;
+          object-fit:contain;
+          object-position:bottom center;
+        }
+        /* Portrait phone images (cards 1,3,5) — narrower, taller */
+        .fx-upgrade-card:nth-child(1) .fx-main-device,
+        .fx-upgrade-card:nth-child(3) .fx-main-device,
+        .fx-upgrade-card:nth-child(5) .fx-main-device {
+          width:auto;
+          max-width:90%;
+          max-height:275px;
+          object-position:bottom center;
+        }
+        /* Landscape laptop images (cards 2,4,6) */
+        .fx-upgrade-card:nth-child(2) .fx-main-device,
+        .fx-upgrade-card:nth-child(4) .fx-main-device,
+        .fx-upgrade-card:nth-child(6) .fx-main-device {
+          width:105%;
+          max-height:260px;
+        }
+
+        /* TOP-RIGHT: floating green icon - absolutely positioned in card */
+        .fx-floating-icon{
+          position:absolute;
+          top:22px;
+          right:22px;
+          width:42px;
+          height:42px;
+          z-index:3;
+          filter:invert(61%) sepia(85%) saturate(1219%) hue-rotate(63deg) brightness(96%) contrast(90%);
+        }
 
 /* ═══ 4. MT5 SECTION STYLES with RESPONSIVE FIXES ═══ */
 .fx-mt5-layout {

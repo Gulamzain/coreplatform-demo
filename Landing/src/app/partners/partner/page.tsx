@@ -2,6 +2,7 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import {
   BiDollar, BiShield, BiGlobe, BiLineChart, BiSupport,
@@ -156,12 +157,7 @@ const faqs = [
   },
 ];
 
-const stats = [
-  { val: '$2.4M+', label: 'Paid to IBs in 2024' },
-  { val: '3,200+', label: 'Active IB Partners' },
-  { val: '40+', label: 'Countries Covered' },
-  { val: '24h', label: 'Approval Time' },
-];
+
 
 // ─── PAGE ───────────────────────────────────────────────────────────────
 export default function IBPartnersPage() {
@@ -194,7 +190,7 @@ export default function IBPartnersPage() {
 
       <div id="ib-page">
 
-        {/* ── HERO ── */}
+        {/* ── HERO (Dark) ── */}
         <section className="ib-hero">
           <div className="ib-hero__canvas">
             <div className="ib-hero__noise" />
@@ -210,12 +206,10 @@ export default function IBPartnersPage() {
               </defs>
               <rect width="100%" height="100%" fill="url(#ibgrid)" />
             </svg>
-            {/* Animated ticker-style line */}
             <div className="ib-hero__ticker-line" />
           </div>
 
           <div className={`ib-hero__inner ${heroReady ? 'ready' : ''}`}>
-            {/* Left — copy */}
             <div className="ib-hero__copy">
               <h1 className="ib-hero__title h-item h-d0">
                 Turn Your Network<br />
@@ -232,10 +226,8 @@ export default function IBPartnersPage() {
                   How It Works
                 </Link>
               </div>
-
             </div>
 
-            {/* Right — floating commission card */}
             <div className="ib-hero__visual h-item h-d1">
               <div className="ib-earn-card">
                 <div className="ib-earn-card__glow" />
@@ -268,7 +260,6 @@ export default function IBPartnersPage() {
                 </Link>
               </div>
 
-              {/* Floating badge cards */}
               <div className="ib-float-badge ib-float-badge--tl">
                 <FiUsers size={16} />
                 <div>
@@ -289,21 +280,8 @@ export default function IBPartnersPage() {
           <div className="ib-hero__scroll"><div className="ib-hero__scroll-dot" /></div>
         </section>
 
-        {/* ── STATS STRIP ── */}
-        <section className="ib-stats-strip">
-          <div className="ib-container">
-            <div className="ib-stats-row">
-              {stats.map((s, i) => (
-                <div key={i} className="ib-stat-item">
-                  <span className="ib-stat-val">{s.val}</span>
-                  <span className="ib-stat-lbl">{s.label}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── BENEFITS ── */}
+       
+        {/* ── BENEFITS (White/Light) ── */}
         <section
           id="benefits"
           ref={setRef('benefits')}
@@ -333,7 +311,7 @@ export default function IBPartnersPage() {
           </div>
         </section>
 
-        {/* ── HOW IT WORKS ── */}
+        {/* ── HOW IT WORKS (Dark) ── */}
         <section
           id="how-it-works"
           ref={setRef('how-it-works')}
@@ -362,7 +340,7 @@ export default function IBPartnersPage() {
           </div>
         </section>
 
-        {/* ── COMMISSION TIERS ── */}
+        {/* ── COMMISSION TIERS (White/Light) ── */}
         <section
           id="commissions"
           ref={setRef('commissions')}
@@ -416,7 +394,7 @@ export default function IBPartnersPage() {
           </div>
         </section>
 
-        {/* ── IB TOOLS ── */}
+        {/* ── IB TOOLS (Dark) with Partners.png image ── */}
         <section
           id="tools"
           ref={setRef('tools')}
@@ -444,87 +422,36 @@ export default function IBPartnersPage() {
                 </Link>
               </div>
               <div className="ib-tools__dashboard">
-                <div className="ib-dashboard-mock">
-                  <div className="ib-dashboard-mock__header">
-                    <div className="ib-dashboard-mock__dot" />
-                    <div className="ib-dashboard-mock__dot" />
-                    <div className="ib-dashboard-mock__dot" />
-                    <span>IB Partner Dashboard</span>
-                  </div>
-                  <div className="ib-dashboard-mock__body">
-                    <div className="ib-dash-kpi-row">
-                      {[
-                        { l: 'Total Earnings', v: '$12,480', up: true },
-                        { l: 'Active Clients', v: '34', up: true },
-                        { l: 'This Month Lots', v: '1,248', up: false },
-                      ].map((k, i) => (
-                        <div key={i} className="ib-dash-kpi">
-                          <span className="ib-dash-kpi__label">{k.l}</span>
-                          <span className="ib-dash-kpi__val">{k.v}</span>
-                          <span className={`ib-dash-kpi__change ${k.up ? 'up' : 'down'}`}>
-                            {k.up ? '↑ 14%' : '↓ 3%'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Chart bars */}
-                    <div className="ib-dash-chart">
-                      <div className="ib-dash-chart__label">Monthly Commission</div>
-                      <div className="ib-dash-chart__bars">
-                        {[40, 55, 48, 70, 62, 85, 78, 92, 88, 100, 95, 72].map((h, i) => (
-                          <div
-                            key={i}
-                            className="ib-dash-bar"
-                            style={{ height: `${h}%`, '--bar-i': i, '--bar-h': `${h}%` } as React.CSSProperties}
-                          />
-                        ))}
-                      </div>
-                      <div className="ib-dash-chart__months">
-                        {['J','F','M','A','M','J','J','A','S','O','N','D'].map((m, i) => (
-                          <span key={i}>{m}</span>
-                        ))}
-                      </div>
-                    </div>
-                    {/* Recent activity */}
-                    <div className="ib-dash-activity">
-                      <div className="ib-dash-activity__title">Recent Commissions</div>
-                      {[
-                        { client: 'Client #1042', lots: '12 lots', earned: '+$120.00', time: '2m ago' },
-                        { client: 'Client #0891', lots: '8 lots',  earned: '+$80.00',  time: '18m ago' },
-                        { client: 'Client #1210', lots: '5 lots',  earned: '+$50.00',  time: '1h ago' },
-                      ].map((row, i) => (
-                        <div key={i} className="ib-dash-activity__row">
-                          <div className="ib-dash-activity__avatar">{row.client.slice(-2)}</div>
-                          <div className="ib-dash-activity__info">
-                            <span>{row.client}</span>
-                            <span className="ib-dash-activity__lots">{row.lots} · {row.time}</span>
-                          </div>
-                          <span className="ib-dash-activity__earned">{row.earned}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <div className="ib-partner-image-wrapper">
+                  <Image 
+                    src="/images/Partners.png" 
+                    alt="IB Partner Dashboard" 
+                    width={500} 
+                    height={400} 
+                    className="ib-partner-image"
+                    priority
+                  />
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* ── FAQ (Dark) ── */}
+        {/* ── FAQ (Light background with border separation) ── */}
         <section
           id="faq"
           ref={setRef('faq')}
-          className={`ib-section ib-section--dark ib-reveal ${visible.has('faq') ? 'on' : ''}`}
+          className={`ib-section ib-section--faq-light ib-reveal ${visible.has('faq') ? 'on' : ''}`}
         >
           <div className="ib-container">
             <div className="ib-faq-grid">
               <div className="ib-faq__head">
                 <span className="ib-eyebrow">FAQ</span>
-                <h2 className="ib-h2 ib-h2--white">Common Questions</h2>
-                <p className="ib-body ib-body--muted">
+                <h2 className="ib-h2 ib-h2--dark">Common Questions</h2>
+                <p className="ib-body ib-body--muted-light">
                   Have more questions? Our IB team is available 24/7 to help you get started.
                 </p>
-                <Link href="/contact" className="ib-btn-outline-dk" style={{ marginTop: '20px', display: 'inline-flex' }}>
+                <Link href="/contact" className="ib-btn-outline-light" style={{ marginTop: '20px', display: 'inline-flex' }}>
                   Talk to IB Team <FiArrowRight />
                 </Link>
               </div>
@@ -551,7 +478,7 @@ export default function IBPartnersPage() {
           </div>
         </section>
 
-        {/* ── FINAL CTA ── */}
+        {/* ── FINAL CTA (Light) ── */}
         <section className="ib-cta-section ib-cta-light">
           <div className="ib-container">
             <div className="ib-cta-card">
@@ -610,6 +537,9 @@ export default function IBPartnersPage() {
           --lt-border:  #e2e8f0;
           --lt-text:    #0c0f0a;
           --lt-text2:   #6b7280;
+          
+          --faq-bg:     #f5f5f0;
+          --faq-border: #e5e7eb;
 
           --sh-sm: 0 2px 8px rgba(0,0,0,0.06);
           --sh-md: 0 8px 32px rgba(0,0,0,0.10);
@@ -640,6 +570,16 @@ export default function IBPartnersPage() {
         .ib-section--light { background: var(--lt-bg); }
         .ib-section--light .ib-h2 { color: var(--lt-text) !important; }
         .ib-section--light .ib-sub { color: var(--lt-text2) !important; }
+        .ib-section--light .ib-body { color: var(--lt-text2) !important; }
+        
+        /* ── FAQ LIGHT SECTION ── */
+        .ib-section--faq-light {
+          background: var(--faq-bg);
+          border-top: 1px solid var(--faq-border);
+          border-bottom: 1px solid var(--faq-border);
+        }
+        .ib-section--faq-light .ib-h2--dark { color: var(--lt-text) !important; }
+        .ib-section--faq-light .ib-body--muted-light { color: var(--lt-text2) !important; }
 
         /* ══ SECTION HEAD ══ */
         .ib-section-head { text-align:center; margin-bottom:64px; display:flex; flex-direction:column; align-items:center; }
@@ -651,9 +591,11 @@ export default function IBPartnersPage() {
         .ib-eyebrow::before,.ib-eyebrow::after { content:''; display:block; width:28px; height:1.5px; background:currentColor; opacity:.5; border-radius:2px; }
         .ib-h2 { font-size:clamp(1.9rem,4vw,2.9rem); font-weight:900; letter-spacing:-.04em; line-height:1.15; color:var(--dk-text); margin:0 0 10px; }
         .ib-h2--white { color:#fff !important; }
+        .ib-h2--dark { color: var(--lt-text) !important; }
         .ib-sub  { font-size:1rem; color:var(--dk-text2); line-height:1.7; max-width:500px; margin:0 auto; }
         .ib-body { font-size:.94rem; color:var(--dk-text2); line-height:1.78; margin-bottom:16px; }
         .ib-body--muted { color:var(--dk-text2) !important; }
+        .ib-body--muted-light { color: var(--lt-text2) !important; }
 
         /* ══ HERO ══ */
         .ib-hero {
@@ -690,7 +632,6 @@ export default function IBPartnersPage() {
         .h-item { opacity:0; transform:translateY(48px); transition:opacity .9s var(--ease),transform .9s var(--ease); }
         .ib-hero__inner.ready .h-item { opacity:1; transform:translateY(0); }
         .h-d0{transition-delay:.1s;} .h-d1{transition-delay:.25s;} .h-d2{transition-delay:.4s;}
-        .h-d3{transition-delay:.55s;}
 
         .ib-hero__title {
           font-size:clamp(2.4rem,5.5vw,4rem); font-weight:900;
@@ -733,15 +674,15 @@ export default function IBPartnersPage() {
         .ib-btn-ghost:hover { border-color:var(--g); color:var(--g); transform:translateY(-3px); }
         .ib-btn-ghost--light { color:rgba(237,240,234,.75); border-color:rgba(255,255,255,.22); }
         .ib-btn-ghost--light:hover { color:#fff; border-color:rgba(255,255,255,.5); }
-
-        .ib-btn-outline-dk {
+        
+        .ib-btn-outline-light {
           display:inline-flex; align-items:center; gap:8px;
           padding:10px 24px; background:transparent;
           color:var(--g); font-weight:700; font-size:.88rem;
           border:1px solid rgba(63,203,27,.3); border-radius:100px;
           text-decoration:none; transition:all .3s var(--ease);
         }
-        .ib-btn-outline-dk:hover { background:rgba(63,203,27,.1); transform:translateY(-2px); }
+        .ib-btn-outline-light:hover { background:rgba(63,203,27,.1); transform:translateY(-2px); }
 
         /* ── EARN CARD ── */
         .ib-hero__visual { position:relative; display:flex; justify-content:center; align-items:center; }
@@ -892,7 +833,7 @@ export default function IBPartnersPage() {
         .ib-tiers__note { text-align:center; margin-top:24px; font-size:.78rem; color:var(--lt-text2); line-height:1.6; }
         .ib-tiers__note a { color:var(--g); text-decoration:none; }
 
-        /* ══ TOOLS / DASHBOARD (Dark) ══ */
+        /* ══ TOOLS / IMAGE SECTION (Dark) ══ */
         .ib-tools-layout { display:grid; grid-template-columns:1fr 1fr; gap:72px; align-items:center; }
         @media(max-width:900px){ .ib-tools-layout { grid-template-columns:1fr; gap:48px; } }
         .ib-tools__copy .ib-h2 { color:var(--dk-text) !important; }
@@ -908,48 +849,29 @@ export default function IBPartnersPage() {
         .ib-tool-chip svg { color:var(--g); flex-shrink:0; }
         .ib-tool-chip:hover { border-color:var(--g-border); box-shadow:var(--sh-g); transform:translateY(-2px); }
 
-        .ib-tools__dashboard { display:flex; justify-content:center; }
-        .ib-dashboard-mock { width:100%; max-width:480px; background:var(--dk-card); border:1px solid var(--dk-border); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--sh-lg); }
-        .ib-dashboard-mock__header { display:flex; align-items:center; gap:7px; padding:12px 18px; background:rgba(255,255,255,.03); border-bottom:1px solid var(--dk-border); font-size:.72rem; color:var(--dk-text2); font-weight:600; }
-        .ib-dashboard-mock__dot { width:10px; height:10px; border-radius:50%; }
-        .ib-dashboard-mock__dot:nth-child(1){background:#ff5f57;}
-        .ib-dashboard-mock__dot:nth-child(2){background:#febc2e;}
-        .ib-dashboard-mock__dot:nth-child(3){background:#28c840;}
-        .ib-dashboard-mock__header span { margin-left:6px; }
-        .ib-dashboard-mock__body { padding:18px; display:flex; flex-direction:column; gap:16px; }
-        .ib-dash-kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-        .ib-dash-kpi { background:rgba(255,255,255,.04); border:1px solid var(--dk-border); border-radius:var(--r-sm); padding:12px; text-align:center; }
-        .ib-dash-kpi__label { font-size:.62rem; color:var(--dk-text2); display:block; margin-bottom:4px; }
-        .ib-dash-kpi__val { font-size:.95rem; font-weight:900; color:var(--dk-text); display:block; }
-        .ib-dash-kpi__change { font-size:.65rem; font-weight:700; display:block; margin-top:3px; }
-        .ib-dash-kpi__change.up { color:#3fcb1b; }
-        .ib-dash-kpi__change.down { color:#f87171; }
-        .ib-dash-chart { background:rgba(255,255,255,.04); border:1px solid var(--dk-border); border-radius:var(--r-sm); padding:14px 12px 8px; }
-        .ib-dash-chart__label { font-size:.65rem; color:var(--dk-text2); font-weight:600; margin-bottom:10px; }
-        .ib-dash-chart__bars { display:flex; align-items:flex-end; gap:4px; height:60px; }
-        .ib-dash-bar { flex:1; border-radius:3px 3px 0 0; background:linear-gradient(to top,var(--g),rgba(63,203,27,.4)); animation:barGrow .6s var(--ease) calc(var(--bar-i) * 0.05s) both; transform-origin:bottom; }
-        @keyframes barGrow { from{transform:scaleY(0);} to{transform:scaleY(1);} }
-        .ib-dash-chart__months { display:flex; gap:4px; margin-top:5px; }
-        .ib-dash-chart__months span { flex:1; text-align:center; font-size:.55rem; color:var(--dk-text2); }
-        .ib-dash-activity { display:flex; flex-direction:column; gap:10px; }
-        .ib-dash-activity__title { font-size:.72rem; font-weight:700; color:var(--dk-text2); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
-        .ib-dash-activity__row { display:flex; align-items:center; gap:10px; padding:8px 10px; background:rgba(255,255,255,.04); border:1px solid var(--dk-border); border-radius:var(--r-sm); }
-        .ib-dash-activity__avatar { width:30px; height:30px; background:var(--g-faint); border:1px solid var(--g-border); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.6rem; font-weight:800; color:var(--g); flex-shrink:0; }
-        .ib-dash-activity__info { flex:1; }
-        .ib-dash-activity__info span:first-child { display:block; font-size:.76rem; font-weight:700; color:var(--dk-text); }
-        .ib-dash-activity__lots { font-size:.65rem; color:var(--dk-text2); }
-        .ib-dash-activity__earned { font-size:.82rem; font-weight:800; color:#3fcb1b; white-space:nowrap; }
+        .ib-tools__dashboard { display:flex; justify-content:center; align-items:center; }
+        .ib-partner-image-wrapper {
+          width:100%; max-width:500px; margin:0 auto;
+          border-radius:var(--r-lg); overflow:hidden;
+          box-shadow:var(--sh-lg);
+          transition:transform .4s var(--ease);
+        }
+        .ib-partner-image-wrapper:hover { transform:translateY(-6px); }
+        .ib-partner-image {
+          width:100%; height:auto; display:block;
+          object-fit:cover;
+        }
 
-        /* ══ FAQ (Dark — MT5 style) ══ */
+        /* ══ FAQ (Light) ══ */
         .ib-faq-grid { display:grid; grid-template-columns:1fr 1.5fr; gap:60px; align-items:start; }
         @media(max-width:900px){ .ib-faq-grid { grid-template-columns:1fr; gap:40px; } }
 
-        .ib-faq__head .ib-h2 { color:#fff !important; }
-        .ib-faq__head .ib-body { color:var(--dk-text2) !important; }
+        .ib-faq__head .ib-h2 { color:var(--lt-text) !important; }
+        .ib-faq__head .ib-body { color:var(--lt-text2) !important; }
         .ib-faq__list { display:flex; flex-direction:column; gap:12px; }
 
         .ib-faq-item {
-          background:var(--dk-card); border:1px solid var(--dk-border);
+          background:var(--lt-card); border:1px solid var(--lt-border);
           border-radius:16px; cursor:pointer; overflow:hidden;
           transition:border-color .3s,box-shadow .3s;
         }
@@ -958,12 +880,12 @@ export default function IBPartnersPage() {
         .ib-faq-item__q {
           display:flex; justify-content:space-between; align-items:center;
           padding:18px 20px; gap:16px;
-          font-size:.92rem; font-weight:600; color:var(--dk-text); line-height:1.4;
+          font-size:.92rem; font-weight:600; color:var(--lt-text); line-height:1.4;
         }
         .ib-faq-item__icon { color:var(--g); transition:.3s; display:flex; align-items:center; flex-shrink:0; margin-left:12px; }
         .ib-faq-item__a { overflow:hidden; max-height:0; transition:max-height .4s var(--ease); }
         .ib-faq-item.open .ib-faq-item__a { max-height:300px; }
-        .ib-faq-item__a p { margin:0; padding:14px 20px 18px; font-size:.85rem; color:var(--dk-text2); line-height:1.7; border-top:1px solid rgba(255,255,255,.06); }
+        .ib-faq-item__a p { margin:0; padding:14px 20px 18px; font-size:.85rem; color:var(--lt-text2); line-height:1.7; border-top:1px solid var(--lt-border); }
 
         /* ══ CTA LIGHT ══ */
         .ib-cta-light { background:linear-gradient(135deg,#f8fafc 0%,#eef2ff 100%); padding:80px 0; }
@@ -998,6 +920,7 @@ export default function IBPartnersPage() {
           .ib-tools__grid { grid-template-columns:1fr; }
           .ib-hero__title { font-size:2.2rem; }
           .ib-tiers { max-width:100%; }
+          .ib-partner-image-wrapper { max-width:100%; }
         }
       `}</style>
     </>

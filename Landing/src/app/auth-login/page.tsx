@@ -1,3 +1,4 @@
+// src/app/auth-signin/page.tsx
 "use client"
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -5,31 +6,19 @@ import Image from 'next/image'
 import Switcher from '../componets/switcher'
 import {
   Mail, Lock, Eye, EyeOff, ArrowRight,
-  Shield, Zap, Globe, Users, TrendingUp, TrendingDown,
-  Activity, CheckCircle,
+  Shield, Zap, Globe, Users, Activity, CheckCircle,
 } from 'react-feather'
 
 /* ── Same green theme as main page ── */
 const GREEN = '#3fcb1b'
 
-const TICKERS = [
-  { n: 'EUR/USD', v: '1.08432', up: true,  c: '+0.04%' },
-  { n: 'GBP/USD', v: '1.27680', up: true,  c: '+0.19%' },
-  { n: 'XAU/USD', v: '2341.20', up: true,  c: '+0.35%' },
-  { n: 'BTC/USD', v: '68,200',  up: true,  c: '+1.23%' },
-  { n: 'NAS100',  v: '17,890',  up: true,  c: '+0.33%' },
-  { n: 'USD/JPY', v: '151.22',  up: false, c: '-0.12%' },
-  { n: 'US30',    v: '38,512',  up: false, c: '-0.08%' },
-  { n: 'ETH/USD', v: '3,410',   up: true,  c: '+0.88%' },
-]
-
 const TRUST_ITEMS = [
-  { icon: <Users    size={14} strokeWidth={1.8} />, label: '500K+ Active Clients'  },
-  { icon: <Globe    size={14} strokeWidth={1.8} />, label: '170+ Global Markets'   },
-  { icon: <Activity size={14} strokeWidth={1.8} />, label: 'Raw Spreads 0.0 pips'  },
-  { icon: <Zap      size={14} strokeWidth={1.8} />, label: '<40ms Execution'        },
-  { icon: <Shield   size={14} strokeWidth={1.8} />, label: 'FCA & ASIC Regulated'  },
-  { icon: <CheckCircle size={14} strokeWidth={1.8} />, label: '24/7 Support'       },
+  { icon: <Users    size={15} strokeWidth={2} />, label: '500K+ Active Clients'  },
+  { icon: <Globe    size={15} strokeWidth={2} />, label: '170+ Global Markets'   },
+  { icon: <Activity size={15} strokeWidth={2} />, label: 'Raw Spreads 0.0 pips'  },
+  { icon: <Zap      size={15} strokeWidth={2} />, label: '<40ms Execution'        },
+  { icon: <Shield   size={15} strokeWidth={2} />, label: 'FCA & ASIC Regulated'  },
+  { icon: <CheckCircle size={15} strokeWidth={2} />, label: '24/7 Support'       },
 ]
 
 export default function LoginPage() {
@@ -50,7 +39,6 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     setTimeout(() => {
-      // window.location.href = 'http://localhost:3001/dashboard'
       window.location.href = 'https://gulam-dashboard.netlify.app/dashboard'
     }, 1200)
   }
@@ -71,16 +59,16 @@ export default function LoginPage() {
           <div className="fl__left-lines" />
 
           <div className="fl__left-inner">
-            {/* Logo with animation */}
+            {/* Logo with animation - Dark version with increased brightness */}
             <div className="fl__logo-wrapper hero-float hero-float--1">
               <Link href="/" className="fl__logo">
                 <Image
                   src="/images/FoxnanceMain.png"
-                  width={180}
-                  height={48}
+                  width={220}
+                  height={55}
                   alt="Foxnance"
-                  className="fl__logo-img"
-                  style={{ objectFit: 'contain', height: '48px', width: 'auto' }}
+                  className="fl__logo-img fl__logo-img--dark"
+                  style={{ objectFit: 'contain', height: '55px', width: 'auto' }}
                   priority
                 />
               </Link>
@@ -100,40 +88,14 @@ export default function LoginPage() {
               </p>
             </div>
 
-            {/* Trust items with hover effects */}
+            {/* Trust items with darker, more visible icons - no hover effects */}
             <div className="fl__trust-grid hero-float hero-float--5">
               {TRUST_ITEMS.map((t, i) => (
-                <div key={i} className="fl__trust-item" style={{ animationDelay: `${i * 0.05}s` }}>
+                <div key={i} className="fl__trust-item">
                   <div className="fl__trust-icon">{t.icon}</div>
                   <span className="fl__trust-lbl">{t.label}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Live market card with floating animation */}
-            <div className="fl__market-card hero-float hero-float--6">
-              <div className="fl__market-top">
-                <div className="fl__market-live">
-                  <span className="fl__live-dot" />
-                  <span>LIVE MARKETS</span>
-                </div>
-                <span className="fl__market-note">24/5 Trading</span>
-              </div>
-              <div className="fl__market-rows">
-                {TICKERS.slice(0, 4).map((t, i) => (
-                  <div key={i} className="fl__market-row">
-                    <span className="fl__mkt-sym">{t.n}</span>
-                    <span className="fl__mkt-val">{t.v}</span>
-                    <span className={`fl__mkt-chg ${t.up ? 'up' : 'dn'}`}>
-                      {t.up
-                        ? <TrendingUp size={10} strokeWidth={2} style={{display:'inline',marginRight:2}} />
-                        : <TrendingDown size={10} strokeWidth={2} style={{display:'inline',marginRight:2}} />
-                      }
-                      {t.c}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
@@ -147,10 +109,15 @@ export default function LoginPage() {
               {/* Card header */}
               <div className="fl__card-top">
                 <Link href="/" className="fl__card-logo">
-                  <Image src="/images/FoxnanceMain.png"
-                    width={160} height={40} alt="Foxnance"
-                    className="fl__card-logo-img"
-                    style={{ objectFit: 'contain', height: '40px', width: 'auto' }} priority />
+                  <Image 
+                    src="/images/FoxnanceMain.png"
+                    width={200} 
+                    height={50} 
+                    alt="Foxnance"
+                    className="fl__card-logo-img fl__logo-img--light"
+                    style={{ objectFit: 'contain', height: '50px', width: 'auto' }} 
+                    priority 
+                  />
                 </Link>
                 <h2 className="fl__card-h2">Sign in to your account</h2>
                 <p className="fl__card-sub">Access global markets in seconds</p>
@@ -298,7 +265,7 @@ export default function LoginPage() {
         #topnav { display: none !important; }
         #topnav + div[aria-hidden="true"] { display: none !important; }
 
-        * { font-family: 'Aktiv Grotesk', 'Inter', -apple-system, sans-serif; box-sizing: border-box; }
+        * { font-family: 'Inter', -apple-system, sans-serif; box-sizing: border-box; }
 
         /* ══ LAYOUT ══ */
         .fl {
@@ -346,7 +313,7 @@ export default function LoginPage() {
           padding: 56px 52px; gap: 32px; width: 100%;
         }
 
-        /* Logo with glow effect */
+        /* Logo with glow effect - Dark version with increased brightness */
         .fl__logo-wrapper {
           position: relative;
           display: inline-block;
@@ -358,14 +325,14 @@ export default function LoginPage() {
           transition: all 0.3s ease;
         }
         
-        .fl__logo-img {
+        .fl__logo-img--dark {
+          filter: brightness(1.2) contrast(1.1);
           transition: all 0.3s ease;
-          filter: brightness(1);
         }
         
-        .fl__logo-wrapper:hover .fl__logo-img {
+        .fl__logo-wrapper:hover .fl__logo-img--dark {
           transform: scale(1.02);
-          filter: brightness(1.05) drop-shadow(0 0 8px rgba(63,203,27,0.3));
+          filter: brightness(1.3) contrast(1.15) drop-shadow(0 0 8px rgba(63,203,27,0.3));
         }
         
         .fl__logo-glow {
@@ -411,7 +378,6 @@ export default function LoginPage() {
         .hero-animate .hero-float--3 { transition-delay: 0.25s; }
         .hero-animate .hero-float--4 { transition-delay: 0.35s; }
         .hero-animate .hero-float--5 { transition-delay: 0.45s; }
-        .hero-animate .hero-float--6 { transition-delay: 0.55s; }
 
         .hero-line {
           display: block;
@@ -455,18 +421,28 @@ export default function LoginPage() {
           line-height: 1.65; max-width: 400px; font-weight: 400;
         }
 
-        /* Trust grid */
+        /* Trust grid - Darker, more visible icons with NO hover effects */
         .fl__trust-grid {
-          display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+          display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+          margin-top: 8px;
         }
         
         .fl__trust-item {
-          display: flex; align-items: center; gap: 8px;
-          font-size: .82rem; color: rgba(255,255,255,0.65); font-weight: 500;
+          display: flex; align-items: center; gap: 10px;
+          font-size: .82rem; font-weight: 500;
+          cursor: default;
           opacity: 0;
           transform: translateX(-10px);
           animation: slideInLeft 0.5s ease forwards;
         }
+        
+        /* Stagger animation delays */
+        .fl__trust-item:nth-child(1) { animation-delay: 0.05s; }
+        .fl__trust-item:nth-child(2) { animation-delay: 0.1s; }
+        .fl__trust-item:nth-child(3) { animation-delay: 0.15s; }
+        .fl__trust-item:nth-child(4) { animation-delay: 0.2s; }
+        .fl__trust-item:nth-child(5) { animation-delay: 0.25s; }
+        .fl__trust-item:nth-child(6) { animation-delay: 0.3s; }
         
         @keyframes slideInLeft {
           to {
@@ -476,75 +452,27 @@ export default function LoginPage() {
         }
         
         .fl__trust-icon {
-          width: 28px; height: 28px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
+          width: 32px;
+          height: 32px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           border-radius: 8px;
-          background: rgba(63,203,27,0.15); color: var(--green);
-          transition: all 0.3s ease;
+          background: rgba(63,203,27,0.18);
         }
         
-        .fl__trust-item:hover .fl__trust-icon {
-          transform: scale(1.1);
-          background: rgba(63,203,27,0.25);
+        .fl__trust-icon svg {
+          stroke-width: 2;
+          color: #4ade80;
+          stroke: #4ade80;
         }
         
-        .fl__trust-lbl { line-height: 1.3; }
-
-        /* Market card */
-        .fl__market-card {
-          background: rgba(255,255,255,0.04);
-          border: 1px solid rgba(255,255,255,0.08);
-          border-radius: 12px; padding: 16px;
-          transition: all 0.3s ease;
-          animation: float 3s ease-in-out infinite;
+        .fl__trust-lbl { 
+          line-height: 1.3; 
+          color: rgba(255,255,255,0.85);
+          font-weight: 500;
         }
-        
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-5px); }
-        }
-        
-        .fl__market-card:hover {
-          border-color: rgba(63,203,27,0.3);
-          background: rgba(63,203,27,0.02);
-          transform: translateY(-2px);
-        }
-        
-        .fl__market-top {
-          display: flex; justify-content: space-between;
-          align-items: center; margin-bottom: 10px;
-        }
-        
-        .fl__market-live {
-          display: flex; align-items: center; gap: 6px;
-          font-size: 10px; font-weight: 800;
-          letter-spacing: .1em; color: var(--green);
-        }
-        
-        .fl__live-dot {
-          width: 6px; height: 6px; border-radius: 50%;
-          background: var(--green); flex-shrink: 0;
-          animation: pulseDot 1.8s infinite;
-        }
-        
-        @keyframes pulseDot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.8); }
-        }
-        
-        .fl__market-note { font-size: 11px; color: rgba(255,255,255,0.3); }
-        
-        .fl__market-rows { display: flex; flex-direction: column; gap: 1px; }
-        .fl__market-row {
-          display: flex; align-items: center; padding: 8px 8px;
-          border-radius: 8px; font-size: .8rem; transition: background .15s;
-        }
-        .fl__market-row:hover { background: rgba(255,255,255,0.04); transform: translateX(4px); }
-        .fl__mkt-sym { width: 72px; color: #fff; font-weight: 700; font-family: monospace; }
-        .fl__mkt-val { flex: 1; color: rgba(255,255,255,0.45); font-family: monospace; font-size: .78rem; }
-        .fl__mkt-chg { font-weight: 700; font-size: .75rem; display: flex; align-items: center; }
-        .fl__mkt-chg.up { color: #4ade80; }
-        .fl__mkt-chg.dn { color: #f87171; }
 
         /* ══ RIGHT PANEL - Glass Effect ══ */
         .fl__right {
@@ -562,7 +490,7 @@ export default function LoginPage() {
         /* Card with glass effect */
         .fl__card {
           width: 100%; max-width: 440px;
-          background: rgba(255, 255, 255, 0.95);
+          background: rgba(255, 255, 255, 0.98);
           backdrop-filter: blur(10px);
           border-radius: 20px;
           box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
@@ -572,9 +500,8 @@ export default function LoginPage() {
         }
         
         .fl__card:hover {
-          box-shadow: 0 24px 48px rgba(63,203,27,0.12);
-          border-color: rgba(63,203,27,0.2);
-          transform: translateY(-2px);
+          box-shadow: 0 24px 48px rgba(63,203,27,0.10);
+          border-color: rgba(63,203,27,0.18);
         }
 
         .fl__card-top {
@@ -582,12 +509,16 @@ export default function LoginPage() {
           border-bottom: 1px solid rgba(0,0,0,0.08);
         }
 
-        .fl__card-logo-img {
-          transition: all 0.3s ease;
+        /* Card logo — full black render so it reads hard on white background.
+           Hover effect removed entirely. */
+        .fl__logo-img--light {
+          filter: brightness(0) saturate(100%);
         }
         
-        .fl__card-logo:hover .fl__card-logo-img {
-          transform: scale(1.02);
+        .fl__card-logo {
+          display: inline-block;
+          cursor: default;
+          pointer-events: none;
         }
 
         .fl__card-h2 {
@@ -739,11 +670,62 @@ export default function LoginPage() {
           font-size: .7rem; color: #9ca3af; justify-content: center;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-          .fl__left-inner { padding: 40px 24px; }
-          .fl__card { margin: 0 16px; }
-          .fl__form { padding: 20px 24px; }
+        /* ── Responsive ─────────────────────────────── */
+
+        /* Small phones (<380px) */
+        @media (max-width: 380px) {
+          .fl__card { margin: 0 10px; border-radius: 16px; }
+          .fl__card-top { padding: 24px 18px 18px; }
+          .fl__form { padding: 18px 18px 28px; gap: 14px; }
+          .fl__card-h2 { font-size: 1.2rem; }
+          .fl__socials { grid-template-columns: 1fr; }
+          .fl__soc-lbl { display: inline; }
+          .fl__form-wrap { padding: 24px 10px; }
+        }
+
+        /* Phones (381px–767px) */
+        @media (max-width: 767px) {
+          .fl {
+            position: relative; /* allow page scroll on mobile */
+            overflow-y: auto;
+            min-height: 100vh;
+          }
+          .fl__right {
+            min-height: 100vh;
+            padding: 0;
+          }
+          .fl__form-wrap {
+            padding: 32px 16px;
+            justify-content: flex-start;
+            padding-top: 48px;
+          }
+          .fl__card { margin: 0 12px; }
+          .fl__card-top { padding: 28px 22px 20px; }
+          .fl__form { padding: 20px 22px 28px; gap: 16px; }
+          .fl__card-h2 { font-size: 1.35rem; }
+          .fl__submit { padding: 13px 18px; font-size: .88rem; }
+          .fl__options { flex-wrap: wrap; gap: 10px; }
+        }
+
+        /* Tablet (768px–1023px) */
+        @media (min-width: 768px) and (max-width: 1023px) {
+          .fl__form-wrap { padding: 48px 24px; }
+          .fl__card { max-width: 480px; }
+          .fl__card-top { padding: 36px 32px 24px; }
+          .fl__form { padding: 24px 32px 36px; }
+        }
+
+        /* Desktop (≥1024px) already handled by grid split above */
+        @media (min-width: 1024px) {
+          .fl__left-inner { padding: 56px 52px; }
+          .fl__right { overflow-y: auto; }
+          .fl__form-wrap { padding: 48px 32px; }
+        }
+
+        /* Large desktop */
+        @media (min-width: 1440px) {
+          .fl__left-inner { padding: 72px 64px; }
+          .fl__card { max-width: 460px; }
         }
       `}</style>
     </>

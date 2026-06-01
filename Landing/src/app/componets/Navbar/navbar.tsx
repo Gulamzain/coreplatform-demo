@@ -68,8 +68,9 @@ const NAV_ITEMS = [
     mega: false,
     links: [
       { name: 'Partner Program', href: '/partners/partner', icon: LuHandshake },
-      // { name: 'Introducing Broker', href: '/partners/ib', icon: LuUsers },
-      // { name: 'Affiliates', href: '/partners/affiliates', icon: LuAward },
+      { name: 'Sign in', href: '/auth-login/', icon: LuUsers },
+      { name: 'Sign Up', href: '/auth-signup/', icon: LuAward },
+       { name: 'Partner App', href: '/partners/partnerapp', icon: LuHandshake },
     ],
   },
   {

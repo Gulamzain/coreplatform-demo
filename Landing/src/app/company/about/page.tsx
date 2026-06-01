@@ -79,7 +79,7 @@ export default function AboutPage() {
 
       <div id="fox-about">
 
-        {/* ── HERO ── */}
+        {/* ── HERO (Dark) ── */}
         <section className="fox-hero">
           <div className="fox-hero__canvas">
             <div className="fox-hero__noise" />
@@ -140,7 +140,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── STORY ── */}
+        {/* ── STORY / WHO WE ARE (Light) with Enlarged Image ── */}
         <section
           id="story"
           ref={setRef('story')}
@@ -164,32 +164,21 @@ export default function AboutPage() {
                   Today, Foxnance stands as a multi-regulated broker, offering 2,250+ instruments
                   with ultra-fast execution and spreads from 0.0 pips.
                 </p>
-
-
               </div>
               <div className="fox-story__visual">
                 <div className="fox-story__glow" />
                 <div className="fox-story__card-stack">
                   <div className="fox-story__bg-card" />
                   <div className="fox-story__mid-card" />
-                  <div className="fox-story__img-wrap">
-                    {/* SVG Placeholder for story image */}
-                    <svg className="fox-story__svg-placeholder" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="250" cy="250" r="200" fill="url(#grad)" opacity="0.08"/>
-                      <rect x="160" y="200" width="180" height="120" rx="12" fill="#3fcb1b" opacity="0.12"/>
-                      <path d="M190 250 L230 230 L270 270 L310 220" stroke="#3fcb1b" strokeWidth="3.5" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                      <circle cx="190" cy="250" r="6" fill="#3fcb1b"/>
-                      <circle cx="230" cy="230" r="6" fill="#3fcb1b"/>
-                      <circle cx="270" cy="270" r="6" fill="#3fcb1b"/>
-                      <circle cx="310" cy="220" r="6" fill="#3fcb1b"/>
-                      <text x="250" y="380" textAnchor="middle" fill="#3fcb1b" fontSize="18" fontWeight="bold" fontFamily="monospace">15+ YEARS</text>
-                      <defs>
-                        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#3fcb1b"/>
-                          <stop offset="100%" stopColor="#2e9c14"/>
-                        </linearGradient>
-                      </defs>
-                    </svg>
+                  <div className="fox-story__img-wrap fox-story__img-wrap--enlarged">
+                    <Image 
+                      src="/images/About-us-1.png" 
+                      alt="Foxnance Story" 
+                      width={600} 
+                      height={600} 
+                      className="fox-story__image"
+                      priority
+                    />
                   </div>
                 </div>
               </div>
@@ -197,7 +186,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── TIMELINE ── */}
+        {/* ── TIMELINE (Dark) ── */}
         <section
           id="history"
           ref={setRef('history')}
@@ -235,7 +224,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── VALUES ── */}
+        {/* ── VALUES (Light) ── */}
         <section
           id="values"
           ref={setRef('values')}
@@ -263,7 +252,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* ── WHY FOXNANCE ── */}
+        {/* ── WHY FOXNANCE (Dark) ── */}
         <section
           id="why"
           ref={setRef('why')}
@@ -294,9 +283,7 @@ export default function AboutPage() {
           </div>
         </section>
 
-
-
-        {/* ── CTA ── */}
+        {/* ── CTA / READY TO TRADE (Light) with Image ── */}
         <section
           id="ready"
           ref={setRef('ready')}
@@ -331,14 +318,13 @@ export default function AboutPage() {
               </div>
               <div className="fox-cta__visual">
                 <div className="fox-cta__img-glow" />
-                {/* SVG Placeholder for CTA image */}
-                <svg className="fox-cta__svg-placeholder" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="200" cy="200" r="160" fill="#3fcb1b" opacity="0.06"/>
-                  <path d="M200 100 L230 160 L200 160 L230 220 L200 220 L230 280 L170 280 L170 220 L200 220 L170 160 L200 160 L170 100 L200 100Z" fill="#3fcb1b" opacity="0.5"/>
-                  <circle cx="200" cy="280" r="45" fill="#3fcb1b" opacity="0.12"/>
-                  <text x="200" y="360" textAnchor="middle" fill="#3fcb1b" fontSize="16" fontWeight="bold" fontFamily="monospace">START TRADING</text>
-                  <path d="M200 140 L200 175 M185 160 L215 160" stroke="#3fcb1b" strokeWidth="2.5" strokeLinecap="round"/>
-                </svg>
+                <Image 
+                  src="/images/about-us-2.png" 
+                  alt="Start Trading with Foxnance" 
+                  width={450} 
+                  height={450} 
+                  className="fox-cta__image"
+                />
               </div>
             </div>
           </div>
@@ -454,7 +440,7 @@ export default function AboutPage() {
 
         .h-item { opacity:0; transform:translateY(50px); transition:opacity 0.9s var(--ease-spring),transform 0.9s var(--ease-spring); }
         .fox-hero__inner.ready .h-item { opacity:1; transform:translateY(0); }
-        .h-d0{transition-delay:0.1s;} .h-d1{transition-delay:0.25s;} .h-d2{transition-delay:0.4s;} .h-d3{transition-delay:0.55s;}
+        .h-d0{transition-delay:0.1s;} .h-d1{transition-delay:0.25s;} .h-d2{transition-delay:0.4s;}
 
         .fox-hero__title { font-size:clamp(2.6rem,6vw,4.4rem); font-weight:900; line-height:1.13; color:#fff; letter-spacing:-0.045em; margin:0 0 20px; }
         .fox-hero__accent {
@@ -473,20 +459,21 @@ export default function AboutPage() {
         .fox-hero__scroll-dot { width:4px; height:8px; background:var(--green); border-radius:100px; animation:scrollBob 2s ease-in-out infinite; }
         @keyframes scrollBob { 0%,100%{opacity:1;transform:translateY(0);} 60%{opacity:0.3;transform:translateY(10px);} }
 
-        /* ══ STORY — LIGHT ══ */
+        /* ══ STORY — LIGHT with Enlarged Image ══ */
         .fox-story { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
         @media(max-width:900px){ .fox-story { grid-template-columns:1fr; gap:48px; } }
         .fox-story__text { display:flex; flex-direction:column; }
-        .fox-section--light .fox-story__kpis { background:var(--lt-card); border-color:var(--lt-border); }
 
         .fox-story__visual { position:relative; display:flex; justify-content:center; }
-        .fox-story__glow { position:absolute; width:320px; height:320px; background:radial-gradient(circle,var(--green-glow),transparent); border-radius:50%; filter:blur(60px); z-index:0; }
-        .fox-story__card-stack { position:relative; width:420px; max-width:100%; }
+        .fox-story__glow { position:absolute; width:380px; height:380px; background:radial-gradient(circle,var(--green-glow),transparent); border-radius:50%; filter:blur(60px); z-index:0; }
+        .fox-story__card-stack { position:relative; width:520px; max-width:100%; }
         .fox-story__bg-card, .fox-story__mid-card { position:absolute; inset:0; border-radius:var(--radius-lg); border:1px solid var(--border-green); }
         .fox-story__bg-card { transform:rotate(6deg) translateY(12px); background:var(--green-faint); opacity:0.5; }
         .fox-story__mid-card { transform:rotate(3deg) translateY(6px); background:var(--lt-card); box-shadow:var(--shadow-md); }
-        .fox-story__img-wrap { position:relative; z-index:1; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-lg),0 0 0 1px var(--border-green); }
-        .fox-story__svg-placeholder { display:block; width:100%; height:auto; background:var(--lt-card); }
+        .fox-story__img-wrap { position:relative; z-index:1; border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-lg),0 0 0 1px var(--border-green); background:var(--lt-card); }
+        .fox-story__img-wrap--enlarged { transform:scale(1.05); }
+        .fox-story__image { width:100%; height:auto; display:block; object-fit:cover; transition:transform 0.5s var(--ease-spring); }
+        .fox-story__img-wrap:hover .fox-story__image { transform:scale(1.02); }
 
         /* ══ TIMELINE — DARK ══ */
         .fox-timeline { position:relative; max-width:860px; margin:0 auto; padding:20px 0; }
@@ -559,32 +546,33 @@ export default function AboutPage() {
         .fox-why-card__arrow { color:var(--dk-text2); opacity:0; transform:translateX(-8px); transition:all 0.3s; position:relative; z-index:1; }
         .fox-why-card:hover .fox-why-card__arrow { opacity:1; transform:translateX(0); color:var(--green); }
 
-        /* ══ CTA — DARK ══ */
-        .fox-cta { background: var(--dk-bg); }
+        /* ══ CTA — LIGHT with Image ══ */
+        .fox-cta { background: var(--lt-bg); }
         .fox-cta__card {
           display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center;
-          background:linear-gradient(135deg,rgba(63,203,27,0.09) 0%,rgba(0,0,0,0.15) 60%);
-          border:1px solid rgba(63,203,27,0.2); border-radius:var(--radius-lg);
+          background:linear-gradient(135deg,rgba(63,203,27,0.05) 0%,rgba(255,255,255,0.02) 60%);
+          border:1px solid var(--lt-border);
+          border-radius:var(--radius-lg);
           padding:64px 60px; position:relative; overflow:hidden;
-          box-shadow:0 0 80px rgba(63,203,27,0.08);
+          box-shadow:var(--shadow-lg);
         }
         @media(max-width:900px){ .fox-cta__card { grid-template-columns:1fr; padding:48px 32px; gap:40px; text-align:center; } }
         .fox-cta__orb { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
-        .fox-cta__orb--1 { width:400px; height:400px; background:radial-gradient(circle,rgba(63,203,27,0.14),transparent); top:-100px; right:-100px; animation:orbDrift 10s ease-in-out infinite; }
-        .fox-cta__orb--2 { width:300px; height:300px; background:radial-gradient(circle,rgba(45,180,10,0.1),transparent); bottom:-80px; left:-60px; animation:orbDrift 14s ease-in-out infinite reverse; }
+        .fox-cta__orb--1 { width:400px; height:400px; background:radial-gradient(circle,rgba(63,203,27,0.08),transparent); top:-100px; right:-100px; animation:orbDrift 10s ease-in-out infinite; }
+        .fox-cta__orb--2 { width:300px; height:300px; background:radial-gradient(circle,rgba(63,203,27,0.06),transparent); bottom:-80px; left:-60px; animation:orbDrift 14s ease-in-out infinite reverse; }
         @keyframes orbDrift { 0%,100%{transform:translate(0,0);} 50%{transform:translate(15px,-15px);} }
         .fox-cta__content { position:relative; z-index:1; }
-        .fox-cta__title { font-size:clamp(1.6rem,3vw,2.4rem); font-weight:900; color:#fff; letter-spacing:-0.04em; line-height:1.18; margin:0 0 16px; }
-        .fox-cta__desc { font-size:0.95rem; color:rgba(237,240,234,0.6); line-height:1.7; margin-bottom:32px; }
+        .fox-cta__title { font-size:clamp(1.6rem,3vw,2.4rem); font-weight:900; color:var(--lt-text); letter-spacing:-0.04em; line-height:1.18; margin:0 0 16px; }
+        .fox-cta__desc { font-size:0.95rem; color:var(--lt-text2); line-height:1.7; margin-bottom:32px; }
         .fox-cta__actions { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:28px; }
         @media(max-width:900px){ .fox-cta__actions { justify-content:center; } }
         .fox-cta__features { display:flex; flex-wrap:wrap; gap:18px; }
         @media(max-width:900px){ .fox-cta__features { justify-content:center; } }
-        .fox-cta__feature { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:rgba(237,240,234,0.55); font-weight:500; }
+        .fox-cta__feature { display:flex; align-items:center; gap:6px; font-size:0.78rem; color:var(--lt-text2); font-weight:500; }
         .fox-cta__feature svg { color:var(--green); }
         .fox-cta__visual { position:relative; display:flex; justify-content:center; z-index:1; }
-        .fox-cta__img-glow { position:absolute; width:300px; height:300px; background:radial-gradient(circle,rgba(63,203,27,0.2),transparent); border-radius:50%; filter:blur(50px); }
-        .fox-cta__svg-placeholder { max-width:100%; height:auto; position:relative; z-index:1; filter:drop-shadow(0 20px 40px rgba(63,203,27,0.2)); animation:floatImg 6s ease-in-out infinite; }
+        .fox-cta__img-glow { position:absolute; width:350px; height:350px; background:radial-gradient(circle,rgba(63,203,27,0.15),transparent); border-radius:50%; filter:blur(50px); }
+        .fox-cta__image { max-width:100%; height:auto; position:relative; z-index:1; filter:drop-shadow(0 20px 40px rgba(63,203,27,0.15)); animation:floatImg 6s ease-in-out infinite; border-radius:var(--radius-md); }
         @keyframes floatImg { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-14px);} }
 
         /* ══ BUTTONS ══ */
@@ -592,7 +580,7 @@ export default function AboutPage() {
         .fox-btn-primary::before { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,0.25),transparent); transform:translateX(-100%); transition:transform 0.5s var(--ease-out); }
         .fox-btn-primary:hover { transform:translateY(-3px); box-shadow:0 10px 30px rgba(63,203,27,0.4); }
         .fox-btn-primary:hover::before { transform:translateX(100%); }
-        .fox-btn-secondary { display:inline-flex; align-items:center; gap:8px; padding:14px 30px; background:transparent; color:rgba(237,240,234,0.85); font-weight:700; font-size:0.88rem; border:1.5px solid rgba(255,255,255,0.2); border-radius:100px; text-decoration:none; transition:all 0.3s var(--ease-out); }
+        .fox-btn-secondary { display:inline-flex; align-items:center; gap:8px; padding:14px 30px; background:transparent; color:var(--lt-text); font-weight:700; font-size:0.88rem; border:1.5px solid var(--lt-border); border-radius:100px; text-decoration:none; transition:all 0.3s var(--ease-out); }
         .fox-btn-secondary:hover { border-color:var(--green); color:var(--green); transform:translateY(-3px); box-shadow:0 8px 24px rgba(63,203,27,0.15); }
 
         /* ══ RESPONSIVE ══ */
@@ -605,6 +593,7 @@ export default function AboutPage() {
           .fox-tl-item__dot { left:10px; }
           .fox-story__card-stack { width:100%; }
           .fox-story__bg-card, .fox-story__mid-card { display:none; }
+          .fox-story__img-wrap--enlarged { transform:scale(1); }
           .fox-cta__card { padding:40px 24px; }
         }
       `}</style>
