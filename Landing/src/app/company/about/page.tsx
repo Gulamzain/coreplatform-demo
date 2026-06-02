@@ -8,7 +8,7 @@ import {
   BiDollar, BiShield, BiGlobe, BiCheckCircle,
   BiTrendingUp, BiLock, BiAward, BiLineChart,
   BiTrophy, BiUserCheck, BiBarChartSquare, BiTargetLock,
-  BiRocket, BiHeart, BiGroup, BiStar, BiTime, BiSupport
+  BiRocket, BiHeart, BiGroup, BiStar, BiTime, BiSupport, BiSun, BiMoon
 } from 'react-icons/bi';
 import { FiArrowRight, FiCheck, FiAward, FiShield, FiGlobe, FiZap } from 'react-icons/fi';
 import { FaRegHandshake, FaChartLine, FaUserTie, FaGlobeAmericas } from 'react-icons/fa';
@@ -53,7 +53,44 @@ export default function AboutPage() {
   const [heroReady, setHeroReady] = useState(false);
   const [activeMilestone, setActiveMilestone] = useState<number | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
+
+  // Check for saved theme preference on mount (default to light)
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    
+    const savedTheme = localStorage.getItem('theme')
+    
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+    } else {
+      setIsDarkMode(false)
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      if (!savedTheme) {
+        localStorage.setItem('theme', 'light')
+      }
+    }
+  }, [])
+
+  // Toggle dark mode function
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   useEffect(() => {
     const t = setTimeout(() => setHeroReady(true), 120);
@@ -78,6 +115,18 @@ export default function AboutPage() {
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
 
       <div id="fox-about">
+
+        {/* Dark Mode Toggle Button */}
+        <button 
+          onClick={toggleDarkMode} 
+          className="dark-mode-toggle"
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? <BiSun size={20} /> : <BiMoon size={20} />}
+          <span className="dark-mode-toggle__tooltip">
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </span>
+        </button>
 
         {/* ── HERO (Dark) ── */}
         <section className="fox-hero">
@@ -338,7 +387,7 @@ export default function AboutPage() {
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap');
 
-        /* ══ TOKENS ══ */
+        /* YOUR ORIGINAL LIGHT THEME STYLES (UNCHANGED) */
         #fox-about {
           --green:        #3fcb1b;
           --green-dk:     #2e9c14;
@@ -371,6 +420,118 @@ export default function AboutPage() {
           background: var(--dk-bg);
           color: var(--dk-text);
         }
+
+        /* DARK MODE OVERRIDES (ADDED) */
+        .dark-mode #fox-about {
+          --lt-bg:      #0a0a0a;
+          --lt-card:    #141414;
+          --lt-border:  rgba(255,255,255,0.08);
+          --lt-text:    #edf0ea;
+          --lt-text2:   rgba(237,240,234,0.55);
+        }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--green);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+          color: #000;
+        }
+        
+        .dark-mode-toggle:hover {
+          transform: scale(1.1);
+          box-shadow: 0 8px 24px rgba(63, 203, 27, 0.4);
+        }
+        
+        .dark-mode-toggle__tooltip {
+          position: absolute;
+          right: 56px;
+          white-space: nowrap;
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover .dark-mode-toggle__tooltip {
+          opacity: 1;
+        }
+
+        /* Dark mode overrides for light background elements */
+        .dark-mode .fox-section--light {
+          background: var(--lt-bg);
+        }
+        
+        .dark-mode .fox-story__img-wrap {
+          background: var(--lt-card);
+          border-color: var(--lt-border);
+        }
+        
+        .dark-mode .fox-story__mid-card {
+          background: var(--lt-card);
+        }
+        
+        .dark-mode .fox-value-card {
+          background: var(--lt-card);
+          border-color: var(--lt-border);
+        }
+        
+        .dark-mode .fox-value-card__title {
+          color: var(--lt-text);
+        }
+        
+        .dark-mode .fox-value-card__desc {
+          color: var(--lt-text2);
+        }
+        
+        .dark-mode .fox-cta {
+          background: var(--lt-bg);
+        }
+        
+        .dark-mode .fox-cta__card {
+          background: linear-gradient(135deg, rgba(63,203,27,0.05), rgba(10,10,10,0.02));
+          border-color: var(--lt-border);
+        }
+        
+        .dark-mode .fox-cta__title {
+          color: var(--lt-text);
+        }
+        
+        .dark-mode .fox-cta__desc {
+          color: var(--lt-text2);
+        }
+        
+        .dark-mode .fox-cta__feature {
+          color: var(--lt-text2);
+        }
+        
+        .dark-mode .fox-btn-secondary {
+          color: var(--lt-text);
+          border-color: var(--lt-border);
+        }
+        
+        .dark-mode .fox-btn-secondary:hover {
+          border-color: var(--green);
+          color: var(--green);
+        }
+
+        /* YOUR ORIGINAL STYLES CONTINUE BELOW (COMPLETELY UNCHANGED) */
         #fox-about *, #fox-about *::before, #fox-about *::after { box-sizing: border-box; }
 
         /* ══ LAYOUT ══ */

@@ -6,10 +6,10 @@ import dynamic from 'next/dynamic';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import {
   FiZap, FiDownload, FiArrowRight, FiChevronDown, FiCpu, 
-  FiBarChart2, FiClock, FiCheck
+  FiBarChart2, FiClock, FiCheck, FiSun, FiMoon
 } from 'react-icons/fi';
 import {
-  BiNetworkChart, BiCode, BiCopy, BiRocket
+  BiNetworkChart, BiCode, BiCopy, BiRocket, BiSun, BiMoon
 } from 'react-icons/bi';
 
 const Navbar = dynamic(() => import('../../componets/Navbar/navbar'));
@@ -19,6 +19,7 @@ import CookieModal from '../../componets/cookieModal';
 const MT5Page = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [visible, setVisible] = useState<Set<string>>(new Set());
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -29,6 +30,40 @@ const MT5Page = () => {
   
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
   const opacityHero = useTransform(scrollYProgress, [0, 0.3], [1, 0.3]);
+
+  // Check for saved theme preference on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    
+    const savedTheme = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+    } else {
+      setIsDarkMode(false)
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+    }
+  }, [])
+
+  // Toggle dark mode function
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   useEffect(() => {
     const io = new IntersectionObserver(
@@ -78,6 +113,18 @@ const MT5Page = () => {
   return (
     <div ref={containerRef} className="mt5-page">
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
+
+      {/* Dark Mode Toggle Button */}
+      <button 
+        onClick={toggleDarkMode} 
+        className="dark-mode-toggle"
+        aria-label="Toggle dark mode"
+      >
+        {isDarkMode ? <BiSun size={20} /> : <BiMoon size={20} />}
+        <span className="dark-mode-toggle__tooltip">
+          {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        </span>
+      </button>
 
       {/* 1. HERO SECTION - Dark Background */}
       <section className="mt5-hero">
@@ -173,7 +220,16 @@ const MT5Page = () => {
             ))}
           </div>
 
-  
+          <div className="advanced-features-bar">
+            <div className="advanced-features-inner">
+              {advancedFeatures.map((feature, i) => (
+                <div key={i} className="advanced-feature-item">
+                  <span className="advanced-feature-value">{feature.value}</span>
+                  <span className="advanced-feature-name">{feature.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
@@ -463,33 +519,106 @@ const MT5Page = () => {
       <CookieModal />
 
       <style jsx global>{`
-        .mt5-page {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@400;500;600;700;800;900&display=swap');
+
+        /* CSS Variables for Theme Support */
+        :root {
           --g: #3fcb1b;
           --g-dark: #2e9c14;
+          --g-glow: rgba(63,203,27,0.22);
+          --red: #ef4444;
+          --profit: #10b981;
+        }
+
+        /* Light Mode (Default) */
+        .light-mode {
+          --bg-white: #ffffff;
+          --bg-white-card: #ffffff;
+          --bg-white-alt: #f8fafc;
           --bg-dark: #000000;
           --bg-dark-card: #0a0a0a;
-          --bg-dark-border: rgba(255,255,255,0.1);
-          --bg-light: #FFFFFF;
-          --bg-light-card: #ffffff;
-          --bg-light-border: #e2e8f0;
-          --text-dark: #ffffff;
-          --text-dark-secondary: rgba(255,255,255,0.65);
+          --border-light: #e2e8f0;
+          --border-dark: rgba(255,255,255,0.08);
           --text-light: #0f172a;
           --text-light-secondary: #475569;
+          --text-dark: #ffffff;
+          --text-dark-secondary: rgba(255,255,255,0.65);
+        }
+
+        /* Dark Mode */
+        .dark-mode {
+          --bg-white: #0a0a0a;
+          --bg-white-card: #141414;
+          --bg-white-alt: #111111;
+          --bg-dark: #000000;
+          --bg-dark-card: #0a0a0a;
+          --border-light: rgba(255,255,255,0.08);
+          --border-dark: rgba(255,255,255,0.08);
+          --text-light: #edf0ea;
+          --text-light-secondary: rgba(237,240,234,0.55);
+          --text-dark: #ffffff;
+          --text-dark-secondary: rgba(255,255,255,0.65);
+        }
+
+        .mt5-page {
           font-family: 'Inter', 'Sora', system-ui, sans-serif;
+          overflow-x: hidden;
+        }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--g);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+          color: #000;
+        }
+        
+        .dark-mode-toggle:hover {
+          transform: scale(1.1);
+          box-shadow: 0 8px 24px rgba(63, 203, 27, 0.4);
+        }
+        
+        .dark-mode-toggle__tooltip {
+          position: absolute;
+          right: 56px;
+          white-space: nowrap;
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover .dark-mode-toggle__tooltip {
+          opacity: 1;
         }
 
         .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
         .section-head { text-align: center; margin-bottom: 64px; }
         .section-eyebrow { display: inline-block; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g); margin-bottom: 16px; }
-        .section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; }
-        .section-desc { font-size: 1rem; max-width: 600px; margin: 0 auto; }
+        .section-title { font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 16px; color: var(--text-light); }
+        .section-desc { font-size: 1rem; max-width: 600px; margin: 0 auto; color: var(--text-light-secondary); }
 
-        /* ========== HERO SECTION ========== */
+        /* ========== HERO SECTION (Always Dark) ========== */
         .mt5-hero { 
           position: relative; 
           min-height: 90vh; 
-          background: var(--bg-dark); 
+          background: #000000; 
           overflow: hidden;
           display: flex;
           align-items: center;
@@ -510,42 +639,30 @@ const MT5Page = () => {
           padding: 80px 40px 80px max(24px, calc((100vw - 1200px) / 2 + 24px)); 
           z-index: 1; 
         }
-        .mt5-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: var(--text-dark); letter-spacing: -0.03em; }
+        .mt5-title { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 800; line-height: 1.15; margin-bottom: 24px; color: #ffffff; letter-spacing: -0.03em; }
         .mt5-title-accent { background: linear-gradient(135deg, #3fcb1b, #84f05b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .mt5-description { font-size: 1.1rem; color: var(--text-dark-secondary); line-height: 1.6; margin-bottom: 36px; }
+        .mt5-description { font-size: 1.1rem; color: rgba(255,255,255,0.65); line-height: 1.6; margin-bottom: 36px; }
         .mt5-actions { display: flex; gap: 16px; flex-wrap: wrap; }
         
         .mt5-btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: var(--g); color: #000; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
         .mt5-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(63,203,27,0.35); background: #4ae024; color: #000; }
-        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(255,255,255,0.25); color: var(--text-dark); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
+        .mt5-btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(255,255,255,0.25); color: #ffffff; font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
         .mt5-btn-secondary:hover { border-color: var(--g); color: var(--g); background: rgba(63,203,27,0.05); transform: translateY(-2px); }
-        .mt5-btn-secondary-light { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(0,0,0,0.15); color: var(--text-light); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
-        .mt5-btn-secondary-light:hover { border-color: #000; background: rgba(0,0,0,0.02); transform: translateY(-2px); }
+        .mt5-btn-secondary-light { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid var(--border-light); color: var(--text-light); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.25s ease-in-out; font-size: 0.95rem; }
+        .mt5-btn-secondary-light:hover { border-color: var(--g); color: var(--g); transform: translateY(-2px); }
         
-        .mt5-hero-visual { 
-          width: 100%;
-          height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: flex-end;
-          position: relative;
-        }
-        .mt5-hero-image { 
-          width: 100%; 
-          height: 100%; 
-          object-fit: cover;
-          display: block;
-        }
+        .mt5-hero-visual { width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-end; position: relative; }
+        .mt5-hero-image { width: 100%; height: 100%; object-fit: cover; display: block; }
 
         /* ========== PLATFORM CAPABILITIES - WHITE BACKGROUND ========== */
-        .mt5-features-light { padding: 100px 0; background: var(--bg-light); }
+        .mt5-features-light { padding: 100px 0; background: var(--bg-white); }
         .features-header { text-align: center; margin-bottom: 64px; }
         .section-badge { display: inline-block; padding: 6px 18px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); border-radius: 40px; font-size: 0.75rem; font-weight: 700; color: var(--g-dark); letter-spacing: 0.05em; margin-bottom: 20px; }
         .features-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 16px; }
         .features-subtitle { font-size: 1.05rem; color: var(--text-light-secondary); max-width: 560px; margin: 0 auto; }
         
         .core-features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 48px; }
-        .core-feature-card { position: relative; background: var(--bg-light-card); border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 36px 28px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.3s ease; }
+        .core-feature-card { position: relative; background: var(--bg-white-card); border: 1px solid var(--border-light); border-radius: 20px; padding: 36px 28px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.3s ease; }
         .core-feature-card:hover { border-color: var(--feature-color); box-shadow: 0 20px 35px -12px rgba(0,0,0,0.15); }
         .core-feature-glow { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
         .core-feature-card:hover .core-feature-glow { opacity: 0.4; }
@@ -554,26 +671,26 @@ const MT5Page = () => {
         .core-feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text-light); margin-bottom: 12px; }
         .core-feature-desc { font-size: 0.95rem; color: var(--text-light-secondary); line-height: 1.55; margin: 0; }
         
-        .advanced-features-bar { background: #f8fafc; border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 32px; }
+        .advanced-features-bar { background: var(--bg-white-alt); border: 1px solid var(--border-light); border-radius: 20px; padding: 32px; }
         .advanced-features-inner { display: grid; grid-template-columns: repeat(6, 1fr); gap: 24px; text-align: center; }
-        .advanced-feature-item { border-right: 1px solid var(--bg-light-border); }
+        .advanced-feature-item { border-right: 1px solid var(--border-light); }
         .advanced-feature-item:last-child { border-right: none; }
         .advanced-feature-value { display: block; font-size: 1.15rem; font-weight: 800; color: var(--g-dark); margin-bottom: 6px; }
         .advanced-feature-name { font-size: 0.75rem; color: var(--text-light-secondary); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
 
         /* ========== DOWNLOAD SECTION - BLACK BACKGROUND ========== */
-        .mt5-download-dark { padding: 100px 0; background: var(--bg-dark); }
-        .mt5-download-dark .section-title { color: var(--text-dark); }
-        .mt5-download-dark .section-desc { color: var(--text-dark-secondary); }
+        .mt5-download-dark { padding: 100px 0; background: #0a0a0a; }
+        .mt5-download-dark .section-title { color: #ffffff; }
+        .mt5-download-dark .section-desc { color: rgba(255,255,255,0.65); }
         .download-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-bottom: 36px; }
-        .download-card { display: flex; align-items: center; gap: 16px; padding: 22px; background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; text-decoration: none; transition: 0.3s; }
+        .download-card { display: flex; align-items: center; gap: 16px; padding: 22px; background: #141414; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; text-decoration: none; transition: 0.3s; }
         .download-card:hover { transform: translateY(-3px); border-color: var(--g); background: rgba(63,203,27,0.05); }
         .download-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .download-info strong { display: block; font-size: 0.95rem; font-weight: 700; color: #fff; }
         .download-note { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
 
         /* ========== ALGO SECTION - WHITE BACKGROUND ========== */
-        .mt5-algo-light { padding: 100px 0; background: var(--bg-light); border-top: 1px solid var(--bg-light-border); }
+        .mt5-algo-light { padding: 100px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); }
         .mt5-algo-light .section-title { color: var(--text-light); }
         .mt5-algo-light .section-desc { color: var(--text-light-secondary); font-size: 1.05rem; line-height: 1.6; }
         .algo-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: center; }
@@ -581,7 +698,7 @@ const MT5Page = () => {
         .algo-list li { display: flex; align-items: center; gap: 12px; font-size: 0.95rem; margin-bottom: 16px; color: var(--text-light-secondary); }
         .algo-list li svg { color: var(--g-dark); flex-shrink: 0; }
         .algo-stats-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-        .algo-stat-card { background: #f8fafc; border: 1px solid var(--bg-light-border); border-radius: 20px; padding: 28px; display: flex; align-items: center; gap: 24px; transition: 0.3s; }
+        .algo-stat-card { background: var(--bg-white-alt); border: 1px solid var(--border-light); border-radius: 20px; padding: 28px; display: flex; align-items: center; gap: 24px; transition: 0.3s; }
         .algo-stat-card:hover { border-color: var(--g); box-shadow: 0 15px 25px -12px rgba(0,0,0,0.1); }
         .algo-stat-icon { color: var(--g-dark); flex-shrink: 0; }
         .algo-stat-value { display: block; font-size: 1.4rem; font-weight: 800; color: var(--text-light); margin-bottom: 2px; }
@@ -590,22 +707,22 @@ const MT5Page = () => {
         .mt5-btn-outline-light:hover { background: rgba(63,203,27,0.06); transform: translateY(-2px); }
 
         /* ========== FAQ SECTION - BLACK BACKGROUND ========== */
-        .mt5-faq-dark { padding: 100px 0; background: var(--bg-dark); }
+        .mt5-faq-dark { padding: 100px 0; background: #0a0a0a; }
         .faq-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 80px; }
         .faq-head .section-title { color: #fff; }
-        .faq-head .section-desc { color: var(--text-dark-secondary); margin-bottom: 32px; font-size: 1.05rem; }
+        .faq-head .section-desc { color: rgba(255,255,255,0.65); margin-bottom: 32px; font-size: 1.05rem; }
         .faq-list { display: flex; flex-direction: column; gap: 16px; }
-        .faq-item { background: var(--bg-dark-card); border: 1px solid var(--bg-dark-border); border-radius: 16px; cursor: pointer; transition: 0.3s; }
+        .faq-item { background: #141414; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; cursor: pointer; transition: 0.3s; }
         .faq-item:hover { border-color: rgba(63,203,27,0.3); }
         .faq-item.open { border-color: var(--g); background: rgba(63,203,27,0.04); }
         .faq-question { display: flex; justify-content: space-between; align-items: center; padding: 22px 24px; font-weight: 600; color: #fff; font-size: 1.05rem; gap: 16px; }
         .faq-icon { color: var(--g); display: flex; align-items: center; flex-shrink: 0; }
-        .faq-answer p { margin: 0; padding: 0 24px 24px; font-size: 0.95rem; color: var(--text-dark-secondary); line-height: 1.65; border-top: 1px solid var(--bg-dark-border); padding-top: 18px; }
+        .faq-answer p { margin: 0; padding: 0 24px 24px; font-size: 0.95rem; color: rgba(255,255,255,0.65); line-height: 1.65; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px; }
         .mt5-btn-outline { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; background: transparent; border: 1.5px solid rgba(63,203,27,0.3); color: var(--g); font-weight: 700; border-radius: 40px; text-decoration: none; transition: 0.3s; }
         .mt5-btn-outline:hover { background: rgba(63,203,27,0.1); transform: translateY(-2px); }
 
         /* ========== START TRADING SECTION - WHITE BACKGROUND ========== */
-        .mt5-start-trading { padding: 120px 0; background: var(--bg-light); border-top: 1px solid var(--bg-light-border); }
+        .mt5-start-trading { padding: 120px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); }
         .start-trading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
         .start-trading-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 20px; line-height: 1.2; }
         .start-trading-desc { font-size: 1.05rem; color: var(--text-light-secondary); line-height: 1.65; margin-bottom: 32px; }

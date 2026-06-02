@@ -6,7 +6,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import {
   BiDollar, BiShield, BiGlobe, BiCheckCircle,
-  BiPlus, BiMinus, BiChart, BiMap, BiLock
+  BiPlus, BiMinus, BiChart, BiMap, BiLock, BiSun, BiMoon
 } from 'react-icons/bi';
 import { FiArrowUpRight, FiArrowDownRight, FiArrowRight } from 'react-icons/fi';
 
@@ -63,9 +63,46 @@ export default function ForexPage() {
   const [tickerOffset, setTickerOffset]       = useState(0);
   const [priceAnimations, setPriceAnimations] = useState<Record<string, 'up' | 'down' | null>>({});
   const [hoveredRow, setHoveredRow]           = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode]           = useState(false);
 
   const refs            = useRef<{ [k: string]: HTMLElement | null }>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check for saved theme preference on mount (default to light)
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    
+    const savedTheme = localStorage.getItem('theme')
+    
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+    } else {
+      setIsDarkMode(false)
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      if (!savedTheme) {
+        localStorage.setItem('theme', 'light')
+      }
+    }
+  }, [])
+
+  // Toggle dark mode function
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   /* Live price feed */
   useEffect(() => {
@@ -119,6 +156,18 @@ export default function ForexPage() {
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
 
       <div id="fx-wrapper">
+
+        {/* Dark Mode Toggle Button */}
+        <button 
+          onClick={toggleDarkMode} 
+          className="dark-mode-toggle"
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? <BiSun size={20} /> : <BiMoon size={20} />}
+          <span className="dark-mode-toggle__tooltip">
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </span>
+        </button>
 
         {/* ── 1 · HERO  (BLACK) ─────────────────────────────────── */}
         <section className="fx-hero">
@@ -380,9 +429,8 @@ export default function ForexPage() {
       <Footer />
       <CookieModal />
 
-      {/* ── GLOBAL STYLES ──────────────────────────────────────── */}
       <style jsx global>{`
-        /* ── Design tokens ──────────────────────────── */
+        /* ── YOUR ORIGINAL LIGHT THEME STYLES (UNCHANGED) ── */
         #fx-wrapper {
           --green:       #3fcb1b;
           --green-dk:    #2e9c14;
@@ -402,7 +450,86 @@ export default function ForexPage() {
           --ease-out:    cubic-bezier(0.22,1,0.36,1);
         }
 
-        /* ── Section shells ─────────────────────────── */
+        /* ── DARK MODE OVERRIDES (ADDED) ── */
+        .dark-mode #fx-wrapper {
+          --off-white: #141414;
+          --text-on-white: #edf0ea;
+          --text-dim-white: rgba(237,240,234,0.5);
+          --border-white: rgba(255,255,255,0.08);
+        }
+
+        /* Dark mode overrides for white background elements */
+        .dark-mode .fx-section--white {
+          background: #0a0a0a;
+        }
+        
+        .dark-mode .fx-prices-tbl {
+          background: #0a0a0a;
+          border-color: rgba(255,255,255,0.08);
+        }
+        
+        .dark-mode .fx-feat-card {
+          background: #141414;
+        }
+        
+        .dark-mode .fx-open-card {
+          background: linear-gradient(135deg, rgba(63,203,27,.04), rgba(10,10,10,0));
+          border-color: rgba(255,255,255,0.08);
+        }
+        
+        .dark-mode .fx-btn--outline-dark {
+          border-color: rgba(255,255,255,0.18);
+        }
+        
+        .dark-mode #faq.fx-section--black {
+          background: #1a1a1a;
+        }
+
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--green);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+          color: #000;
+        }
+        
+        .dark-mode-toggle:hover {
+          transform: scale(1.1);
+          box-shadow: 0 8px 24px rgba(63, 203, 27, 0.4);
+        }
+        
+        .dark-mode-toggle__tooltip {
+          position: absolute;
+          right: 56px;
+          white-space: nowrap;
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover .dark-mode-toggle__tooltip {
+          opacity: 1;
+        }
+
+        /* ── ALL YOUR ORIGINAL STYLES BELOW (COMPLETELY UNCHANGED) ── */
+        /* Section shells */
         .fx-section         { padding: 100px 0; }
         .fx-section--black  { background: var(--black); color: var(--text-on-black); }
         .fx-section--white  { background: var(--white); color: var(--text-on-white); }
@@ -436,9 +563,9 @@ export default function ForexPage() {
         .fx-container  { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         @media(min-width:1024px){ .fx-container { padding: 0 64px; } }
 
-        /* ── Typography helpers ─────────────────────── */
+        /* Typography helpers */
         .fx-head        { text-align: center; margin-bottom: 56px; }
-        .fx-head--dark  { }   /* used for white-bg heads */
+        .fx-head--dark  { }
 
         .fx-eyebrow {
           display: inline-flex; align-items: center; gap: 10px;
@@ -456,7 +583,7 @@ export default function ForexPage() {
         .fx-sub           { font-size: .95rem; color: var(--text-dim-black); max-width:520px; margin: 14px auto 0; line-height:1.7; }
         .fx-sub--dark     { color: var(--text-dim-white); }
 
-        /* ── Unified Button System ──────────────────── */
+        /* Unified Button System */
         .fx-btn {
           display: inline-flex; align-items: center; gap: 9px;
           padding: 14px 30px;
@@ -502,7 +629,7 @@ export default function ForexPage() {
           transform: translateY(-3px);
         }
 
-        /* ── Badge ──────────────────────────────────── */
+        /* Badge */
         .fx-badge {
           display: inline-flex; align-items: center; gap: 8px;
           padding: 6px 14px; background: rgba(63,203,27,.12);
@@ -515,7 +642,7 @@ export default function ForexPage() {
         }
         @keyframes dotPulse { 0%,100%{ box-shadow:0 0 0 0 rgba(63,203,27,.4); } 50%{ box-shadow:0 0 0 5px rgba(63,203,27,0); } }
 
-        /* ── HERO ───────────────────────────────────── */
+        /* HERO */
         .fx-hero {
           position: relative; min-height: 660px; background: var(--black);
           display: flex; flex-direction: column; align-items: center;
@@ -583,7 +710,7 @@ export default function ForexPage() {
         .h-d1 { transition-delay:.1s; }
         .h-d2 { transition-delay:.28s; }
 
-        /* ── Ticker ─────────────────────────────────── */
+        /* Ticker */
         .fx-ticker {
           position:absolute; bottom:0; left:0; right:0; height:40px;
           background:rgba(63,203,27,.07); border-top:1px solid rgba(63,203,27,.15);
@@ -607,7 +734,7 @@ export default function ForexPage() {
         .fx-ticker__chg.up  { color:#10b981; }
         .fx-ticker__chg.dn  { color:#ef4444; }
 
-        /* ── LIVE PRICES (white bg) ──────────────────── */
+        /* LIVE PRICES (white bg) */
         .fx-prices-wrap { max-width:1000px; margin:0 auto; }
         .fx-prices-tbl  {
           border:1px solid var(--border-white); border-radius:var(--radius-lg);
@@ -649,7 +776,7 @@ export default function ForexPage() {
           .fx-prow .fx-pr-hl { display:none; }
         }
 
-        /* ── WHAT IS FOREX (black bg) ───────────────── */
+        /* WHAT IS FOREX (black bg) */
         .fx-what-grid { display:grid; grid-template-columns:1fr .9fr; gap:56px; align-items:center; }
         @media(max-width:900px){ .fx-what-grid { grid-template-columns:1fr; } }
         .fx-what-text p { color:var(--text-dim-black); line-height:1.75; margin-bottom:18px; font-size:.95rem; }
@@ -673,7 +800,7 @@ export default function ForexPage() {
         .fx-stat-val { font-size:2.2rem; font-weight:900; color:var(--green); display:block; margin-bottom:8px; }
         .fx-stat-lbl { font-size:.75rem; color:var(--text-dim-black); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
 
-        /* ── FEATURES (white bg) ────────────────────── */
+        /* FEATURES (white bg) */
         .fx-feat-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(290px,1fr)); gap:22px; }
         .fx-feat-card {
           border:1px solid var(--border-white); border-radius:var(--radius-lg);
@@ -691,7 +818,7 @@ export default function ForexPage() {
         .fx-feat-title { font-size:1rem; font-weight:800; color:var(--text-on-white); margin-bottom:10px; }
         .fx-feat-desc  { font-size:.84rem; color:var(--text-dim-white); line-height:1.65; }
 
-        /* ── MARKET CARDS (black bg) ────────────────── */
+        /* MARKET CARDS (black bg) */
         .fx-mkt-grid { display:flex; justify-content:space-between; gap:16px; flex-wrap:nowrap; }
         @media(max-width:1100px){ .fx-mkt-grid { flex-wrap:wrap; justify-content:center; } }
         .fx-mkt-card {
@@ -749,7 +876,7 @@ export default function ForexPage() {
         }
         @media(max-width:640px){ .fx-mkt-card { min-width:150px; min-height:240px; } .fx-mkt-img-wrap { height:100px; } }
 
-        /* ── OPEN ACCOUNT (white bg) ────────────────── */
+        /* OPEN ACCOUNT (white bg) */
         .fx-open-card {
           border:1px solid var(--border-white); border-radius:28px; padding:56px;
           display:grid; grid-template-columns:1fr .85fr; gap:56px;
@@ -780,7 +907,7 @@ export default function ForexPage() {
         .fx-benefit:hover { background:rgba(63,203,27,.1); border-color:var(--green); transform:translateY(-3px) scale(1.02); }
         .fx-benefit-icon { color:var(--green); flex-shrink:0; width:18px; height:18px; }
 
-        /* ── FAQ (black bg) ─────────────────────────── */
+        /* FAQ (black bg) */
         .fx-faq        { max-width:760px; margin:0 auto; }
         #faq .fx-head  { margin-bottom: 48px; }
         .fx-faq__item  { border-bottom:1px solid rgba(255,255,255,.1); transition:all .3s; }

@@ -6,7 +6,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import {
   BiDollar, BiShield, BiGlobe, BiCheckCircle,
-  BiPlus, BiMinus, BiChart, BiMap, BiLock, BiTrendingUp, BiBuilding
+  BiPlus, BiMinus, BiChart, BiMap, BiLock, BiTrendingUp, BiBuilding, BiSun, BiMoon
 } from 'react-icons/bi';
 import { FiArrowUpRight, FiArrowDownRight, FiArrowRight } from 'react-icons/fi';
 
@@ -61,9 +61,46 @@ export default function StocksPage() {
   const [tickerOffset, setTickerOffset] = useState(0);
   const [priceAnimations, setPriceAnimations] = useState<Record<string, 'up' | 'down' | null>>({});
   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   
   const refs = useRef<{ [k: string]: HTMLElement | null }>({});
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Check for saved theme preference on mount (default to light)
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    
+    const savedTheme = localStorage.getItem('theme')
+    
+    if (savedTheme === 'dark') {
+      setIsDarkMode(true)
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+    } else {
+      setIsDarkMode(false)
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      if (!savedTheme) {
+        localStorage.setItem('theme', 'light')
+      }
+    }
+  }, [])
+
+  // Toggle dark mode function
+  const toggleDarkMode = () => {
+    const newMode = !isDarkMode
+    setIsDarkMode(newMode)
+    
+    if (newMode) {
+      document.documentElement.classList.add('dark-mode')
+      document.documentElement.classList.remove('light-mode')
+      localStorage.setItem('theme', 'dark')
+    } else {
+      document.documentElement.classList.add('light-mode')
+      document.documentElement.classList.remove('dark-mode')
+      localStorage.setItem('theme', 'light')
+    }
+  }
 
   // Real-time price simulation with 2-second delay
   useEffect(() => {
@@ -137,6 +174,19 @@ export default function StocksPage() {
       <Navbar navClass={undefined} navJustify={undefined} bg={undefined} />
       
       <div id="stocks-layout-wrapper">
+
+        {/* Dark Mode Toggle Button */}
+        <button 
+          onClick={toggleDarkMode} 
+          className="dark-mode-toggle"
+          aria-label="Toggle dark mode"
+        >
+          {isDarkMode ? <BiSun size={20} /> : <BiMoon size={20} />}
+          <span className="dark-mode-toggle__tooltip">
+            {isDarkMode ? 'Light Mode' : 'Dark Mode'}
+          </span>
+        </button>
+
         {/* Hero Section */}
         <section className="fp-hero-ref">
           <div className="fp-hero__bg">
@@ -397,6 +447,7 @@ export default function StocksPage() {
       <CookieModal />
 
       <style jsx global>{`
+        /* YOUR ORIGINAL LIGHT THEME STYLES (UNCHANGED) */
         #stocks-layout-wrapper {
           --green:      #3fcb1b;
           --green-dk:   #2e9c14;
@@ -418,18 +469,118 @@ export default function StocksPage() {
           background: var(--bg);
           color: var(--text);
         }
-        @media(prefers-color-scheme:dark){
-          #stocks-layout-wrapper {
-            --bg:      #0A0A0A;
-            --bg-alt:  #111111;
-            --bg-card: #181818;
-            --bg-faq-light: #1a1a1a;
-            --border:  rgba(255,255,255,0.09);
-            --text:    #f0f0f0;
-            --text2:   rgba(255,255,255,0.5);
-          }
+
+        /* DARK MODE OVERRIDES (ADDED) */
+        .dark-mode #stocks-layout-wrapper {
+          --bg:         #0A0A0A;
+          --bg-alt:     #111111;
+          --bg-card:    #181818;
+          --bg-faq-light: #1a1a1a;
+          --border:     rgba(255,255,255,0.09);
+          --text:       #f0f0f0;
+          --text2:      rgba(255,255,255,0.5);
         }
 
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 9999;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: var(--green);
+          border: none;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          transition: all 0.3s ease;
+          color: #000;
+        }
+        
+        .dark-mode-toggle:hover {
+          transform: scale(1.1);
+          box-shadow: 0 8px 24px rgba(63, 203, 27, 0.4);
+        }
+        
+        .dark-mode-toggle__tooltip {
+          position: absolute;
+          right: 56px;
+          white-space: nowrap;
+          background: rgba(0, 0, 0, 0.8);
+          color: white;
+          padding: 6px 12px;
+          border-radius: 8px;
+          font-size: 0.75rem;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        
+        .dark-mode-toggle:hover .dark-mode-toggle__tooltip {
+          opacity: 1;
+        }
+
+        /* Dark mode overrides for white background elements */
+        .dark-mode .fp-section--white {
+          background: var(--bg);
+        }
+        
+        .dark-mode .fp-prices-tbl-full {
+          background: var(--bg-card);
+          border-color: var(--border);
+        }
+        
+        .dark-mode .fp-prices-thead {
+          background: rgba(63,203,27,.05);
+          color: var(--text2);
+        }
+        
+        .dark-mode .fp-feat-card {
+          background: var(--bg-card);
+          border-color: var(--border);
+        }
+        
+        .dark-mode .fp-open-card {
+          background: linear-gradient(135deg, rgba(63,203,27,.04), rgba(0,0,0,.02));
+          border-color: var(--border);
+        }
+        
+        .dark-mode .fp-btn--outline-dark {
+          border-color: rgba(255,255,255,0.18);
+          color: var(--text);
+        }
+        
+        .dark-mode .fp-faq__item {
+          border-bottom-color: var(--border);
+        }
+        
+        .dark-mode .fp-faq__q {
+          color: var(--text);
+        }
+        
+        .dark-mode .fp-faq__a p {
+          color: var(--text2);
+        }
+        
+        .dark-mode .fp-step h4 {
+          color: var(--text);
+        }
+        
+        .dark-mode .fp-step p {
+          color: var(--text2);
+        }
+        
+        .dark-mode .fp-benefit {
+          color: var(--text);
+          background: rgba(63,203,27,.04);
+          border-color: rgba(63,203,27,.12);
+        }
+
+        /* YOUR ORIGINAL STYLES CONTINUE BELOW (COMPLETELY UNCHANGED) */
         #stocks-layout-wrapper .fp-container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
         @media(min-width:1024px){ #stocks-layout-wrapper .fp-container { padding: 0 64px; } }
 
@@ -701,7 +852,6 @@ export default function StocksPage() {
           .fp-what-stats { grid-template-columns: 1fr; }
           .fp-open-right { grid-template-columns: 1fr; }
           .fp-mkt-card { min-width: 150px; min-height: 240px; }
-
           .fx-trade-category-image { height: 100px; }
         }
       `}</style>
