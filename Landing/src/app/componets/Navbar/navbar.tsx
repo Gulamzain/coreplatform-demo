@@ -70,7 +70,7 @@ const NAV_ITEMS = [
       { name: 'Partner Program', href: '/partners/partner', icon: LuHandshake },
       { name: 'Sign in', href: '/auth-login/', icon: LuUsers },
       { name: 'Sign Up', href: '/auth-signup/', icon: LuAward },
-       { name: 'Partner App', href: '/partners/partnerapp', icon: LuHandshake },
+       { name: 'Partner App', href: '/partners/LayoutDashboard', icon: LuHandshake },
     ],
   },
   {
