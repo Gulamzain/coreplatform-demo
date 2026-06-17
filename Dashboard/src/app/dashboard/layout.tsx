@@ -3,15 +3,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   BiHome, BiHistory, BiUser, BiMenu, BiX, BiRefresh, BiBell,
   BiSun, BiMoon, BiLogOut, BiGridAlt, BiChevronDown, BiChevronRight,
   BiPlusCircle, BiMinusCircle, BiTransfer, BiReceipt, BiPieChart,
   BiLineChart, BiCalendar, BiWrench, BiChat, BiHelpCircle, BiCheckCircle,
-  BiDollar, BiWallet, BiShield, BiLock
+  BiDollar, BiWallet, BiShield, BiLock, BiBriefcase, BiArrowFromLeft
 } from 'react-icons/bi'
-import { FiSettings } from 'react-icons/fi'
+import { FiSettings, FiToggleRight } from 'react-icons/fi'
 
 const menuSections = [
   {
@@ -85,6 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     SETTINGS: false,
   })
   const pathname = usePathname()
+  const router = useRouter()
   const scrollYRef = useRef<number>(0)
 
   useEffect(() => {
@@ -151,6 +152,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const isChildActive = (items: any[]) => items.some(item => pathname === item.href)
 
+  const navigateToPartner = () => {
+    router.push('/partners/LayoutDashboard')
+  }
+
   return (
     <div className="dashboard-container" data-theme={isDarkMode ? 'dark' : 'light'}>
       {/* Mobile Menu Button */}
@@ -167,19 +172,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="sidebar-content">
           {/* Logo */}
           <div className="logo-section flex justify-center items-center">
-  <div className="logo-text-wrapper">
-    <Image 
-      src="/images/FoxnanceMain.png" 
-      alt="Foxnance" 
-      width={140} 
-      height={38} 
-      className="logo-image mx-auto" 
-      priority
-    />
-    <p className="logo-subtext">Client Portal</p>
-  </div>
-</div>
-
+            <div className="logo-text-wrapper">
+              <Image 
+                src="/images/FoxnanceMain.png" 
+                alt="Foxnance" 
+                width={140} 
+                height={38} 
+                className="logo-image mx-auto" 
+                priority
+              />
+              <p className="logo-subtext">Client Portal</p>
+            </div>
+          </div>
 
           {/* User Profile */}
           <div className="user-profile">
@@ -253,6 +257,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <p className="welcome-subtitle">Welcome back! Here's your trading overview</p>
             </div>
             <div className="top-actions">
+              {/* Partner Switch Button */}
+              <button 
+                className="partner-switch-btn" 
+                onClick={navigateToPartner}
+                aria-label="Switch to Partner Dashboard"
+              >
+                <BiBriefcase size={18} />
+                <span className="partner-switch-text">Partner</span>
+                <FiToggleRight size={18} className="switch-icon" />
+              </button>
+              
               <button className="action-btn" aria-label="Notifications"><BiBell size={20} /></button>
               <button className="action-btn" aria-label="Refresh"><BiRefresh size={20} /></button>
               <select className="period-select" aria-label="Select period">
@@ -778,6 +793,42 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         }
         .period-select:hover {
           border-color: var(--accent-green);
+        }
+
+        /* Partner Switch Button */
+        .partner-switch-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 14px;
+          border-radius: 10px;
+          background: var(--accent-green);
+          border: none;
+          color: #000;
+          font-weight: 600;
+          font-size: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .partner-switch-btn:hover {
+          background: var(--accent-green-dark);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(63,203,27,0.3);
+        }
+        .partner-switch-btn .switch-icon {
+          margin-left: 2px;
+          opacity: 0.7;
+        }
+        .partner-switch-text {
+          white-space: nowrap;
+        }
+        @media (max-width: 480px) {
+          .partner-switch-btn .partner-switch-text {
+            display: none;
+          }
+          .partner-switch-btn {
+            padding: 8px 10px;
+          }
         }
 
         /* Page Content */

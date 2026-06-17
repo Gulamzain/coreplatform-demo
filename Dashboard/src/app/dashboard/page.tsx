@@ -1,1113 +1,1325 @@
-// src/app/dashboard/page.tsx
+// src/app/dashboard/overview/page.tsx
 'use client'
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
-  BiDollar, BiTrendingUp, BiTrendingDown, BiArrowToRight,
-  BiArrowFromLeft, BiWallet, BiLineChart, BiPieChart,
-  BiRefresh, BiBell, BiCalendar, BiDownload, BiX, BiCheck,
-  BiTransfer, BiShield, BiTime
-} from 'react-icons/bi';
+  BiDollar, BiTrendingUp, BiArrowToRight, BiArrowFromLeft,
+  BiWallet, BiLineChart, BiRefresh, BiBell, BiX, BiCheck,
+  BiTransfer, BiShield, BiTime, BiSun, BiMoon, BiMenu,
+  BiHistory, BiSupport, BiCog, BiBarChart, BiGroup, BiRocket,
+  BiChevronDown, BiChevronRight, BiLogOut, BiUser, BiCreditCard,
+  BiBarChartSquare
+} from 'react-icons/bi'
 import {
-  FiArrowUpRight, FiArrowDownRight, FiZap, FiActivity,
-  FiCreditCard, FiRepeat, FiChevronRight, FiTrendingUp
-} from 'react-icons/fi';
-import { Line, Doughnut } from 'react-chartjs-2';
+  FiArrowUpRight, FiActivity, FiZap,
+  FiChevronRight, FiTrendingUp, FiUsers,
+  FiPieChart, FiAlertCircle, FiSettings
+} from 'react-icons/fi'
+import { Line, Doughnut } from 'react-chartjs-2'
 import {
   Chart as ChartJS, CategoryScale, LinearScale, PointElement,
   LineElement, Title, Tooltip, Legend, ArcElement, Filler
-} from 'chart.js';
+} from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement,
-  Title, Tooltip, Legend, ArcElement, Filler);
+  Title, Tooltip, Legend, ArcElement, Filler)
 
-// ── DATA ────────────────────────────────────────────────────────────────
+// ── DATA ─────────────────────────────────────────────────────────────────
 const accounts = [
-  { id: 1, name: 'MT5 #155691', type: 'Standard', status: 'Live', balance: 25340.50, equity: 26780.30, profit: 1439.80, profitPercent: 5.68, margin: 1439.80, freeMargin: 25340.50, marginLevel: 1861.02 },
-  { id: 2, name: 'MT5 #155692', type: 'Raw Spread', status: 'Demo', balance: 10000.00, equity: 10890.20, profit: 890.20, profitPercent: 8.90, margin: 890.20, freeMargin: 10000.00, marginLevel: 1223.35 },
-];
+  { id:1, name:'MT5 #155691', type:'Standard',   status:'Live', balance:25340.5, equity:26780.3, profit:1439.8, profitPct:5.68, margin:1439.8, freeMargin:25340.5, marginLevel:1861.02 },
+  { id:2, name:'MT5 #155692', type:'Raw Spread', status:'Demo', balance:10000.0, equity:10890.2, profit:890.2,  profitPct:8.90, margin:890.2,  freeMargin:10000.0, marginLevel:1223.35 },
+]
 
 const recentTrades = [
-  { id: 1, symbol: 'EUR/USD', type: 'Buy',  volume: 0.5,  price: 1.08432, current: 1.08945, profit: 256.50,  time: '10:32', flag: '🇪🇺' },
-  { id: 2, symbol: 'GBP/USD', type: 'Sell', volume: 0.3,  price: 1.27680, current: 1.27420, profit: 78.00,   time: '10:28', flag: '🇬🇧' },
-  { id: 3, symbol: 'XAU/USD', type: 'Buy',  volume: 0.1,  price: 2341.20, current: 2356.80, profit: 156.00,  time: '10:15', flag: '🥇' },
-  { id: 4, symbol: 'BTC/USD', type: 'Buy',  volume: 0.05, price: 68200,   current: 69150,   profit: 47.50,   time: '09:58', flag: '₿' },
-];
+  { id:1, symbol:'EUR/USD', type:'Buy',  volume:0.5,  open:1.08432, current:1.08945, profit:256.50, time:'10:32', flag:'🇪🇺' },
+  { id:2, symbol:'GBP/USD', type:'Sell', volume:0.3,  open:1.27680, current:1.27420, profit:78.00,  time:'10:28', flag:'🇬🇧' },
+  { id:3, symbol:'XAU/USD', type:'Buy',  volume:0.1,  open:2341.20, current:2356.80, profit:156.00, time:'10:15', flag:'🥇' },
+  { id:4, symbol:'BTC/USD', type:'Buy',  volume:0.05, open:68200,   current:69150,   profit:47.50,  time:'09:58', flag:'₿' },
+]
 
-const marketTicker = [
-  { symbol: 'EUR/USD', price: '1.08945', change: '+0.47%', up: true },
-  { symbol: 'GBP/USD', price: '1.27420', change: '-0.21%', up: false },
-  { symbol: 'XAU/USD', price: '2356.80', change: '+0.67%', up: true },
-  { symbol: 'BTC/USD', price: '69,150',  change: '+1.39%', up: true },
-  { symbol: 'USD/JPY', price: '154.32',  change: '+0.12%', up: true },
-  { symbol: 'OIL/USD', price: '78.45',   change: '-0.88%', up: false },
-];
-
-const balanceHistoryData = {
-  labels: ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5', 'Wk 6', 'Wk 7', 'Wk 8'],
+const balanceHistory = {
+  labels: ['Week 1','Week 2','Week 3','Week 4','Week 5','Week 6','Week 7','Week 8'],
   datasets: [{
     label: 'Balance',
     data: [12500, 14200, 13800, 15600, 16800, 18500, 19200, 20500],
     borderColor: '#3fcb1b',
     backgroundColor: (ctx: any) => {
-      const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 260);
-      g.addColorStop(0, 'rgba(63,203,27,0.18)');
-      g.addColorStop(1, 'rgba(63,203,27,0)');
-      return g;
+      const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 280)
+      g.addColorStop(0, 'rgba(63,203,27,0.18)')
+      g.addColorStop(1, 'rgba(63,203,27,0)')
+      return g
     },
     fill: true, tension: 0.45,
     pointBackgroundColor: '#3fcb1b',
-    pointBorderColor: '#0c0f0a',
-    pointBorderWidth: 2,
-    pointRadius: 4,
-    pointHoverRadius: 7,
-    borderWidth: 2.5,
+    pointBorderColor: '#1a201a', pointBorderWidth: 2,
+    pointRadius: 4, pointHoverRadius: 7, borderWidth: 2.5,
   }],
-};
+}
 
-const allocationData = {
-  labels: ['Forex', 'Commodities', 'Indices', 'Crypto', 'Stocks'],
-  datasets: [{
-    data: [45, 20, 15, 12, 8],
-    backgroundColor: ['#3fcb1b', '#f59e0b', '#3b82f6', '#8b5cf6', '#ec489a'],
-    hoverBackgroundColor: ['#4de022', '#fbbf24', '#60a5fa', '#a78bfa', '#f472b6'],
-    borderWidth: 0,
-    hoverOffset: 6,
-  }],
-};
+const allocation = {
+  labels: ['Forex','Commodities','Indices','Crypto','Stocks'],
+  datasets: [{ data:[45,20,15,12,8], backgroundColor:['#3fcb1b','#f59e0b','#3b82f6','#8b5cf6','#ec489a'], borderWidth:0, hoverOffset:5 }],
+}
+const allocColors = ['#3fcb1b','#f59e0b','#3b82f6','#8b5cf6','#ec489a']
 
-// ── COMPONENT ────────────────────────────────────────────────────────────
+// ── NAV ──────────────────────────────────────────────────────────────────
+const NAV = [
+  { section:'DASHBOARD', items:[
+    { label:'Overview',    href:'/dashboard/overview', icon:BiBarChart,   active:true },
+    { label:'My Accounts', href:'/dashboard/accounts', icon:BiUser },
+    { label:'History',     href:'/dashboard/history',  icon:BiHistory },
+  ]},
+  { section:'TRANSACTIONS', items:[
+    { label:'Deposit',    href:'/dashboard/deposit',   icon:BiArrowFromLeft },
+    { label:'Withdraw',   href:'/dashboard/withdraw',  icon:BiArrowToRight },
+    { label:'Transfer',   href:'/dashboard/transfer',  icon:BiTransfer },
+  ]},
+  { section:'DATA & ANALYTICS', items:[
+    { label:'Reports',   href:'/dashboard/reports',   icon:BiBarChartSquare },
+    { label:'Analytics', href:'/dashboard/analytics', icon:FiPieChart },
+  ]},
+  { section:'WALLET', items:[
+    { label:'My Wallet',       href:'/dashboard/wallet',          icon:BiWallet },
+    { label:'Payment Methods', href:'/dashboard/payment-methods', icon:BiCreditCard },
+  ]},
+  { section:'SUPPORT', items:[
+    { label:'Help Center', href:'/dashboard/help',    icon:BiSupport },
+    { label:'Tickets',     href:'/dashboard/tickets', icon:FiAlertCircle },
+  ]},
+  { section:'SETTINGS', items:[
+    { label:'Settings', href:'/dashboard/settings', icon:BiCog },
+  ]},
+]
+
+// ── COMPONENT ─────────────────────────────────────────────────────────────
 export default function DashboardOverview() {
-  const [selectedAccount, setSelectedAccount] = useState(0);
-  const [showDeposit, setShowDeposit]   = useState(false);
-  const [showWithdraw, setShowWithdraw] = useState(false);
-  const [amount, setAmount]             = useState('');
-  const [activePeriod, setActivePeriod] = useState('1M');
-  const [selectedMethod, setSelectedMethod] = useState('');
-  const [tickerX, setTickerX] = useState(0);
-  const [counters, setCounters] = useState({ balance: 0, equity: 0, profit: 0 });
-  const [mounted, setMounted] = useState(false);
-  const tickerRef = useRef<number>(0);
-  const animRef   = useRef<number>(0);
+  const [selAcc,       setSelAcc]       = useState(0)
+  const [showDep,      setShowDep]      = useState(false)
+  const [showWit,      setShowWit]      = useState(false)
+  const [amount,       setAmount]       = useState('')
+  const [method,       setMethod]       = useState('')
+  const [period,       setPeriod]       = useState('1M')
+  const [counters,     setCounters]     = useState({ bal:0, eq:0, pnl:0 })
+  const [mounted,      setMounted]      = useState(false)
+  const [dark,         setDark]         = useState(true)
+  const [mobOpen,      setMobOpen]      = useState(false)
+  const [expanded,     setExpanded]     = useState<Set<string>>(new Set(NAV.map(n=>n.section)))
+  const animRef = useRef<number>(0)
 
-  const currentAccount = accounts[selectedAccount];
-  const totalBalance   = accounts.reduce((s, a) => s + a.balance, 0);
-  const totalProfit    = accounts.reduce((s, a) => s + a.profit, 0);
+  const acc   = accounts[selAcc]
+  const totBal = accounts.reduce((s,a) => s + a.balance, 0)
+  const totPnl = accounts.reduce((s,a) => s + a.profit,  0)
+  const fmt = (n: number) => n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1})
+  const fmt2 = (n: number) => n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})
 
-  // Mount animation
+  // theme - sync with layout
   useEffect(() => {
-    setMounted(true);
-    const targets = { balance: currentAccount.balance, equity: currentAccount.equity, profit: currentAccount.profit };
-    let start: number | null = null;
-    const duration = 1200;
+    const saved = typeof window !== 'undefined' && localStorage.getItem('fox-dash-theme')
+    const isDark = saved ? saved === 'dark' : true
+    setDark(isDark)
+    setMounted(true)
+    
+    // Listen for theme changes from layout
+    const handleStorageChange = () => {
+      const updated = localStorage.getItem('fox-dash-theme')
+      if (updated) {
+        setDark(updated === 'dark')
+      }
+    }
+    window.addEventListener('storage', handleStorageChange)
+    return () => window.removeEventListener('storage', handleStorageChange)
+  }, [])
+
+  // counters
+  useEffect(() => {
+    const t = { bal: acc.balance, eq: acc.equity, pnl: acc.profit }
+    let start: number|null = null
     const step = (ts: number) => {
-      if (!start) start = ts;
-      const p = Math.min((ts - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - p, 3);
-      setCounters({
-        balance: targets.balance * ease,
-        equity:  targets.equity  * ease,
-        profit:  targets.profit  * ease,
-      });
-      if (p < 1) animRef.current = requestAnimationFrame(step);
-    };
-    animRef.current = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(animRef.current);
-  }, [selectedAccount]);
+      if (!start) start = ts
+      const p = Math.min((ts - start)/1200, 1)
+      const e = 1 - Math.pow(1-p, 3)
+      setCounters({ bal: t.bal*e, eq: t.eq*e, pnl: t.pnl*e })
+      if (p < 1) animRef.current = requestAnimationFrame(step)
+    }
+    animRef.current = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(animRef.current)
+  }, [selAcc])
 
-  // Ticker scroll
-  useEffect(() => {
-    const speed = 0.4;
-    const scroll = () => {
-      setTickerX(x => {
-        const next = x - speed;
-        return next < -900 ? 0 : next;
-      });
-      tickerRef.current = requestAnimationFrame(scroll);
-    };
-    tickerRef.current = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(tickerRef.current);
-  }, []);
-
-  const chartOptions: any = {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: {
-        backgroundColor: 'rgba(12,15,10,0.95)',
-        titleColor: '#edf0ea', bodyColor: '#9aad94',
-        borderColor: 'rgba(63,203,27,0.4)', borderWidth: 1,
-        padding: 10, cornerRadius: 10,
-        callbacks: { label: (ctx: any) => ' $' + ctx.raw.toLocaleString() },
+  const lineOpts: any = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ 
+      legend:{display:false}, 
+      tooltip:{ 
+        backgroundColor: dark ? 'rgba(10,12,10,0.95)' : 'rgba(255,255,255,0.95)',
+        titleColor: dark ? '#edf0ea' : '#1a1f36',
+        bodyColor: dark ? '#9aad94' : '#6b7280',
+        borderColor: dark ? 'rgba(63,203,27,0.35)' : 'rgba(63,203,27,0.2)',
+        borderWidth:1, 
+        padding:10, 
+        cornerRadius:10, 
+        callbacks:{ label:(ctx:any) => ' $'+ctx.raw.toLocaleString() } 
+      } 
+    },
+    scales:{
+      y:{ 
+        grid:{ color: dark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)', drawBorder:false }, 
+        ticks:{ color: dark ? '#556050' : '#9aa8a0', font:{size:11}, callback:(v:any)=>'$'+(v/1000).toFixed(0)+'k' }, 
+        border:{display:false} 
+      },
+      x:{ 
+        grid:{display:false}, 
+        border:{display:false}, 
+        ticks:{ color: dark ? '#556050' : '#9aa8a0', font:{size:11} } 
       },
     },
-    scales: {
-      y: {
-        grid: { color: 'rgba(237,240,234,0.05)', drawBorder: false },
-        ticks: { color: '#556050', font: { size: 10 }, callback: (v: any) => '$' + (v/1000).toFixed(0) + 'k' },
-        border: { display: false },
-      },
-      x: {
-        grid: { display: false }, border: { display: false },
-        ticks: { color: '#556050', font: { size: 10 } },
-      },
+    interaction:{mode:'index',intersect:false},
+  }
+
+  const donutOpts: any = {
+    responsive:true, maintainAspectRatio:false, cutout:'70%',
+    plugins:{ 
+      legend:{display:false}, 
+      tooltip:{ 
+        backgroundColor: dark ? 'rgba(10,12,10,0.95)' : 'rgba(255,255,255,0.95)',
+        titleColor: dark ? '#edf0ea' : '#1a1f36',
+        bodyColor: dark ? '#9aad94' : '#6b7280',
+        borderColor: dark ? 'rgba(63,203,27,0.3)' : 'rgba(63,203,27,0.2)',
+        borderWidth:1, 
+        padding:10, 
+        cornerRadius:10 
+      } 
     },
-    interaction: { mode: 'index', intersect: false },
-  };
+  }
 
-  const doughnutOptions: any = {
-    responsive: true, maintainAspectRatio: false,
-    cutout: '72%',
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: { color: '#556050', usePointStyle: true, boxWidth: 7, font: { size: 10 }, padding: 14 },
-      },
-      tooltip: {
-        backgroundColor: 'rgba(12,15,10,0.95)',
-        titleColor: '#edf0ea', bodyColor: '#9aad94',
-        borderColor: 'rgba(63,203,27,0.3)', borderWidth: 1,
-        padding: 10, cornerRadius: 10,
-      },
-    },
-  };
-
-  const allocationColors = ['#3fcb1b','#f59e0b','#3b82f6','#8b5cf6','#ec489a'];
-
-  const fmt = (n: number) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (!mounted) return null
 
   return (
-    <div className={`dov ${mounted ? 'mounted' : ''}`}>
+    <div className={`fd ${dark ? 'fd--dark' : 'fd--light'}`}>
 
-      {/* ── MARKET TICKER ── */}
-      <div className="ticker-wrap">
-        <div className="ticker-label"><FiActivity size={11} />LIVE</div>
-        <div className="ticker-track">
-          <div className="ticker-inner" style={{ transform: `translateX(${tickerX}px)` }}>
-            {[...marketTicker, ...marketTicker, ...marketTicker].map((m, i) => (
-              <div key={i} className="ticker-item">
-                <span className="ticker-sym">{m.symbol}</span>
-                <span className="ticker-price">{m.price}</span>
-                <span className={`ticker-chg ${m.up ? 'up' : 'dn'}`}>{m.change}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* MOBILE OVERLAY */}
+      {mobOpen && <div className="fd-mob-overlay" onClick={()=>setMobOpen(false)} />}
 
-      {/* ── WELCOME BANNER ── */}
-      <div className="welcome">
-        <div className="welcome__canvas">
-          <div className="welcome__orb" />
-          <svg className="welcome__grid" xmlns="http://www.w3.org/2000/svg">
-            <defs><pattern id="wg" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(63,203,27,0.05)" strokeWidth="1"/>
-            </pattern></defs>
-            <rect width="100%" height="100%" fill="url(#wg)" />
-          </svg>
-        </div>
-        <div className="welcome__left">
-          <div className="welcome__greeting">
-            <span className="welcome__dot" />
-            Good Morning
-          </div>
-          <h2 className="welcome__name">Gulam Zain 👋</h2>
-          <p className="welcome__sub">Here's your trading overview for today</p>
-        </div>
-        <div className="welcome__right">
-          <div className="welcome__kpi">
-            <div className="welcome__kpi-icon"><BiWallet size={18} /></div>
-            <div>
-              <span className="welcome__kpi-lbl">Total Portfolio</span>
-              <strong className="welcome__kpi-val">${totalBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
-            </div>
-          </div>
-          <div className="welcome__divider" />
-          <div className="welcome__kpi">
-            <div className="welcome__kpi-icon green"><FiTrendingUp size={18} /></div>
-            <div>
-              <span className="welcome__kpi-lbl">Total P&L</span>
-              <strong className="welcome__kpi-val profit">+${totalProfit.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ═══════════ SIDEBAR ═══════════ */}
+      <aside className={`fd-sb ${mobOpen ? 'fd-sb--open' : ''}`}>
 
-      {/* ── ACCOUNT TABS ── */}
-      <div className="acc-tabs">
-        {accounts.map((acc, i) => (
-          <button
-            key={acc.id}
-            onClick={() => setSelectedAccount(i)}
-            className={`acc-tab ${selectedAccount === i ? 'active' : ''}`}
-          >
-            <span className={`acc-tab__dot ${acc.status === 'Live' ? 'live' : 'demo'}`} />
-            <span className="acc-tab__name">{acc.name}</span>
-            <span className={`acc-tab__badge ${acc.status === 'Live' ? 'live' : 'demo'}`}>{acc.status}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* ── KPI CARDS ROW ── */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={selectedAccount}
-          className="kpi-row"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -12 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {/* Balance */}
-          <div className="kpi-card kpi-card--green">
-            <div className="kpi-card__top">
-              <div className="kpi-card__icon green"><BiDollar size={20} /></div>
-              <span className="kpi-card__lbl">Account Balance</span>
-            </div>
-            <strong className="kpi-card__val">${fmt(counters.balance)}</strong>
-            <div className="kpi-card__footer">
-              <span className="kpi-badge up"><FiArrowUpRight size={11} />+${fmt(currentAccount.profit)} ({currentAccount.profitPercent}%)</span>
-            </div>
-            <div className="kpi-card__bar"><div className="kpi-card__bar-fill" style={{ width: '72%' }} /></div>
-          </div>
-
-          {/* Equity */}
-          <div className="kpi-card kpi-card--blue">
-            <div className="kpi-card__top">
-              <div className="kpi-card__icon blue"><BiLineChart size={20} /></div>
-              <span className="kpi-card__lbl">Total Equity</span>
-            </div>
-            <strong className="kpi-card__val">${fmt(counters.equity)}</strong>
-            <div className="kpi-card__footer">
-              <span className="kpi-card__sub">Floating P&L: <em className="profit">+${fmt(currentAccount.profit)}</em></span>
-            </div>
-            <div className="kpi-card__bar"><div className="kpi-card__bar-fill blue" style={{ width: '88%' }} /></div>
-          </div>
-
-          {/* Margin */}
-          <div className="kpi-card kpi-card--amber">
-            <div className="kpi-card__top">
-              <div className="kpi-card__icon amber"><FiZap size={18} /></div>
-              <span className="kpi-card__lbl">Free Margin</span>
-            </div>
-            <strong className="kpi-card__val">${fmt(currentAccount.freeMargin)}</strong>
-            <div className="kpi-card__footer">
-              <span className="kpi-card__sub">Margin Used: <em>${fmt(currentAccount.margin)}</em></span>
-            </div>
-            <div className="kpi-card__bar"><div className="kpi-card__bar-fill amber" style={{ width: '55%' }} /></div>
-          </div>
-
-          {/* Margin Level */}
-          <div className="kpi-card kpi-card--purple">
-            <div className="kpi-card__top">
-              <div className="kpi-card__icon purple"><BiShield size={20} /></div>
-              <span className="kpi-card__lbl">Margin Level</span>
-            </div>
-            <strong className="kpi-card__val">{currentAccount.marginLevel.toFixed(2)}%</strong>
-            <div className="kpi-card__footer">
-              <span className="kpi-badge safe"><BiCheck size={11} />Safe Level</span>
-            </div>
-            <div className="kpi-card__bar"><div className="kpi-card__bar-fill purple" style={{ width: '93%' }} /></div>
-          </div>
-        </motion.div>
-      </AnimatePresence>
-
-      {/* ── ACTION BUTTONS ── */}
-      <div className="actions">
-        <button className="act-btn act-btn--deposit" onClick={() => { setShowDeposit(true); setAmount(''); setSelectedMethod(''); }}>
-          <div className="act-btn__icon"><BiArrowFromLeft size={18} /></div>
-          <div className="act-btn__text">
-            <strong>Deposit</strong>
-            <span>Add funds</span>
-          </div>
-          <FiChevronRight size={16} className="act-btn__arrow" />
-        </button>
-        <button className="act-btn act-btn--withdraw" onClick={() => { setShowWithdraw(true); setAmount(''); setSelectedMethod(''); }}>
-          <div className="act-btn__icon"><BiArrowToRight size={18} /></div>
-          <div className="act-btn__text">
-            <strong>Withdraw</strong>
-            <span>Cash out</span>
-          </div>
-          <FiChevronRight size={16} className="act-btn__arrow" />
-        </button>
-        <button className="act-btn act-btn--transfer">
-          <div className="act-btn__icon"><BiTransfer size={18} /></div>
-          <div className="act-btn__text">
-            <strong>Transfer</strong>
-            <span>Between accounts</span>
-          </div>
-          <FiChevronRight size={16} className="act-btn__arrow" />
-        </button>
-      </div>
-
-      {/* ── CHARTS ROW ── */}
-      <div className="charts-row">
-        {/* Line Chart */}
-        <div className="chart-card">
-          <div className="chart-card__head">
-            <div>
-              <h3 className="chart-card__title">Balance History</h3>
-              <p className="chart-card__sub">Portfolio performance over time</p>
-            </div>
-            <div className="periods">
-              {['1W','1M','3M','1Y'].map(p => (
-                <button
-                  key={p}
-                  className={`period-btn ${activePeriod === p ? 'active' : ''}`}
-                  onClick={() => setActivePeriod(p)}
-                >{p}</button>
-              ))}
-            </div>
-          </div>
-          {/* Inline stat */}
-          <div className="chart-card__stat-row">
-            <div className="chart-mini-stat">
-              <span>Peak</span><strong>$20,500</strong>
-            </div>
-            <div className="chart-mini-stat">
-              <span>Growth</span><strong className="profit">+64%</strong>
-            </div>
-            <div className="chart-mini-stat">
-              <span>Drawdown</span><strong className="loss">-2.8%</strong>
-            </div>
-          </div>
-          <div className="chart-card__body">
-            <Line data={balanceHistoryData} options={chartOptions} />
-          </div>
-        </div>
-
-        {/* Doughnut Chart */}
-        <div className="chart-card chart-card--sm">
-          <div className="chart-card__head">
-            <div>
-              <h3 className="chart-card__title">Asset Allocation</h3>
-              <p className="chart-card__sub">Portfolio diversification</p>
-            </div>
-          </div>
-          <div className="chart-card__donut-wrap">
-            <div className="chart-card__donut-center">
-              <span>Total</span>
-              <strong>100%</strong>
-            </div>
-            <Doughnut data={allocationData} options={doughnutOptions} />
-          </div>
-          {/* Manual legend */}
-          <div className="allocation-list">
-            {['Forex','Commodities','Indices','Crypto','Stocks'].map((l, i) => (
-              <div key={l} className="alloc-row">
-                <div className="alloc-dot" style={{ background: allocationColors[i] }} />
-                <span className="alloc-label">{l}</span>
-                <div className="alloc-bar-track">
-                  <div className="alloc-bar-fill" style={{ width: `${[45,20,15,12,8][i]}%`, background: allocationColors[i] }} />
-                </div>
-                <span className="alloc-pct">{[45,20,15,12,8][i]}%</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ── RECENT TRADES ── */}
-      <div className="trades-card">
-        <div className="trades-card__head">
+        {/* Logo */}
+        <div className="fd-sb__logo">
+          <div className="fd-sb__logo-icon">F</div>
           <div>
-            <h3 className="trades-card__title">Open Positions</h3>
-            <p className="trades-card__sub">{recentTrades.length} active trades</p>
+            <div className="fd-sb__logo-name">Foxnance</div>
+            <div className="fd-sb__logo-sub">Client Portal</div>
           </div>
-          <button className="view-all-btn">View All <FiChevronRight size={14} /></button>
         </div>
 
-        {/* Mobile cards view */}
-        <div className="trades-cards-mobile">
-          {recentTrades.map(t => (
-            <div key={t.id} className="trade-mob-card">
-              <div className="trade-mob-card__left">
-                <div className="trade-mob-card__flag">{t.flag}</div>
-                <div>
-                  <strong className="trade-mob-card__sym">{t.symbol}</strong>
-                  <span className={`trade-mob-card__badge ${t.type === 'Buy' ? 'buy' : 'sell'}`}>{t.type}</span>
+        {/* User */}
+        <div className="fd-sb__user">
+          <div className="fd-sb__avatar">GZ</div>
+          <div className="fd-sb__user-info">
+            <span className="fd-sb__user-name">Gulam Zain</span>
+            <span className="fd-sb__user-id">ID: FOX12345</span>
+          </div>
+          <BiUser size={16} className="fd-sb__user-edit" />
+        </div>
+
+        {/* Nav */}
+        <nav className="fd-sb__nav">
+          {NAV.map(section => (
+            <div key={section.section} className="fd-sb__sec">
+              <button
+                className="fd-sb__sec-label"
+                onClick={() => setExpanded(prev => { const n=new Set(prev); n.has(section.section)?n.delete(section.section):n.add(section.section); return n })}
+              >
+                {section.section}
+                <BiChevronDown size={13} style={{transform: expanded.has(section.section)?'rotate(180deg)':'none', transition:'transform .25s'}} />
+              </button>
+              {expanded.has(section.section) && (
+                <div className="fd-sb__sec-items">
+                  {section.items.map(item => (
+                    <Link key={item.href} href={item.href} className={`fd-sb__item ${item.active ? 'fd-sb__item--active' : ''}`}>
+                      <item.icon size={17} />
+                      <span>{item.label}</span>
+                      {item.active && <span className="fd-sb__item-dot" />}
+                    </Link>
+                  ))}
                 </div>
-              </div>
-              <div className="trade-mob-card__mid">
-                <span className="trade-mob-card__lbl">Vol</span>
-                <span className="trade-mob-card__val">{t.volume}</span>
-              </div>
-              <div className="trade-mob-card__mid">
-                <span className="trade-mob-card__lbl">Price</span>
-                <span className="trade-mob-card__val">{t.price}</span>
-              </div>
-              <div className="trade-mob-card__right">
-                <span className={`trade-mob-card__pnl ${t.profit >= 0 ? 'profit' : 'loss'}`}>
-                  {t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}
-                </span>
-                <span className="trade-mob-card__time">{t.time}</span>
-              </div>
+              )}
             </div>
           ))}
-        </div>
+        </nav>
 
-        {/* Desktop table */}
-        <div className="trades-table-wrap">
-          <table className="trades-table">
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Type</th>
-                <th>Volume</th>
-                <th>Open Price</th>
-                <th>Current</th>
-                <th>P&L</th>
-                <th>Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recentTrades.map((t, i) => (
-                <motion.tr
-                  key={t.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.06, duration: 0.3 }}
-                  className="trade-row"
-                >
-                  <td>
-                    <div className="trade-sym-cell">
-                      <span className="trade-flag">{t.flag}</span>
-                      <span className="trade-sym">{t.symbol}</span>
-                    </div>
-                  </td>
-                  <td>
-                    <span className={`t-badge ${t.type === 'Buy' ? 'buy' : 'sell'}`}>{t.type}</span>
-                  </td>
-                  <td className="t-num">{t.volume}</td>
-                  <td className="t-num">{t.price}</td>
-                  <td className="t-num">{t.current}</td>
-                  <td className={`t-pnl ${t.profit >= 0 ? 'profit' : 'loss'}`}>
-                    {t.profit >= 0 ? '+' : ''}${t.profit.toFixed(2)}
-                  </td>
-                  <td className="t-time">
-                    <BiTime size={11} style={{ marginRight: 4 }} />{t.time}
-                  </td>
-                </motion.tr>
+        {/* Disconnect */}
+        <button className="fd-sb__disconnect">
+          <BiLogOut size={15} />
+          <span>Disconnect MT5</span>
+        </button>
+      </aside>
+
+      {/* ═══════════ MAIN ═══════════ */}
+      <div className="fd-main">
+
+        {/* CONTENT - Keep only the page-specific content, not the topbar since it's in layout */}
+        <div className="fd-content">
+
+          {/* ── WELCOME BANNER ── */}
+          <div className="fd-welcome">
+            <div className="fd-welcome__bg" />
+            <div className="fd-welcome__grid-svg">
+              <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs><pattern id="wg2" width="48" height="48" patternUnits="userSpaceOnUse">
+                  <path d="M 48 0 L 0 0 0 48" fill="none" stroke="rgba(63,203,27,0.06)" strokeWidth="1"/>
+                </pattern></defs>
+                <rect width="100%" height="100%" fill="url(#wg2)"/>
+              </svg>
+            </div>
+            <div className="fd-welcome__left">
+              <div className="fd-welcome__title">Welcome Back, Gulam Zain</div>
+              <div className="fd-welcome__sub">Here's your trading overview</div>
+            </div>
+            <div className="fd-welcome__right">
+              <div className="fd-welcome__kpi">
+                <span className="fd-welcome__kpi-lbl">Total Balance</span>
+                <span className="fd-welcome__kpi-val">${fmt(totBal)}</span>
+              </div>
+              <div className="fd-welcome__sep"/>
+              <div className="fd-welcome__kpi">
+                <span className="fd-welcome__kpi-lbl">Total Profit</span>
+                <span className="fd-welcome__kpi-val fd-welcome__kpi-val--up">+${fmt(totPnl)}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ── ACCOUNT TABS ── */}
+          <div className="fd-tabs">
+            {accounts.map((a,i) => (
+              <button key={a.id} onClick={()=>setSelAcc(i)} className={`fd-tab ${selAcc===i?'fd-tab--active':''}`}>
+                <span className={`fd-tab__dot ${a.status==='Live'?'fd-tab__dot--live':'fd-tab__dot--demo'}`}/>
+                {a.name}
+              </button>
+            ))}
+          </div>
+
+          {/* ── KPI CARDS ── */}
+          <AnimatePresence mode="wait">
+            <motion.div key={selAcc} className="fd-kpi-row"
+              initial={{opacity:0,y:10}} animate={{opacity:1,y:0}} exit={{opacity:0,y:-8}}
+              transition={{duration:.3,ease:[.16,1,.3,1]}}
+            >
+              <div className="fd-kpi">
+                <div className="fd-kpi__lbl">Total Balance</div>
+                <div className="fd-kpi__val">${fmt(counters.bal)}</div>
+                <div className="fd-kpi__foot fd-kpi__foot--up">+${fmt2(acc.profit)} ({acc.profitPct}%)</div>
+              </div>
+              <div className="fd-kpi">
+                <div className="fd-kpi__lbl">Total Equity</div>
+                <div className="fd-kpi__val">${fmt(counters.eq)}</div>
+                <div className="fd-kpi__foot">Margin: ${fmt2(acc.margin)}</div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          {/* ── ACTION BUTTONS ── */}
+          <div className="fd-actions">
+            <button className="fd-act fd-act--dep" onClick={()=>{setShowDep(true);setAmount('');setMethod('')}}>
+              + Deposit Funds
+            </button>
+            <button className="fd-act fd-act--wit" onClick={()=>{setShowWit(true);setAmount('');setMethod('')}}>
+              - Withdraw Funds
+            </button>
+            <button className="fd-act fd-act--tra">
+              ↗ Internal Transfer
+            </button>
+          </div>
+
+          {/* ── CHARTS ROW ── */}
+          <div className="fd-charts">
+
+            {/* Balance History */}
+            <div className="fd-chart-card fd-chart-card--line">
+              <div className="fd-chart-card__head">
+                <div>
+                  <div className="fd-chart-card__title">Balance History</div>
+                  <div className="fd-chart-card__sub">Account performance over time</div>
+                </div>
+                <div className="fd-periods">
+                  {['1M','3M','1Y'].map(p => (
+                    <button key={p} onClick={()=>setPeriod(p)} className={`fd-period ${period===p?'fd-period--active':''}`}>{p}</button>
+                  ))}
+                </div>
+              </div>
+              <div className="fd-chart-card__body">
+                <Line data={balanceHistory} options={lineOpts}/>
+              </div>
+            </div>
+
+            {/* Asset Allocation */}
+            <div className="fd-chart-card fd-chart-card--donut">
+              <div className="fd-chart-card__title" style={{marginBottom:'16px'}}>Asset Allocation</div>
+              <div className="fd-chart-card__donut">
+                <Doughnut data={allocation} options={donutOpts}/>
+              </div>
+              <div className="fd-alloc-legend">
+                {allocation.labels.map((lbl,i) => (
+                  <span key={i} className="fd-alloc-item">
+                    <span className="fd-alloc-dot" style={{background:allocColors[i]}}/>
+                    {lbl}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* ── RECENT TRADES ── */}
+          <div className="fd-trades">
+            <div className="fd-trades__head">
+              <span className="fd-trades__title">Recent Trades</span>
+              <button className="fd-trades__view-all">View All →</button>
+            </div>
+
+            {/* Mobile */}
+            <div className="fd-trades-mob">
+              {recentTrades.map(t => (
+                <div key={t.id} className="fd-trade-mob">
+                  <span className="fd-trade-mob__flag">{t.flag}</span>
+                  <div className="fd-trade-mob__info">
+                    <strong>{t.symbol}</strong>
+                    <span className={`fd-badge ${t.type==='Buy'?'fd-badge--buy':'fd-badge--sell'}`}>{t.type}</span>
+                  </div>
+                  <span className={`fd-trade-mob__pnl ${t.profit>=0?'fd-green':'fd-red'}`}>{t.profit>=0?'+':''}${t.profit.toFixed(2)}</span>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </div>
 
-      {/* ── DEPOSIT MODAL ── */}
+            {/* Desktop */}
+            <div className="fd-trades-tbl-wrap">
+              <table className="fd-trades-tbl">
+                <thead>
+                  <tr>
+                    <th>Symbol</th><th>Type</th><th>Volume</th>
+                    <th>Open Price</th><th>Current</th><th>P&amp;L</th><th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentTrades.map((t,i) => (
+                    <motion.tr key={t.id} className="fd-trade-row"
+                      initial={{opacity:0,x:-8}} animate={{opacity:1,x:0}}
+                      transition={{delay:i*0.06,duration:.3}}
+                    >
+                      <td><div className="fd-sym-cell"><span className="fd-flag">{t.flag}</span><span className="fd-sym">{t.symbol}</span></div></td>
+                      <td><span className={`fd-badge ${t.type==='Buy'?'fd-badge--buy':'fd-badge--sell'}`}>{t.type}</span></td>
+                      <td className="fd-num">{t.volume}</td>
+                      <td className="fd-num">{t.open}</td>
+                      <td className="fd-num">{t.current}</td>
+                      <td className={`fd-pnl ${t.profit>=0?'fd-green':'fd-red'}`}>{t.profit>=0?'+':''}${t.profit.toFixed(2)}</td>
+                      <td className="fd-time"><BiTime size={11} style={{marginRight:4}}/>{t.time}</td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>{/* /fd-content */}
+      </div>{/* /fd-main */}
+
+      {/* ═══════════ DEPOSIT MODAL ═══════════ */}
       <AnimatePresence>
-        {showDeposit && (
-          <motion.div
-            className="modal-overlay"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setShowDeposit(false)}
-          >
-            <motion.div
-              className="modal"
-              initial={{ scale: 0.92, y: 24, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.94, y: 16, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="modal__glow" />
-              <div className="modal__head">
-                <div className="modal__icon deposit"><BiArrowFromLeft size={20} /></div>
-                <div>
-                  <h3 className="modal__title">Deposit Funds</h3>
-                  <p className="modal__sub">Instant deposits, no fees</p>
-                </div>
-                <button className="modal__close" onClick={() => setShowDeposit(false)}><BiX size={20} /></button>
+        {showDep && (
+          <motion.div className="fd-modal-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowDep(false)}>
+            <motion.div className="fd-modal" initial={{scale:.92,y:24,opacity:0}} animate={{scale:1,y:0,opacity:1}} exit={{scale:.94,opacity:0}} transition={{duration:.28,ease:[.16,1,.3,1]}} onClick={e=>e.stopPropagation()}>
+              <div className="fd-modal__glow"/>
+              <div className="fd-modal__head">
+                <div className="fd-modal__icon fd-modal__icon--dep"><BiArrowFromLeft size={20}/></div>
+                <div><div className="fd-modal__title">Deposit Funds</div><div className="fd-modal__sub">Instant deposits, no fees</div></div>
+                <button className="fd-modal__close" onClick={()=>setShowDep(false)}><BiX size={20}/></button>
               </div>
-              <p className="modal__section-label">Select Payment Method</p>
-              <div className="modal__methods">
-                {[
-                  { id: 'card', label: 'Credit Card', icon: '💳' },
-                  { id: 'bank', label: 'Bank Wire',   icon: '🏦' },
-                  { id: 'crypto', label: 'Crypto',    icon: '₿' },
-                  { id: 'skrill', label: 'Skrill',    icon: '⚡' },
-                ].map(m => (
-                  <button
-                    key={m.id}
-                    className={`modal__method ${selectedMethod === m.id ? 'active' : ''}`}
-                    onClick={() => setSelectedMethod(m.id)}
-                  >
-                    <span className="modal__method-icon">{m.icon}</span>
-                    <span>{m.label}</span>
+              <div className="fd-modal__lbl">Select Payment Method</div>
+              <div className="fd-modal__methods">
+                {[{id:'card',label:'Credit Card',icon:'💳'},{id:'bank',label:'Bank Wire',icon:'🏦'},{id:'crypto',label:'Crypto',icon:'₿'},{id:'skrill',label:'Skrill',icon:'⚡'}].map(m=>(
+                  <button key={m.id} className={`fd-modal__method ${method===m.id?'fd-modal__method--active':''}`} onClick={()=>setMethod(m.id)}>
+                    <span style={{fontSize:'1.1rem'}}>{m.icon}</span><span>{m.label}</span>
                   </button>
                 ))}
               </div>
-              <p className="modal__section-label">Amount</p>
-              <div className="modal__input-wrap">
-                <span className="modal__input-prefix">$</span>
-                <input
-                  type="number" placeholder="0.00"
-                  className="modal__input" value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                />
-              </div>
-              <div className="modal__quick-amounts">
-                {['100','500','1000','5000'].map(v => (
-                  <button key={v} className="modal__quick" onClick={() => setAmount(v)}>${v}</button>
-                ))}
-              </div>
-              <div className="modal__footer">
-                <button className="modal__cancel" onClick={() => setShowDeposit(false)}>Cancel</button>
-                <button className="modal__confirm">
-                  <BiCheck size={16} /> Confirm Deposit
-                </button>
+              <div className="fd-modal__lbl">Amount</div>
+              <div className="fd-modal__input-wrap"><span className="fd-modal__prefix">$</span><input type="number" placeholder="0.00" className="fd-modal__input" value={amount} onChange={e=>setAmount(e.target.value)}/></div>
+              <div className="fd-modal__quick">{['100','500','1000','5000'].map(v=><button key={v} className="fd-modal__quick-btn" onClick={()=>setAmount(v)}>${v}</button>)}</div>
+              <div className="fd-modal__footer">
+                <button className="fd-modal__cancel" onClick={()=>setShowDep(false)}>Cancel</button>
+                <button className="fd-modal__confirm"><BiCheck size={16}/>Confirm Deposit</button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── WITHDRAW MODAL ── */}
+      {/* ═══════════ WITHDRAW MODAL ═══════════ */}
       <AnimatePresence>
-        {showWithdraw && (
-          <motion.div
-            className="modal-overlay"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            onClick={() => setShowWithdraw(false)}
-          >
-            <motion.div
-              className="modal"
-              initial={{ scale: 0.92, y: 24, opacity: 0 }}
-              animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.94, y: 16, opacity: 0 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              onClick={e => e.stopPropagation()}
-            >
-              <div className="modal__glow modal__glow--red" />
-              <div className="modal__head">
-                <div className="modal__icon withdraw"><BiArrowToRight size={20} /></div>
-                <div>
-                  <h3 className="modal__title">Withdraw Funds</h3>
-                  <p className="modal__sub">Available: ${fmt(currentAccount.balance)}</p>
-                </div>
-                <button className="modal__close" onClick={() => setShowWithdraw(false)}><BiX size={20} /></button>
+        {showWit && (
+          <motion.div className="fd-modal-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onClick={()=>setShowWit(false)}>
+            <motion.div className="fd-modal" initial={{scale:.92,y:24,opacity:0}} animate={{scale:1,y:0,opacity:1}} exit={{scale:.94,opacity:0}} transition={{duration:.28,ease:[.16,1,.3,1]}} onClick={e=>e.stopPropagation()}>
+              <div className="fd-modal__glow fd-modal__glow--red"/>
+              <div className="fd-modal__head">
+                <div className="fd-modal__icon fd-modal__icon--wit"><BiArrowToRight size={20}/></div>
+                <div><div className="fd-modal__title">Withdraw Funds</div><div className="fd-modal__sub">Available: ${fmt2(acc.balance)}</div></div>
+                <button className="fd-modal__close" onClick={()=>setShowWit(false)}><BiX size={20}/></button>
               </div>
-              <p className="modal__section-label">Select Withdrawal Method</p>
-              <div className="modal__methods">
-                {[
-                  { id: 'bank',    label: 'Bank Wire', icon: '🏦' },
-                  { id: 'crypto',  label: 'Crypto',    icon: '₿' },
-                  { id: 'skrill',  label: 'Skrill',    icon: '⚡' },
-                  { id: 'neteller', label: 'Neteller', icon: '🔵' },
-                ].map(m => (
-                  <button
-                    key={m.id}
-                    className={`modal__method ${selectedMethod === m.id ? 'active' : ''}`}
-                    onClick={() => setSelectedMethod(m.id)}
-                  >
-                    <span className="modal__method-icon">{m.icon}</span>
-                    <span>{m.label}</span>
+              <div className="fd-modal__lbl">Select Withdrawal Method</div>
+              <div className="fd-modal__methods">
+                {[{id:'bank',label:'Bank Wire',icon:'🏦'},{id:'crypto',label:'Crypto',icon:'₿'},{id:'skrill',label:'Skrill',icon:'⚡'},{id:'neteller',label:'Neteller',icon:'🔵'}].map(m=>(
+                  <button key={m.id} className={`fd-modal__method ${method===m.id?'fd-modal__method--active':''}`} onClick={()=>setMethod(m.id)}>
+                    <span style={{fontSize:'1.1rem'}}>{m.icon}</span><span>{m.label}</span>
                   </button>
                 ))}
               </div>
-              <p className="modal__section-label">Amount</p>
-              <div className="modal__input-wrap">
-                <span className="modal__input-prefix">$</span>
-                <input
-                  type="number" placeholder="0.00"
-                  className="modal__input" value={amount}
-                  onChange={e => setAmount(e.target.value)}
-                />
-              </div>
-              <div className="modal__quick-amounts">
-                {['100','500','1000','5000'].map(v => (
-                  <button key={v} className="modal__quick" onClick={() => setAmount(v)}>${v}</button>
-                ))}
-              </div>
-              <div className="modal__footer">
-                <button className="modal__cancel" onClick={() => setShowWithdraw(false)}>Cancel</button>
-                <button className="modal__confirm modal__confirm--red">
-                  <BiCheck size={16} /> Confirm Withdrawal
-                </button>
+              <div className="fd-modal__lbl">Amount</div>
+              <div className="fd-modal__input-wrap"><span className="fd-modal__prefix">$</span><input type="number" placeholder="0.00" className="fd-modal__input" value={amount} onChange={e=>setAmount(e.target.value)}/></div>
+              <div className="fd-modal__quick">{['100','500','1000','5000'].map(v=><button key={v} className="fd-modal__quick-btn" onClick={()=>setAmount(v)}>${v}</button>)}</div>
+              <div className="fd-modal__footer">
+                <button className="fd-modal__cancel" onClick={()=>setShowWit(false)}>Cancel</button>
+                <button className="fd-modal__confirm fd-modal__confirm--red"><BiCheck size={16}/>Confirm Withdrawal</button>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ══════════════════════════════════════════
-          STYLES
-      ══════════════════════════════════════════ */}
-      <style jsx>{`
-        /* ── TOKENS ── */
-        .dov {
-          --g:        #3fcb1b;
-          --g-dk:     #2e9c14;
-          --g-faint:  rgba(63,203,27,0.08);
-          --g-border: rgba(63,203,27,0.22);
-          --blue:     #3b82f6;
-          --amber:    #f59e0b;
-          --purple:   #8b5cf6;
-          --red:      #ef4444;
-          --profit:   #10b981;
-          --bg:       var(--bg-primary, #0c0f0a);
-          --bg2:      var(--bg-secondary, #141914);
-          --bg3:      var(--bg-card, #1a201a);
-          --border:   var(--border-color, rgba(255,255,255,0.08));
-          --text:     var(--text-primary, #edf0ea);
-          --text2:    var(--text-secondary, #556050);
-          --ease:     cubic-bezier(0.16,1,0.3,1);
-          --r:        16px;
-          font-family: 'Sora', 'DM Sans', system-ui, sans-serif;
-          max-width: 1400px;
-          margin: 0 auto;
-          padding: 0;
-          opacity: 0;
-          transform: translateY(8px);
-          transition: opacity .5s var(--ease), transform .5s var(--ease);
+      {/* ═══════════ STYLES - Only page-specific styles, theme is in layout ═══════════ */}
+      <style jsx global>{`
+        /* ── Page-specific styles that aren't in layout ── */
+        .fd {
+          display: flex;
+          min-height: 100vh;
+          width: 100%;
+          font-family: 'Sora','DM Sans',system-ui,sans-serif;
+          --g: #3fcb1b;
+          --g-dk: #2e9c14;
+          --red: #ef4444;
+          --blue: #3b82f6;
+          --profit: #10b981;
+          --ease: cubic-bezier(.16,1,.3,1);
+          --r: 14px;
         }
-        .dov.mounted { opacity: 1; transform: translateY(0); }
 
-        /* ── TICKER ── */
-        .ticker-wrap {
-          display: flex; align-items: center; gap: 0;
-          background: var(--bg3); border: 1px solid var(--border);
-          border-radius: 12px; overflow: hidden;
-          margin-bottom: 20px; height: 38px;
+        .fd-main {
+          flex: 1;
+          margin-left: 0;
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          width: 100%;
         }
-        .ticker-label {
-          display: flex; align-items: center; gap: 5px;
-          padding: 0 14px; background: var(--g); color: #000;
-          font-size: .62rem; font-weight: 800; letter-spacing: .1em;
-          text-transform: uppercase; height: 100%; flex-shrink: 0; white-space: nowrap;
+
+        .fd-content {
+          flex: 1;
+          padding: 22px 28px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
         }
-        .ticker-track { flex: 1; overflow: hidden; height: 100%; }
-        .ticker-inner {
-          display: flex; align-items: center; height: 100%;
-          will-change: transform;
+
+        @media (max-width: 768px) {
+          .fd-content {
+            padding: 14px 16px;
+            gap: 12px;
+          }
         }
-        .ticker-item {
-          display: flex; align-items: center; gap: 7px;
-          padding: 0 20px; white-space: nowrap;
-          border-right: 1px solid var(--border);
-          height: 100%;
-        }
-        .ticker-sym  { font-size: .72rem; font-weight: 700; color: var(--text); }
-        .ticker-price{ font-size: .72rem; color: var(--text2); }
-        .ticker-chg  { font-size: .68rem; font-weight: 700; }
-        .ticker-chg.up { color: var(--g); }
-        .ticker-chg.dn { color: var(--red); }
 
         /* ── WELCOME ── */
-        .welcome {
-          position: relative; overflow: hidden;
-          background: linear-gradient(135deg, rgba(63,203,27,0.08) 0%, rgba(63,203,27,0.03) 50%, transparent 100%);
-          border: 1px solid var(--g-border);
-          border-radius: 20px; padding: 22px 28px;
-          display: flex; justify-content: space-between; align-items: center;
-          flex-wrap: wrap; gap: 16px; margin-bottom: 20px;
+        .fd-welcome {
+          position: relative;
+          overflow: hidden;
+          background: linear-gradient(135deg, var(--welcome-bg-start, rgba(30,50,28,0.9)) 0%, var(--welcome-bg-end, rgba(20,32,18,0.95)) 100%);
+          border: 1px solid var(--g-bdr, rgba(63,203,27,0.25));
+          border-radius: 16px;
+          padding: 22px 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 14px;
+          transition: background 0.3s ease, border-color 0.3s ease;
         }
-        .welcome__canvas { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
-        .welcome__orb {
-          position: absolute; width: 300px; height: 300px;
-          background: radial-gradient(circle, rgba(63,203,27,0.12), transparent);
-          border-radius: 50%; filter: blur(60px);
-          top: -100px; right: -50px;
-          animation: welcomeOrb 8s ease-in-out infinite;
+        .fd-welcome__bg {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          background: radial-gradient(ellipse at 80% 50%, rgba(63,203,27,0.12) 0%, transparent 65%);
         }
-        @keyframes welcomeOrb { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-15px,10px);} }
-        .welcome__grid { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-        .welcome__left { position: relative; z-index: 1; }
-        .welcome__greeting {
-          display: inline-flex; align-items: center; gap: 7px;
-          font-size: .68rem; font-weight: 700; color: var(--g);
-          letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px;
+        .fd-welcome__grid-svg {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
         }
-        .welcome__dot {
-          width: 7px; height: 7px; border-radius: 50%; background: var(--g);
-          animation: wDotPulse 2s ease-in-out infinite;
+        .fd-welcome__left {
+          position: relative;
+          z-index: 1;
         }
-        @keyframes wDotPulse { 0%,100%{box-shadow:0 0 0 0 rgba(63,203,27,.5);} 50%{box-shadow:0 0 0 5px rgba(63,203,27,0);} }
-        .welcome__name { font-size: clamp(1.2rem,2.5vw,1.6rem); font-weight: 900; color: var(--text); letter-spacing: -.03em; margin: 0 0 4px; }
-        .welcome__sub  { font-size: .78rem; color: var(--text2); margin: 0; }
-
-        .welcome__right {
-          display: flex; align-items: center; gap: 20px;
-          position: relative; z-index: 1;
-          background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-          border-radius: 14px; padding: 14px 20px;
-          backdrop-filter: blur(10px);
+        .fd-welcome__title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: var(--text-primary, #fff);
+          letter-spacing: -.02em;
+          margin-bottom: 4px;
+          transition: color 0.3s ease;
         }
-        .welcome__kpi { display: flex; align-items: center; gap: 12px; }
-        .welcome__kpi-icon {
-          width: 40px; height: 40px; border-radius: 11px;
-          background: rgba(255,255,255,0.06); border: 1px solid var(--border);
-          color: var(--text2);
-          display: flex; align-items: center; justify-content: center;
+        .fd-welcome__sub {
+          font-size: .74rem;
+          color: var(--text-secondary, rgba(255,255,255,0.5));
+          transition: color 0.3s ease;
         }
-        .welcome__kpi-icon.green { background: var(--g-faint); border-color: var(--g-border); color: var(--g); }
-        .welcome__kpi-lbl { font-size: .66rem; color: var(--text2); display: block; margin-bottom: 3px; }
-        .welcome__kpi-val { font-size: 1rem; font-weight: 800; color: var(--text); display: block; letter-spacing: -.02em; }
-        .welcome__kpi-val.profit { color: var(--profit); }
-        .welcome__divider { width: 1px; height: 36px; background: var(--border); }
-
-        @media(max-width:640px){
-          .welcome { padding: 18px 18px; }
-          .welcome__right { width: 100%; justify-content: center; }
+        .fd-welcome__right {
+          display: flex;
+          align-items: center;
+          gap: 24px;
+          position: relative;
+          z-index: 1;
         }
-
-        /* ── ACCOUNT TABS ── */
-        .acc-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .acc-tab {
-          display: flex; align-items: center; gap: 8px;
-          padding: 9px 16px; background: var(--bg3);
-          border: 1px solid var(--border); border-radius: 30px;
-          color: var(--text2); cursor: pointer; font-size: .82rem;
-          transition: all .25s var(--ease);
+        .fd-welcome__kpi {
+          text-align: right;
         }
-        .acc-tab.active { background: var(--g-faint); border-color: var(--g-border); color: var(--text); }
-        .acc-tab__dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .acc-tab__dot.live { background: var(--g); box-shadow: 0 0 0 3px rgba(63,203,27,.2); animation: wDotPulse 2s ease-in-out infinite; }
-        .acc-tab__dot.demo { background: var(--blue); }
-        .acc-tab__name { font-weight: 600; }
-        .acc-tab__badge {
-          font-size: .6rem; font-weight: 700; padding: 2px 7px;
-          border-radius: 100px; text-transform: uppercase; letter-spacing: .06em;
+        .fd-welcome__kpi-lbl {
+          display: block;
+          font-size: .62rem;
+          color: var(--text-secondary, rgba(255,255,255,0.45));
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: .07em;
+          margin-bottom: 3px;
+          transition: color 0.3s ease;
         }
-        .acc-tab__badge.live { background: rgba(63,203,27,.15); color: var(--g); }
-        .acc-tab__badge.demo { background: rgba(59,130,246,.15); color: var(--blue); }
-
-        /* ── KPI CARDS ── */
-        .kpi-row {
-          display: grid;
-          grid-template-columns: repeat(4,1fr);
-          gap: 16px; margin-bottom: 20px;
+        .fd-welcome__kpi-val {
+          display: block;
+          font-size: 1.25rem;
+          font-weight: 900;
+          color: var(--text-primary, #fff);
+          letter-spacing: -.03em;
+          transition: color 0.3s ease;
         }
-        @media(max-width:1100px){ .kpi-row { grid-template-columns: repeat(2,1fr); } }
-        @media(max-width:520px)  { .kpi-row { grid-template-columns: 1fr; } }
-
-        .kpi-card {
-          background: var(--bg3); border: 1px solid var(--border);
-          border-radius: 18px; padding: 20px 18px;
-          position: relative; overflow: hidden;
-          transition: transform .3s var(--ease), box-shadow .3s, border-color .3s;
+        .fd-welcome__kpi-val--up {
+          color: var(--g);
         }
-        .kpi-card:hover { transform: translateY(-4px); }
-        .kpi-card--green:hover { border-color: var(--g-border); box-shadow: 0 8px 28px rgba(63,203,27,.12); }
-        .kpi-card--blue:hover  { border-color: rgba(59,130,246,.3); box-shadow: 0 8px 28px rgba(59,130,246,.1); }
-        .kpi-card--amber:hover { border-color: rgba(245,158,11,.3); box-shadow: 0 8px 28px rgba(245,158,11,.1); }
-        .kpi-card--purple:hover{ border-color: rgba(139,92,246,.3); box-shadow: 0 8px 28px rgba(139,92,246,.1); }
-
-        .kpi-card__top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-        .kpi-card__icon {
-          width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .kpi-card__icon.green  { background: var(--g-faint); color: var(--g); border: 1px solid var(--g-border); }
-        .kpi-card__icon.blue   { background: rgba(59,130,246,.1); color: var(--blue); border: 1px solid rgba(59,130,246,.2); }
-        .kpi-card__icon.amber  { background: rgba(245,158,11,.1); color: var(--amber); border: 1px solid rgba(245,158,11,.2); }
-        .kpi-card__icon.purple { background: rgba(139,92,246,.1); color: var(--purple); border: 1px solid rgba(139,92,246,.2); }
-        .kpi-card__lbl { font-size: .68rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
-
-        .kpi-card__val {
-          font-size: clamp(1.3rem,2vw,1.7rem); font-weight: 900;
-          color: var(--text); letter-spacing: -.04em;
-          display: block; margin-bottom: 10px;
-          font-variant-numeric: tabular-nums;
-        }
-        .kpi-card__footer { margin-bottom: 14px; }
-        .kpi-card__sub { font-size: .72rem; color: var(--text2); }
-        .kpi-card__sub em { font-style: normal; }
-
-        .kpi-badge {
-          display: inline-flex; align-items: center; gap: 4px;
-          font-size: .68rem; font-weight: 700; padding: 3px 9px; border-radius: 100px;
-        }
-        .kpi-badge.up   { background: rgba(16,185,129,.12); color: var(--profit); }
-        .kpi-badge.safe { background: rgba(63,203,27,.1); color: var(--g); }
-
-        .kpi-card__bar { height: 3px; background: var(--border); border-radius: 100px; overflow: hidden; }
-        .kpi-card__bar-fill {
-          height: 100%; border-radius: 100px;
-          background: linear-gradient(90deg, var(--g), #7de84a);
-          transition: width 1.2s var(--ease);
-        }
-        .kpi-card__bar-fill.blue   { background: linear-gradient(90deg, var(--blue), #93c5fd); }
-        .kpi-card__bar-fill.amber  { background: linear-gradient(90deg, var(--amber), #fcd34d); }
-        .kpi-card__bar-fill.purple { background: linear-gradient(90deg, var(--purple), #c4b5fd); }
-
-        /* ── ACTION BUTTONS ── */
-        .actions { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
-        @media(max-width:640px){ .actions { grid-template-columns: 1fr; gap: 10px; } }
-
-        .act-btn {
-          display: flex; align-items: center; gap: 14px;
-          padding: 14px 18px; border-radius: 15px; cursor: pointer;
-          border: none; transition: all .3s var(--ease);
-          text-align: left;
-        }
-        .act-btn__icon {
-          width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
-        }
-        .act-btn__text { flex: 1; }
-        .act-btn__text strong { display: block; font-size: .88rem; font-weight: 800; margin-bottom: 2px; }
-        .act-btn__text span   { display: block; font-size: .7rem; opacity: .65; }
-        .act-btn__arrow { opacity: .4; transition: all .3s; flex-shrink: 0; }
-        .act-btn:hover .act-btn__arrow { opacity: 1; transform: translateX(3px); }
-
-        .act-btn--deposit {
-          background: linear-gradient(135deg, #3fcb1b, #2e9c14);
-          color: #000;
-        }
-        .act-btn--deposit .act-btn__icon { background: rgba(0,0,0,.15); color: #000; }
-        .act-btn--deposit:hover { box-shadow: 0 10px 28px rgba(63,203,27,.35); transform: translateY(-3px); }
-
-        .act-btn--withdraw {
-          background: var(--bg3); border: 1px solid var(--border);
-          color: var(--text);
-        }
-        .act-btn--withdraw .act-btn__icon { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
-        .act-btn--withdraw:hover { border-color: rgba(239,68,68,.3); box-shadow: 0 8px 24px rgba(239,68,68,.08); transform: translateY(-2px); }
-
-        .act-btn--transfer {
-          background: var(--bg3); border: 1px solid var(--border);
-          color: var(--text);
-        }
-        .act-btn--transfer .act-btn__icon { background: rgba(59,130,246,.1); color: var(--blue); border: 1px solid rgba(59,130,246,.2); }
-        .act-btn--transfer:hover { border-color: rgba(59,130,246,.3); box-shadow: 0 8px 24px rgba(59,130,246,.08); transform: translateY(-2px); }
-
-        /* ── CHARTS ROW ── */
-        .charts-row {
-          display: grid; grid-template-columns: 1.55fr 1fr;
-          gap: 16px; margin-bottom: 20px;
-        }
-        @media(max-width:960px){ .charts-row { grid-template-columns: 1fr; } }
-
-        .chart-card {
-          background: var(--bg3); border: 1px solid var(--border);
-          border-radius: 20px; padding: 22px; overflow: hidden;
-        }
-        .chart-card__head {
-          display: flex; justify-content: space-between; align-items: flex-start;
-          flex-wrap: wrap; gap: 12px; margin-bottom: 14px;
-        }
-        .chart-card__title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 0 0 3px; }
-        .chart-card__sub   { font-size: .7rem; color: var(--text2); margin: 0; }
-        .chart-card__stat-row { display: flex; gap: 20px; margin-bottom: 14px; flex-wrap: wrap; }
-        .chart-mini-stat { display: flex; flex-direction: column; gap: 2px; }
-        .chart-mini-stat span    { font-size: .65rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
-        .chart-mini-stat strong  { font-size: .9rem; font-weight: 800; color: var(--text); }
-
-        .periods { display: flex; gap: 5px; }
-        .period-btn {
-          padding: 4px 11px; background: transparent;
-          border: 1px solid var(--border); border-radius: 20px;
-          color: var(--text2); font-size: .68rem; cursor: pointer;
-          transition: all .2s;
-        }
-        .period-btn.active { background: var(--g-faint); border-color: var(--g-border); color: var(--g); font-weight: 700; }
-        .period-btn:not(.active):hover { border-color: var(--text2); color: var(--text); }
-
-        .chart-card__body { height: 240px; }
-        @media(max-width:480px){ .chart-card__body { height: 190px; } }
-
-        /* Donut card */
-        .chart-card--sm {}
-        .chart-card__donut-wrap { position: relative; height: 200px; margin-bottom: 16px; }
-        .chart-card__donut-center {
-          position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
-          text-align: center; pointer-events: none; z-index: 1;
-        }
-        .chart-card__donut-center span  { display: block; font-size: .62rem; color: var(--text2); margin-bottom: 2px; }
-        .chart-card__donut-center strong{ display: block; font-size: 1.3rem; font-weight: 900; color: var(--text); }
-
-        .allocation-list { display: flex; flex-direction: column; gap: 8px; }
-        .alloc-row { display: flex; align-items: center; gap: 8px; }
-        .alloc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-        .alloc-label { font-size: .72rem; color: var(--text2); width: 80px; flex-shrink: 0; }
-        .alloc-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 100px; overflow: hidden; }
-        .alloc-bar-fill  { height: 100%; border-radius: 100px; transition: width 1s var(--ease); }
-        .alloc-pct { font-size: .7rem; font-weight: 700; color: var(--text); width: 32px; text-align: right; flex-shrink: 0; }
-
-        /* ── TRADES ── */
-        .trades-card {
-          background: var(--bg3); border: 1px solid var(--border);
-          border-radius: 20px; padding: 22px; overflow: hidden;
-        }
-        .trades-card__head {
-          display: flex; justify-content: space-between; align-items: center;
-          margin-bottom: 18px; flex-wrap: wrap; gap: 10px;
-        }
-        .trades-card__title { font-size: .95rem; font-weight: 700; color: var(--text); margin: 0 0 2px; }
-        .trades-card__sub   { font-size: .7rem; color: var(--text2); margin: 0; }
-        .view-all-btn {
-          display: inline-flex; align-items: center; gap: 4px;
-          background: var(--g-faint); border: 1px solid var(--g-border);
-          color: var(--g); font-size: .76rem; font-weight: 700;
-          padding: 6px 13px; border-radius: 20px; cursor: pointer;
-          transition: all .2s;
-        }
-        .view-all-btn:hover { background: rgba(63,203,27,.15); }
-
-        /* Mobile card view */
-        .trades-cards-mobile { display: none; flex-direction: column; gap: 10px; }
-        @media(max-width:700px){ 
-          .trades-cards-mobile { display: flex; }
-          .trades-table-wrap   { display: none; }
+        .fd-welcome__sep {
+          width: 1px;
+          height: 40px;
+          background: var(--border-color, rgba(255,255,255,0.1));
+          transition: background 0.3s ease;
         }
 
-        .trade-mob-card {
-          display: flex; align-items: center; gap: 10px;
-          padding: 12px 14px; background: var(--bg2);
-          border: 1px solid var(--border); border-radius: 13px;
+        /* ── TABS ── */
+        .fd-tabs {
+          display: flex;
+          gap: 8px;
           flex-wrap: wrap;
         }
-        .trade-mob-card__left  { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 110px; }
-        .trade-mob-card__flag  { width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.05); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-        .trade-mob-card__sym   { display: block; font-size: .84rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
-        .trade-mob-card__badge { font-size: .62rem; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
-        .trade-mob-card__badge.buy  { background: rgba(63,203,27,.12); color: var(--g); }
-        .trade-mob-card__badge.sell { background: rgba(239,68,68,.12); color: var(--red); }
-        .trade-mob-card__mid  { display: flex; flex-direction: column; gap: 2px; }
-        .trade-mob-card__lbl  { font-size: .62rem; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; }
-        .trade-mob-card__val  { font-size: .78rem; color: var(--text); font-weight: 600; }
-        .trade-mob-card__right{ margin-left: auto; text-align: right; }
-        .trade-mob-card__pnl  { display: block; font-size: .9rem; font-weight: 800; }
-        .trade-mob-card__time { font-size: .66rem; color: var(--text2); }
+        .fd-tab {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 18px;
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 30px;
+          color: var(--text-secondary, #556050);
+          cursor: pointer;
+          font-size: .82rem;
+          font-weight: 600;
+          transition: all .22s;
+          font-family: inherit;
+        }
+        .fd-tab:hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--text-primary, #edf0ea);
+        }
+        .fd-tab--active {
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--text-primary, #edf0ea);
+        }
+        .fd-tab__dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+        .fd-tab__dot--live {
+          background: var(--g);
+          box-shadow: 0 0 0 3px rgba(63,203,27,.18);
+          animation: liveDot 2s ease-in-out infinite;
+        }
+        .fd-tab__dot--demo {
+          background: var(--blue);
+        }
+        @keyframes liveDot {
+          0%,100%{box-shadow:0 0 0 0 rgba(63,203,27,.5);}
+          50%{box-shadow:0 0 0 5px rgba(63,203,27,0);}
+        }
+
+        /* ── KPI ── */
+        .fd-kpi-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+        @media (max-width: 900px) {
+          .fd-kpi-row {
+            grid-template-columns: 1fr 1fr;
+          }
+        }
+        @media (max-width: 600px) {
+          .fd-kpi-row {
+            grid-template-columns: 1fr;
+          }
+        }
+        .fd-kpi {
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: var(--r);
+          padding: 22px 26px;
+          transition: background .3s, border-color .3s, box-shadow .3s;
+          box-shadow: var(--card-shadow, none);
+        }
+        .fd-kpi__lbl {
+          font-size: .68rem;
+          color: var(--text-secondary, #556050);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: .07em;
+          margin-bottom: 10px;
+          transition: color 0.3s ease;
+        }
+        .fd-kpi__val {
+          font-size: clamp(1.6rem,3vw,2.2rem);
+          font-weight: 900;
+          color: var(--text-primary, #edf0ea);
+          letter-spacing: -.04em;
+          margin-bottom: 8px;
+          font-variant-numeric: tabular-nums;
+          transition: color 0.3s ease;
+        }
+        .fd-kpi__foot {
+          font-size: .76rem;
+          color: var(--text-secondary, #556050);
+          transition: color 0.3s ease;
+        }
+        .fd-kpi__foot--up {
+          color: var(--g);
+          font-weight: 700;
+        }
+
+        /* ── ACTIONS ── */
+        .fd-actions {
+          display: grid;
+          grid-template-columns: repeat(3,1fr);
+          gap: 12px;
+        }
+        @media (max-width: 768px) {
+          .fd-actions {
+            grid-template-columns: 1fr;
+            gap: 8px;
+          }
+        }
+        .fd-act {
+          padding: 15px 20px;
+          border-radius: 12px;
+          border: none;
+          font-size: .88rem;
+          font-weight: 800;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all .25s var(--ease);
+          letter-spacing: -.01em;
+        }
+        .fd-act--dep {
+          background: linear-gradient(135deg,#3fcb1b,#2e9c14);
+          color: #000;
+        }
+        .fd-act--dep:hover {
+          box-shadow: 0 8px 24px rgba(63,203,27,.35);
+          transform: translateY(-2px);
+        }
+        .fd-act--wit {
+          background: rgba(239,68,68,0.1);
+          border: 1px solid rgba(239,68,68,0.3);
+          color: var(--red);
+        }
+        .fd-act--wit:hover {
+          background: rgba(239,68,68,0.2);
+          transform: translateY(-2px);
+        }
+        .fd-act--tra {
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          color: var(--text-primary, #edf0ea);
+        }
+        .fd-act--tra:hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          transform: translateY(-2px);
+        }
+
+        /* ── CHARTS ── */
+        .fd-charts {
+          display: grid;
+          grid-template-columns: 1.55fr 1fr;
+          gap: 14px;
+        }
+        @media (max-width: 1100px) {
+          .fd-charts {
+            grid-template-columns: 1fr;
+          }
+        }
+        .fd-chart-card {
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: var(--r);
+          padding: 22px;
+          transition: background .3s, border-color .3s, box-shadow .3s;
+          box-shadow: var(--card-shadow, none);
+        }
+        .fd-chart-card__head {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 10px;
+          margin-bottom: 16px;
+          flex-wrap: wrap;
+        }
+        .fd-chart-card__title {
+          font-size: .92rem;
+          font-weight: 700;
+          color: var(--text-primary, #edf0ea);
+          margin-bottom: 3px;
+          transition: color 0.3s ease;
+        }
+        .fd-chart-card__sub {
+          font-size: .68rem;
+          color: var(--text-secondary, #556050);
+          transition: color 0.3s ease;
+        }
+        .fd-chart-card__body {
+          height: 240px;
+        }
+        @media(max-width:480px) {
+          .fd-chart-card__body {
+            height: 190px;
+          }
+        }
+        .fd-periods {
+          display: flex;
+          gap: 5px;
+        }
+        .fd-period {
+          padding: 4px 12px;
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 20px;
+          color: var(--text-secondary, #556050);
+          font-size: .68rem;
+          cursor: pointer;
+          background: transparent;
+          font-family: inherit;
+          transition: all .18s;
+        }
+        .fd-period--active {
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--g);
+          font-weight: 700;
+        }
+        .fd-period:not(.fd-period--active):hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--text-primary, #edf0ea);
+        }
+
+        /* ── DONUT ── */
+        .fd-chart-card--donut {
+          display: flex;
+          flex-direction: column;
+        }
+        .fd-chart-card__donut {
+          height: 200px;
+          margin-bottom: 16px;
+          flex-shrink: 0;
+        }
+        .fd-alloc-legend {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px 16px;
+          justify-content: center;
+          margin-top: auto;
+        }
+        .fd-alloc-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          font-size: .72rem;
+          color: var(--text-secondary, #556050);
+          transition: color 0.3s ease;
+        }
+        .fd-alloc-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          flex-shrink: 0;
+        }
+
+        /* ── TRADES ── */
+        .fd-trades {
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: var(--r);
+          padding: 22px;
+          transition: background .3s, border-color .3s, box-shadow .3s;
+          box-shadow: var(--card-shadow, none);
+        }
+        .fd-trades__head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+        .fd-trades__title {
+          font-size: .92rem;
+          font-weight: 700;
+          color: var(--text-primary, #edf0ea);
+          transition: color 0.3s ease;
+        }
+        .fd-trades__view-all {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          border: 1px solid var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--g);
+          font-size: .74rem;
+          font-weight: 700;
+          padding: 5px 13px;
+          border-radius: 20px;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all .18s;
+        }
+        .fd-trades__view-all:hover {
+          background: rgba(63,203,27,.14);
+        }
+
+        /* Mobile trade cards */
+        .fd-trades-mob {
+          display: none;
+          flex-direction: column;
+          gap: 8px;
+        }
+        @media (max-width: 600px) {
+          .fd-trades-mob {
+            display: flex;
+          }
+          .fd-trades-tbl-wrap {
+            display: none;
+          }
+        }
+        .fd-trade-mob {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          background: var(--bg-secondary, #141914);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 11px;
+          transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .fd-trade-mob__flag {
+          width: 32px;
+          height: 32px;
+          border-radius: 9px;
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 15px;
+          flex-shrink: 0;
+        }
+        .fd-trade-mob__info {
+          flex: 1;
+        }
+        .fd-trade-mob__info strong {
+          display: block;
+          font-size: .83rem;
+          font-weight: 700;
+          color: var(--text-primary, #edf0ea);
+          margin-bottom: 3px;
+          transition: color 0.3s ease;
+        }
+        .fd-trade-mob__pnl {
+          font-size: .88rem;
+          font-weight: 800;
+        }
 
         /* Desktop table */
-        .trades-table-wrap { overflow-x: auto; }
-        .trades-table {
-          width: 100%; border-collapse: collapse; min-width: 560px;
+        .fd-trades-tbl-wrap {
+          overflow-x: auto;
         }
-        .trades-table thead th {
-          text-align: left; padding: 9px 12px;
-          font-size: .66rem; color: var(--text2); font-weight: 600;
-          text-transform: uppercase; letter-spacing: .08em;
-          border-bottom: 1px solid var(--border);
+        .fd-trades-tbl {
+          width: 100%;
+          border-collapse: collapse;
+          min-width: 540px;
         }
-        .trade-row { transition: background .2s; }
-        .trade-row:hover { background: rgba(255,255,255,.025); }
-        .trades-table td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,.04); }
-        .trades-table tr:last-child td { border-bottom: none; }
-
-        .trade-sym-cell { display: flex; align-items: center; gap: 9px; }
-        .trade-flag { width: 28px; height: 28px; border-radius: 8px; background: rgba(255,255,255,.05); display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-        .trade-sym  { font-size: .84rem; font-weight: 700; color: var(--text); }
-        .t-badge { font-size: .66rem; font-weight: 700; padding: 3px 9px; border-radius: 10px; }
-        .t-badge.buy  { background: rgba(63,203,27,.12); color: var(--g); }
-        .t-badge.sell { background: rgba(239,68,68,.12); color: var(--red); }
-        .t-num    { font-size: .8rem; color: var(--text2); font-variant-numeric: tabular-nums; }
-        .t-pnl    { font-size: .84rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-        .t-time   { font-size: .72rem; color: var(--text2); display: flex; align-items: center; white-space: nowrap; }
-
-        /* shared profit/loss colors */
-        .profit { color: var(--profit) !important; }
-        .loss   { color: var(--red)    !important; }
+        .fd-trades-tbl thead th {
+          text-align: left;
+          padding: 8px 12px;
+          font-size: .63rem;
+          color: var(--text-secondary, #556050);
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: .08em;
+          border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          transition: color 0.3s ease, border-color 0.3s ease;
+        }
+        .fd-trade-row {
+          transition: background .18s;
+        }
+        .fd-trade-row:hover {
+          background: var(--g-faint, rgba(63,203,27,0.09));
+        }
+        .fd-trades-tbl td {
+          padding: 12px;
+          border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          transition: border-color 0.3s ease;
+        }
+        .fd-trades-tbl tr:last-child td {
+          border-bottom: none;
+        }
+        .fd-sym-cell {
+          display: flex;
+          align-items: center;
+          gap: 9px;
+        }
+        .fd-flag {
+          width: 28px;
+          height: 28px;
+          border-radius: 8px;
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+        }
+        .fd-sym {
+          font-size: .83rem;
+          font-weight: 700;
+          color: var(--text-primary, #edf0ea);
+          transition: color 0.3s ease;
+        }
+        .fd-badge {
+          font-size: .64rem;
+          font-weight: 700;
+          padding: 3px 9px;
+          border-radius: 10px;
+        }
+        .fd-badge--buy {
+          background: var(--badge-buy-bg, rgba(63,203,27,0.12));
+          color: var(--g);
+        }
+        .fd-badge--sell {
+          background: var(--badge-sell-bg, rgba(239,68,68,0.12));
+          color: var(--red);
+        }
+        .fd-num {
+          font-size: .78rem;
+          color: var(--text-secondary, #556050);
+          font-variant-numeric: tabular-nums;
+          transition: color 0.3s ease;
+        }
+        .fd-pnl {
+          font-size: .82rem;
+          font-weight: 700;
+          font-variant-numeric: tabular-nums;
+        }
+        .fd-time {
+          font-size: .7rem;
+          color: var(--text-secondary, #556050);
+          display: flex;
+          align-items: center;
+          transition: color 0.3s ease;
+        }
+        .fd-green {
+          color: var(--profit) !important;
+        }
+        .fd-red {
+          color: var(--red) !important;
+        }
 
         /* ── MODAL ── */
-        .modal-overlay {
-          position: fixed; inset: 0;
-          background: rgba(0,0,0,0.65); backdrop-filter: blur(6px);
-          z-index: 1000; display: flex; align-items: center; justify-content: center;
+        .fd-modal-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,.65);
+          backdrop-filter: blur(6px);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           padding: 20px;
         }
-        .modal {
-          background: var(--bg3); border: 1px solid var(--border);
-          border-radius: 24px; padding: 28px;
-          width: 100%; max-width: 440px;
-          position: relative; overflow: hidden;
+        .fd-modal {
+          background: var(--bg-card, #1a201a);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 22px;
+          padding: 28px;
+          width: 100%;
+          max-width: 440px;
+          position: relative;
+          overflow: hidden;
           box-shadow: 0 32px 80px rgba(0,0,0,.6);
+          transition: background 0.3s ease, border-color 0.3s ease;
         }
-        .modal__glow {
-          position: absolute; top: -60px; right: -60px; width: 200px; height: 200px;
-          background: radial-gradient(circle, rgba(63,203,27,.15), transparent);
-          border-radius: 50%; filter: blur(40px); pointer-events: none;
+        .fd-modal__glow {
+          position: absolute;
+          top: -60px;
+          right: -60px;
+          width: 200px;
+          height: 200px;
+          background: radial-gradient(circle,rgba(63,203,27,.15),transparent);
+          border-radius: 50%;
+          filter: blur(40px);
+          pointer-events: none;
         }
-        .modal__glow--red {
-          background: radial-gradient(circle, rgba(239,68,68,.12), transparent);
+        .fd-modal__glow--red {
+          background: radial-gradient(circle,rgba(239,68,68,.12),transparent);
         }
-        .modal__head {
-          display: flex; align-items: center; gap: 14px; margin-bottom: 24px;
-          position: relative; z-index: 1;
+        .fd-modal__head {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+          margin-bottom: 22px;
+          position: relative;
+          z-index: 1;
         }
-        .modal__icon {
-          width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
-          display: flex; align-items: center; justify-content: center;
+        .fd-modal__icon {
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
-        .modal__icon.deposit  { background: var(--g-faint); color: var(--g); border: 1px solid var(--g-border); }
-        .modal__icon.withdraw { background: rgba(239,68,68,.1); color: var(--red); border: 1px solid rgba(239,68,68,.2); }
-        .modal__title { font-size: 1.15rem; font-weight: 800; color: var(--text); margin: 0 0 3px; }
-        .modal__sub   { font-size: .76rem; color: var(--text2); margin: 0; }
-        .modal__close {
-          margin-left: auto; flex-shrink: 0; width: 32px; height: 32px;
-          border-radius: 8px; border: 1px solid var(--border);
-          background: transparent; color: var(--text2);
-          display: flex; align-items: center; justify-content: center;
-          cursor: pointer; transition: all .2s;
+        .fd-modal__icon--dep {
+          background: rgba(63,203,27,.1);
+          color: var(--g);
+          border: 1px solid rgba(63,203,27,.22);
         }
-        .modal__close:hover { background: rgba(255,255,255,.06); color: var(--text); }
-
-        .modal__section-label { font-size: .65rem; font-weight: 700; color: var(--text2); text-transform: uppercase; letter-spacing: .1em; margin: 0 0 10px; position: relative; z-index:1; }
-
-        .modal__methods { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 20px; position: relative; z-index:1; }
-        @media(max-width:380px){ .modal__methods { grid-template-columns: repeat(2,1fr); } }
-        .modal__method {
-          display: flex; flex-direction: column; align-items: center; gap: 5px;
-          padding: 10px 8px; background: var(--bg2);
-          border: 1px solid var(--border); border-radius: 12px;
-          color: var(--text2); cursor: pointer; font-size: .72rem; font-weight: 600;
-          transition: all .25s var(--ease);
+        .fd-modal__icon--wit {
+          background: rgba(239,68,68,.1);
+          color: var(--red);
+          border: 1px solid rgba(239,68,68,.2);
         }
-        .modal__method:hover  { border-color: var(--text2); color: var(--text); }
-        .modal__method.active { background: var(--g-faint); border-color: var(--g-border); color: var(--g); }
-        .modal__method-icon   { font-size: 1.2rem; }
-
-        .modal__input-wrap { position: relative; margin-bottom: 12px; z-index:1; }
-        .modal__input-prefix {
-          position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
-          font-size: 1.1rem; font-weight: 700; color: var(--text2);
+        .fd-modal__title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          color: var(--text-primary, #edf0ea);
+          margin-bottom: 3px;
+          transition: color 0.3s ease;
         }
-        .modal__input {
-          width: 100%; padding: 14px 14px 14px 32px;
-          background: var(--bg2); border: 1px solid var(--border);
-          border-radius: 13px; color: var(--text); font-size: 1.1rem; font-weight: 700;
+        .fd-modal__sub {
+          font-size: .73rem;
+          color: var(--text-secondary, #556050);
+          transition: color 0.3s ease;
+        }
+        .fd-modal__close {
+          margin-left: auto;
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          border-radius: 8px;
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          background: transparent;
+          color: var(--text-secondary, #556050);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all .2s;
+        }
+        .fd-modal__close:hover {
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          color: var(--text-primary, #edf0ea);
+        }
+        .fd-modal__lbl {
+          font-size: .63rem;
+          font-weight: 700;
+          color: var(--text-secondary, #556050);
+          text-transform: uppercase;
+          letter-spacing: .1em;
+          margin-bottom: 10px;
+          display: block;
+          position: relative;
+          z-index: 1;
+          transition: color 0.3s ease;
+        }
+        .fd-modal__methods {
+          display: grid;
+          grid-template-columns: repeat(4,1fr);
+          gap: 8px;
+          margin-bottom: 20px;
+          position: relative;
+          z-index: 1;
+        }
+        @media (max-width: 600px) {
+          .fd-modal__methods {
+            grid-template-columns: repeat(2,1fr);
+          }
+        }
+        .fd-modal__method {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+          padding: 10px 8px;
+          background: var(--bg-secondary, #141914);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 11px;
+          color: var(--text-secondary, #556050);
+          cursor: pointer;
+          font-size: .7rem;
+          font-weight: 600;
+          transition: all .2s;
+          font-family: inherit;
+        }
+        .fd-modal__method:hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--text-primary, #edf0ea);
+        }
+        .fd-modal__method--active {
+          background: var(--g-faint, rgba(63,203,27,0.09));
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--g);
+        }
+        .fd-modal__input-wrap {
+          position: relative;
+          margin-bottom: 12px;
+          z-index: 1;
+        }
+        .fd-modal__prefix {
+          position: absolute;
+          left: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: var(--text-secondary, #556050);
+        }
+        .fd-modal__input {
+          width: 100%;
+          padding: 13px 13px 13px 30px;
+          background: var(--bg-secondary, #141914);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 12px;
+          color: var(--text-primary, #edf0ea);
+          font-size: 1.1rem;
+          font-weight: 700;
           transition: border-color .2s;
           font-family: inherit;
         }
-        .modal__input:focus { outline: none; border-color: var(--g-border); }
-        .modal__input::placeholder { color: var(--text2); font-weight: 400; }
-
-        .modal__quick-amounts { display: flex; gap: 8px; margin-bottom: 22px; flex-wrap: wrap; position: relative; z-index:1; }
-        .modal__quick {
-          padding: 6px 14px; background: var(--bg2);
-          border: 1px solid var(--border); border-radius: 20px;
-          color: var(--text2); font-size: .76rem; font-weight: 700;
-          cursor: pointer; transition: all .2s;
+        .fd-modal__input:focus {
+          outline: none;
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
         }
-        .modal__quick:hover { border-color: var(--g-border); color: var(--g); background: var(--g-faint); }
-
-        .modal__footer { display: flex; gap: 10px; position: relative; z-index:1; }
-        .modal__cancel, .modal__confirm {
-          flex: 1; padding: 13px; border-radius: 13px;
-          font-weight: 700; font-size: .88rem; cursor: pointer;
-          display: flex; align-items: center; justify-content: center; gap: 6px;
+        .fd-modal__input::placeholder {
+          color: var(--text-secondary, #556050);
+          font-weight: 400;
+        }
+        .fd-modal__quick {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 22px;
+          flex-wrap: wrap;
+          position: relative;
+          z-index: 1;
+        }
+        .fd-modal__quick-btn {
+          padding: 6px 14px;
+          background: var(--bg-secondary, #141914);
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          border-radius: 20px;
+          color: var(--text-secondary, #556050);
+          font-size: .74rem;
+          font-weight: 700;
+          cursor: pointer;
+          transition: all .2s;
+          font-family: inherit;
+        }
+        .fd-modal__quick-btn:hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--g);
+          background: var(--g-faint, rgba(63,203,27,0.09));
+        }
+        .fd-modal__footer {
+          display: flex;
+          gap: 10px;
+          position: relative;
+          z-index: 1;
+        }
+        .fd-modal__cancel, .fd-modal__confirm {
+          flex: 1;
+          padding: 13px;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: .86rem;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
           transition: all .25s var(--ease);
+          font-family: inherit;
         }
-        .modal__cancel {
-          background: transparent; border: 1px solid var(--border); color: var(--text2);
+        .fd-modal__cancel {
+          background: transparent;
+          border: 1px solid var(--border-color, rgba(255,255,255,0.08));
+          color: var(--text-secondary, #556050);
         }
-        .modal__cancel:hover { border-color: var(--text2); color: var(--text); }
-        .modal__confirm {
-          background: linear-gradient(135deg, #3fcb1b, #2e9c14);
-          color: #000; border: none;
+        .fd-modal__cancel:hover {
+          border-color: var(--g-bdr, rgba(63,203,27,0.25));
+          color: var(--text-primary, #edf0ea);
         }
-        .modal__confirm:hover { box-shadow: 0 8px 24px rgba(63,203,27,.35); transform: translateY(-2px); }
-        .modal__confirm--red {
-          background: linear-gradient(135deg, #ef4444, #dc2626);
+        .fd-modal__confirm {
+          background: linear-gradient(135deg,#3fcb1b,#2e9c14);
+          color: #000;
+          border: none;
+        }
+        .fd-modal__confirm:hover {
+          box-shadow: 0 8px 24px rgba(63,203,27,.35);
+          transform: translateY(-2px);
+        }
+        .fd-modal__confirm--red {
+          background: linear-gradient(135deg,#ef4444,#dc2626);
           color: #fff;
         }
-        .modal__confirm--red:hover { box-shadow: 0 8px 24px rgba(239,68,68,.3); }
+        .fd-modal__confirm--red:hover {
+          box-shadow: 0 8px 24px rgba(239,68,68,.3);
+        }
+
+        /* ── RESPONSIVE ── */
+        @media(max-width:768px) {
+          .fd-sb {
+            transform: translateX(-100%);
+          }
+          .fd-sb--open {
+            transform: translateX(0);
+          }
+          .fd-main {
+            margin-left: 0 !important;
+          }
+        }
+        @media(max-width:600px) {
+          .fd-welcome {
+            flex-direction: column;
+          }
+          .fd-welcome__right {
+            width: 100%;
+            justify-content: flex-start;
+          }
+        }
       `}</style>
     </div>
-  );
+  )
 }
