@@ -216,7 +216,7 @@ export default function FoxnanceBroker() {
         </div>
       </section>
 
-      {/* ═══ 3. UPGRADE YOUR TRADING SECTION - Larger images ═══ */}
+      {/* ═══ 3. UPGRADE YOUR TRADING SECTION - Two-column layout ═══ */}
       <section id="upgrade" ref={ref("upgrade")} className={`fx-section fx-section--black fx-reveal ${visible.has("upgrade")?"on":""}`}>
         <div className="fx-container">
           <div className="fx-section__head">
@@ -224,23 +224,23 @@ export default function FoxnanceBroker() {
             <h2 className="fx-h2 fx-h2--white">Upgrade your trading with Foxnance</h2>
             <p className="fx-section__sub fx-section__sub--light">The infrastructure that institutional traders demand — now available to everyone.</p>
           </div>
-          <div className="fx-upgrade-grid">
+          <div className="fx-upgrade-two-col-grid">
             {UPGRADE_FEATURES.map((feat, i) => (
               <div 
                 key={i} 
-                className={`fx-upgrade-card ${hoveredFeature === i ? 'hovered' : ''}`}
+                className={`fx-upgrade-card-v2 ${hoveredFeature === i ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredFeature(i)}
                 onMouseLeave={() => setHoveredFeature(null)}
               >
-                <img src={feat.floatingIcon} className="fx-floating-icon" alt="icon" />
-                <div className="fx-upgrade-row">
-                  <div className="fx-upgrade-content">
-                    <h3 className="fx-upgrade-title">{feat.title}</h3>
-                    <p className="fx-upgrade-desc">{feat.desc}</p>
-                  </div>
-                  <div className="fx-upgrade-visual">
-                    <img src={feat.icon} className="fx-main-device" alt={feat.title} />
-                  </div>
+                {/* Left: text + icon */}
+                <div className="fx-upgrade-v2-left">
+                  <img src={feat.floatingIcon} className="fx-upgrade-v2-icon" alt="icon" />
+                  <h3 className="fx-upgrade-title">{feat.title}</h3>
+                  <p className="fx-upgrade-desc">{feat.desc}</p>
+                </div>
+                {/* Right: device image */}
+                <div className="fx-upgrade-v2-right">
+                  <img src={feat.icon} className="fx-upgrade-v2-img" alt={feat.title} />
                 </div>
               </div>
             ))}
@@ -507,7 +507,7 @@ export default function FoxnanceBroker() {
       </section>
 
       {/* ═══ 9. TRUST SECTION ═══ */}
-      <section id="trust" ref={ref("trust")} className={`fx-section fx-section--white fx-reveal ${visible.has("trust")?"on":""}`}>
+      <section id="trust" ref={ref("trust")} className={`fx-section fx-section--white fx-reveal ${visible.has("trust")?"on":""}`} style={{ paddingBottom: 0 }}>
         <div className="fx-container">
           <div className="fx-trust-split">
             <div className="fx-trust-split__left" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
@@ -757,25 +757,65 @@ export default function FoxnanceBroker() {
         .fx-trade-category-card.hovered .fx-trade-hover-overlay { transform: translateY(0); }
         .fx-trade-hover-text { font-size: 0.8rem; font-weight: 800; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* UPGRADE SECTION */
-        .fx-upgrade-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 40px; }
-        @media(max-width:1024px){ .fx-upgrade-grid { grid-template-columns: repeat(2,1fr); } }
-        @media(max-width:640px){ .fx-upgrade-grid { grid-template-columns: 1fr; } }
-        .fx-upgrade-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 0; display: flex; flex-direction: column; transition: all 0.3s ease; position: relative; overflow: hidden; min-height: 280px; }
-        .fx-upgrade-card.hovered { transform: translateY(-6px); border-color: rgba(63,203,27,0.5); box-shadow: 0 20px 40px rgba(63,203,27,0.12); background: rgba(255,255,255,0.08); }
-        .fx-upgrade-row { display: flex; flex-direction: row; align-items: stretch; flex: 1; height: 100%; min-height: 280px; }
-        .fx-upgrade-content { flex: 0 0 45%; padding: 26px 0 26px 26px; display: flex; flex-direction: column; justify-content: flex-start; z-index: 2; }
-        .fx-upgrade-title { font-size: 1.1rem; font-weight: 800; color: #fff; margin-bottom: 10px; line-height: 1.25; }
-        .fx-upgrade-desc { font-size: 0.78rem; color: rgba(255,255,255,0.55); line-height: 1.5; }
-        .fx-upgrade-visual { flex: 1; position: relative; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; padding-bottom: 0; }
-        .fx-main-device { display: block; width: 100%; height: auto; max-height: 260px; object-fit: contain; object-position: bottom center; }
-        .fx-upgrade-card:nth-child(1) .fx-main-device,
-        .fx-upgrade-card:nth-child(3) .fx-main-device,
-        .fx-upgrade-card:nth-child(5) .fx-main-device { width: auto; max-width: 90%; max-height: 275px; object-position: bottom center; }
-        .fx-upgrade-card:nth-child(2) .fx-main-device,
-        .fx-upgrade-card:nth-child(4) .fx-main-device,
-        .fx-upgrade-card:nth-child(6) .fx-main-device { width: 105%; max-height: 260px; }
-        .fx-floating-icon { position: absolute; top: 22px; right: 22px; width: 42px; height: 42px; z-index: 3; filter: invert(61%) sepia(85%) saturate(1219%) hue-rotate(63deg) brightness(96%) contrast(90%); }
+        /* UPGRADE SECTION - Two-column card layout */
+        .fx-upgrade-two-col-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+        @media(max-width:1024px){ .fx-upgrade-two-col-grid { grid-template-columns: repeat(2,1fr); } }
+        @media(max-width:640px){ .fx-upgrade-two-col-grid { grid-template-columns: 1fr; } }
+
+        .fx-upgrade-card-v2 {
+          background: rgba(255,255,255,0.04);
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 20px;
+          display: flex;
+          flex-direction: row;
+          align-items: stretch;
+          overflow: hidden;
+          transition: all 0.3s ease;
+          min-height: 200px;
+        }
+        .fx-upgrade-card-v2.hovered {
+          transform: translateY(-6px);
+          border-color: rgba(63,203,27,0.5);
+          box-shadow: 0 20px 40px rgba(63,203,27,0.12);
+          background: rgba(255,255,255,0.08);
+        }
+
+        /* Left column: icon + text */
+        .fx-upgrade-v2-left {
+          flex: 0 0 52%;
+          padding: 22px 16px 22px 22px;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          gap: 8px;
+        }
+        .fx-upgrade-v2-icon {
+          width: 36px;
+          height: 36px;
+          object-fit: contain;
+          filter: invert(61%) sepia(85%) saturate(1219%) hue-rotate(63deg) brightness(96%) contrast(90%);
+          flex-shrink: 0;
+        }
+        .fx-upgrade-title { font-size: 1rem; font-weight: 800; color: #fff; margin: 0; line-height: 1.25; }
+        .fx-upgrade-desc { font-size: 0.75rem; color: rgba(255,255,255,0.55); line-height: 1.5; margin: 0; }
+
+        /* Right column: device image flush to bottom, no clipping */
+        .fx-upgrade-v2-right {
+          flex: 1;
+          display: flex;
+          align-items: flex-center;
+          justify-content: center;
+          overflow: hidden;
+          padding: 0 0 0 4px;
+        }
+        .fx-upgrade-v2-img {
+          display: block;
+          width: 100%;
+          height: auto;
+          max-height: 190px;
+          object-fit: contain;
+          object-position: bottom center;
+        }
 
         /* MT5 SECTION */
         .fx-mt5-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 18px; margin-bottom: 48px; align-items: start; }
@@ -858,9 +898,9 @@ export default function FoxnanceBroker() {
         /* TRUST SECTION */
         .fx-trust-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; justify-content: center; }
         @media(max-width:1024px) { .fx-trust-split { grid-template-columns: 1fr; text-align: center; gap: 40px; } .fx-trust-split__left { text-align: center; } .fx-trust-split__left .fx-section__sub { text-align: center !important; } }
-        .fx-trust-image { width: 100%; max-width: 450px; height: auto; mix-blend-mode: multiply; filter: contrast(1.05); margin-bottom: 0px; position: relative; z-index: 10; }
+        .fx-trust-image { width: 100%; max-width: 500px; height: auto; mix-blend-mode: multiply; filter: contrast(1.05); margin-bottom: -4px; position: relative; z-index: 10; display: block; }
         .dark-mode .fx-trust-image { mix-blend-mode: normal; filter: brightness(0.9) contrast(1.1); }
-        .fx-trust-split__right { display: flex; justify-content: center; align-items: flex-end; text-align: center; overflow: visible; }
+        .fx-trust-split__right { display: flex; justify-content: center; align-items: flex-end; text-align: center; overflow: visible; padding-bottom: 0; margin-bottom: 0; }
 
         /* READY TO TRADE SLIDER */
         .fx-testimonials-slider { overflow: hidden; width: 100%; margin: 40px 0 32px; padding: 10px 0; }

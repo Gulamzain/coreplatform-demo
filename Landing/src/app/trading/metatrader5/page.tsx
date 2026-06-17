@@ -175,7 +175,7 @@ const MT5Page = () => {
             transition={{ delay: 0.4, duration: 0.8 }}
           >
             <img 
-              src="/images/MT5-Hero.png" 
+              src="/images/MT5-Extra.png" 
               alt="MetaTrader 5 Platform" 
               className="mt5-hero-image"
             />
@@ -505,7 +505,7 @@ const MT5Page = () => {
             >
               <div className="start-trading-image-wrapper">
                 <img 
-                  src="/images/MT5-Extra.png" 
+                  src="/images/MT5-Hero.png" 
                   alt="MetaTrader 5 Trading Platform" 
                   className="start-trading-image"
                 />
@@ -519,7 +519,7 @@ const MT5Page = () => {
       <CookieModal />
 
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800;900&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
 
         /* CSS Variables for Theme Support */
         :root {
@@ -561,7 +561,8 @@ const MT5Page = () => {
         }
 
         .mt5-page {
-          font-family: 'Inter', 'Sora', system-ui, sans-serif;
+          transition: background 0.28s ease, color 0.28s ease;
+          font-family: 'Sora', 'DM Sans', system-ui, sans-serif;
           overflow-x: hidden;
         }
 
@@ -654,8 +655,18 @@ const MT5Page = () => {
         .mt5-hero-visual { width: 100%; height: 100%; display: flex; align-items: center; justify-content: flex-end; position: relative; }
         .mt5-hero-image { width: 100%; height: 100%; object-fit: cover; display: block; }
 
+        /* Mobile hero image — center & show fully */
+        @media(max-width:968px) {
+          .mt5-hero-visual { width:100%; height:auto; min-height:260px; padding:0 24px 32px; }
+          .mt5-hero-image { width:100%; height:auto; object-fit:contain; max-height:320px; object-position:center; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6)); }
+        }
+        @media(max-width:560px) {
+          .mt5-hero-visual { min-height:220px; padding:0 16px 24px; }
+          .mt5-hero-image { max-height:260px; }
+        }
+
         /* ========== PLATFORM CAPABILITIES - WHITE BACKGROUND ========== */
-        .mt5-features-light { padding: 100px 0; background: var(--bg-white); }
+        .mt5-features-light { padding: 100px 0; background: var(--bg-white); transition: background 0.28s, border-color 0.28s; }
         .features-header { text-align: center; margin-bottom: 64px; }
         .section-badge { display: inline-block; padding: 6px 18px; background: rgba(63,203,27,0.1); border: 1px solid rgba(63,203,27,0.2); border-radius: 40px; font-size: 0.75rem; font-weight: 700; color: var(--g-dark); letter-spacing: 0.05em; margin-bottom: 20px; }
         .features-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 16px; }
@@ -690,7 +701,7 @@ const MT5Page = () => {
         .download-note { text-align: center; font-size: 0.8rem; color: rgba(255,255,255,0.4); }
 
         /* ========== ALGO SECTION - WHITE BACKGROUND ========== */
-        .mt5-algo-light { padding: 100px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); }
+        .mt5-algo-light { padding: 100px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); transition: background 0.28s, border-color 0.28s; }
         .mt5-algo-light .section-title { color: var(--text-light); }
         .mt5-algo-light .section-desc { color: var(--text-light-secondary); font-size: 1.05rem; line-height: 1.6; }
         .algo-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 80px; align-items: center; }
@@ -722,7 +733,7 @@ const MT5Page = () => {
         .mt5-btn-outline:hover { background: rgba(63,203,27,0.1); transform: translateY(-2px); }
 
         /* ========== START TRADING SECTION - WHITE BACKGROUND ========== */
-        .mt5-start-trading { padding: 120px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); }
+        .mt5-start-trading { padding: 120px 0; background: var(--bg-white); border-top: 1px solid var(--border-light); transition: background 0.28s, border-color 0.28s; }
         .start-trading-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 100px; align-items: center; }
         .start-trading-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; color: var(--text-light); letter-spacing: -0.02em; margin-bottom: 20px; line-height: 1.2; }
         .start-trading-desc { font-size: 1.05rem; color: var(--text-light-secondary); line-height: 1.65; margin-bottom: 32px; }
@@ -732,7 +743,7 @@ const MT5Page = () => {
         .start-trading-actions { display: flex; gap: 16px; flex-wrap: wrap; }
         .start-trading-visual { display: flex; justify-content: center; align-items: center; }
         .start-trading-image-wrapper { width: 100%; display: flex; justify-content: center; }
-        .start-trading-image { max-width: 100%; height: auto; display: block; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.08)); }
+        .start-trading-image { max-width: 100%; height: auto; display: block; filter: drop-shadow(0 20px 30px rgba(0,0,0,0.12)); border-radius: 12px; }
 
         /* ==================== SCREEN RESPONSIVENESS ==================== */
         @media (max-width: 1100px) {
@@ -742,10 +753,10 @@ const MT5Page = () => {
         }
 
         @media (max-width: 968px) {
-          .mt5-hero-inner { grid-template-columns: 1fr; text-align: center; }
-          .mt5-hero-content { padding: 100px 24px 60px; max-width: 700px; margin: 0 auto; }
-          .mt5-actions { justify-content: center; }
-          .mt5-hero-visual { display: none; } 
+          .mt5-hero-inner { grid-template-columns: 1fr; text-align: center; min-height: auto; }
+          .mt5-hero-content { padding: 100px 24px 40px; max-width: 700px; margin: 0 auto; }
+          .mt5-actions { justify-content: center; flex-wrap: wrap; }
+          .mt5-hero-visual { display: flex; justify-content: center; align-items: center; min-height: 300px; } 
           
           .core-features-grid { grid-template-columns: repeat(2, 1fr); gap: 24px; }
           .advanced-features-inner { grid-template-columns: repeat(3, 1fr); gap: 20px; }

@@ -4,7 +4,6 @@ import React from 'react'
 import Link from 'next/link';
 import Image from 'next/image';
 
-import * as Icon from 'react-feather';
 
 // Updated imports to include Payment Icons
 import { 
@@ -14,37 +13,25 @@ import {
 } from 'react-icons/fa';
 import { MdKeyboardArrowRight } from "react-icons/md"
 
-interface FooterLink {
-    liClass: string;
-    route: string;
-    title: string;
-}
-
-interface FooterCompany {
-    liClass: string;
-    route: string;
-    title: string;
-}
-
 export default function Footer() {
-    const footerLinks = [
-        { liClass: '', route: '/page-terms', title: 'Terms of Services' },
-        { liClass: '', route: '/page-privacy', title: 'Privacy Policy' },
-        { route: '/documentation', title: 'Documentation', liClass: '' },
-        { route: '/changelog', title: 'Changelog', liClass: '' },
-        { route: '/faq', title: 'FAQ', liClass: '' },
-        { route: '/risk-disclosure', title: 'Risk Disclosure', liClass: '' }
+    const footerTrading = [
+        { liClass: '', route: '/trading/accounts', title: 'Accounts Overview' },
+        { liClass: '', route: '/trading/metatrader5', title: 'MetaTrader 5' },
     ];
-    
+
+    const footerMarkets = [
+        { liClass: '', route: '/markets/forex', title: 'Forex' },
+        { liClass: '', route: '/markets/commodities', title: 'Commodities' },
+        { liClass: '', route: '/markets/stocks', title: 'Stocks' },
+        { liClass: '', route: '/markets/indices', title: 'Indices' },
+        { liClass: '', route: '/markets/crypto', title: 'Crypto' },
+    ];
+
     const footerCompany = [
-        { liClass: '', route: '/page-aboutus', title: 'About us' },
-        { liClass: '', route: '/page-services', title: 'Services' },
-        { route: '/page-team', title: 'Team', liClass: '' },
-        { route: '/page-pricing', title: 'Pricing', liClass: '' },
-        { route: '/markets', title: 'Markets', liClass: '' },
-        { route: '/blog', title: 'Blog', liClass: '' },
-        { route: '/auth-login', title: 'Login', liClass: '' },
-        { route: '/auth-signup', title: 'Sign Up', liClass: '' }
+        { liClass: '', route: '/company/about', title: 'About Us' },
+        { liClass: '', route: '/partners/partner', title: 'Partner Program' },
+        { liClass: '', route: '/auth-login', title: 'Login' },
+        { liClass: '', route: '/auth-signup', title: 'Open Account' },
     ];
 
     // Updated to use React Components instead of image paths
@@ -78,10 +65,8 @@ export default function Footer() {
                                                 priority
                                             />
                                         </Link>
-                                        <p className="mt-4 text-gray-400 text-xs leading-relaxed max-w-md">
-                                            The risk of loss in online trading of stocks, options, futures, currencies, foreign equities, 
-                                            and fixed income can be substantial. FOXNANCE is a trusted broker with 15+ years of experience 
-                                            serving 500,000+ clients worldwide.
+                                        <p className="mt-4 text-gray-400 text-sm font-medium leading-relaxed italic">
+                                            Markets Move Fast, We Move Faster.
                                         </p>
                                         
                                         {/* Regulatory Badges */}
@@ -145,14 +130,14 @@ export default function Footer() {
                                         </ul>
                                     </div>
 
-                                    {/* Company Links */}
+                                    {/* Trading Links */}
                                     <div className="lg:col-span-2 md:col-span-4">
-                                        <h5 className="tracking-[1px] text-white font-semibold text-sm mb-3">Company</h5>
+                                        <h5 className="tracking-[1px] text-white font-semibold text-sm mb-3">Trading</h5>
                                         <ul className="list-none footer-list space-y-1.5">
-                                            {footerCompany.map((data: FooterCompany, index: number) => (
+                                            {footerTrading.map((data, index) => (
                                                 <li key={index}>
                                                     <Link href={data.route} className="text-gray-400 hover:text-[#3fcb1b] duration-500 ease-in-out flex items-center group text-xs">
-                                                        <MdKeyboardArrowRight className="text-base me-1 group-hover:translate-x-1 transition-transform" /> 
+                                                        <MdKeyboardArrowRight className="text-base me-1 group-hover:translate-x-1 transition-transform" />
                                                         {data.title}
                                                     </Link>
                                                 </li>
@@ -160,32 +145,34 @@ export default function Footer() {
                                         </ul>
                                     </div>
 
-                                    {/* Useful Links */}
-                                    <div className="lg:col-span-3 md:col-span-4">
-                                        <h5 className="tracking-[1px] text-white font-semibold text-sm mb-3">Useful Links</h5>
+                                    {/* Markets Links */}
+                                    <div className="lg:col-span-2 md:col-span-4">
+                                        <h5 className="tracking-[1px] text-white font-semibold text-sm mb-3">Markets</h5>
                                         <ul className="list-none footer-list space-y-1.5">
-                                            {footerLinks.map((data: FooterLink, index: number) => (
+                                            {footerMarkets.map((data, index) => (
                                                 <li key={index}>
                                                     <Link href={data.route} className="text-gray-400 hover:text-[#3fcb1b] duration-500 ease-in-out flex items-center group text-xs">
-                                                        <MdKeyboardArrowRight className="text-base me-1 group-hover:translate-x-1 transition-transform" /> 
+                                                        <MdKeyboardArrowRight className="text-base me-1 group-hover:translate-x-1 transition-transform" />
                                                         {data.title}
                                                     </Link>
                                                 </li>
                                             ))}
                                         </ul>
+                                    </div>
 
-                                        {/* Contact Info */}
-                                        <div className="mt-4">
-                                            <h6 className="text-white font-semibold text-sm mb-2">Contact Us</h6>
-                                            <p className="text-gray-400 text-xs flex items-center gap-2 mb-1">
-                                                <Icon.Phone className="w-3 h-3 flex-shrink-0" />
-                                                <span>+1 (888) 123-4567</span>
-                                            </p>
-                                            <p className="text-gray-400 text-xs flex items-center gap-2">
-                                                <Icon.MessageCircle className="w-3 h-3 flex-shrink-0" />
-                                                <span>24/7 Live Support</span>
-                                            </p>
-                                        </div>
+                                    {/* Company Links */}
+                                    <div className="lg:col-span-2 md:col-span-4">
+                                        <h5 className="tracking-[1px] text-white font-semibold text-sm mb-3">Company</h5>
+                                        <ul className="list-none footer-list space-y-1.5">
+                                            {footerCompany.map((data, index) => (
+                                                <li key={index}>
+                                                    <Link href={data.route} className="text-gray-400 hover:text-[#3fcb1b] duration-500 ease-in-out flex items-center group text-xs">
+                                                        <MdKeyboardArrowRight className="text-base me-1 group-hover:translate-x-1 transition-transform" />
+                                                        {data.title}
+                                                    </Link>
+                                                </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -194,16 +181,18 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom Bar with Payment Icons */}
-                <div className="py-4 px-0 border-t border-gray-800">
+                <div className="py-4 px-0 border-t border-gray-600">
     <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-3">
             <div className="text-center md:text-left">
-                <p className="mb-0 text-xs text-gray-500">
-                    © {new Date().getFullYear()} FOXNANCE. All rights reserved. 
+                <p className="mb-0 text-xs text-gray-300">
+                    © {new Date().getFullYear()} Foxnance. All rights reserved.
                     <span className="mx-2">|</span>
-                    <Link href="/sitemap" className="text-gray-500 hover:text-[#3fcb1b] transition-colors">Sitemap</Link>
+                    <Link href="/privacy-policy" className="text-gray-300 hover:text-[#3fcb1b] transition-colors">Privacy Policy</Link>
                     <span className="mx-2">|</span>
-                    <Link href="/accessibility" className="text-gray-500 hover:text-[#3fcb1b] transition-colors">Accessibility</Link>
+                    <Link href="/terms-and-conditions" className="text-gray-300 hover:text-[#3fcb1b] transition-colors">Terms &amp; Conditions</Link>
+                    <span className="mx-2">|</span>
+                    <Link href="/risk-warning" className="text-gray-300 hover:text-[#3fcb1b] transition-colors">Risk Warning</Link>
                 </p>
             </div>
 
@@ -217,8 +206,7 @@ export default function Footer() {
                         src={method.icon} 
                         alt={method.name} 
                         title={method.name}
-                        /* We use inline styles with !important to stop the global CSS from making them big */
-                        style={{ 
+                                        style={{ 
                             height: '14px', 
                             width: 'auto', 
                             maxWidth: 'none', 
@@ -233,12 +221,22 @@ export default function Footer() {
 </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="mt-4 text-center">
-            <p className="text-[10px] text-gray-600 leading-relaxed">
-                *Risk Warning: Trading foreign exchange on margin carries a high level of risk and may not be suitable for all investors. 
-                The possibility exists that you could sustain a loss of some or all of your initial investment and therefore you should not 
-                invest money that you cannot afford to lose. You should be aware of all the risks associated with foreign exchange trading.
+        {/* Full Risk Warning */}
+        <div className="mt-6 text-center border-t border-gray-800 pt-6">
+            <p className="text-[10px] text-gray-400 leading-relaxed mb-3">
+                Risk Warning: Trading Forex, CFDs, and other leveraged products carries a high level of risk and may not be suitable for all investors. CFDs are complex instruments and come with a high risk of losing money rapidly due to leverage. You should consider whether you understand how CFDs work and whether you can afford to take the high risk of losing your money. You may lose all of your invested capital. Do not trade with money you cannot afford to lose. The high degree of leverage can work against you as well as for you. High leverage options such as 1:200 or 1:500 involve substantial risk and are not appropriate for all investors.
+            </p>
+            <p className="text-[10px] text-gray-400 leading-relaxed mb-3">
+                All content, information, and tools provided on this website are for informational and educational purposes only and do not constitute investment advice, a recommendation, or a solicitation to buy or sell any financial instrument. It is your sole responsibility to evaluate the accuracy, completeness, and usefulness of any information provided. Past performance is not indicative of future results. Any trading results shown whether live or simulated do not guarantee future performance.
+            </p>
+            <p className="text-[10px] text-gray-400 leading-relaxed mb-3">
+                Client funds are held in segregated accounts with reputable financial institutions, separate from the company&#39;s operational funds. Retail clients are protected from negative balance and cannot lose more than the funds held in their trading account.
+            </p>
+            <p className="text-[10px] text-gray-400 leading-relaxed mb-4">
+                This website is not directed at residents of the United States, Canada, Iran, North Korea, Sudan, Myanmar, Cuba, or any other jurisdiction where such distribution or use would be contrary to local law or regulation. It is your responsibility to ensure that you are legally permitted to access and use this platform in your jurisdiction before proceeding.
+            </p>
+            <p className="text-[10px] text-gray-300 font-medium">
+                © 2026 Foxnance. All rights reserved.
             </p>
         </div>
     </div>

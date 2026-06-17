@@ -68,8 +68,8 @@ const NAV_ITEMS = [
     mega: false,
     links: [
       { name: 'Partner Program', href: '/partners/partner', icon: LuHandshake },
-      { name: 'Sign in', href: '/auth-login/', icon: LuUsers },
-      { name: 'Sign Up', href: '/auth-signup/', icon: LuAward },
+     // { name: 'Sign in', href: '/auth-login/', icon: LuUsers },
+     // { name: 'Sign Up', href: '/auth-signup/', icon: LuAward },
        { name: 'Partner App', href: '/partners/LayoutDashboard', icon: LuHandshake },
     ],
   },
@@ -341,10 +341,11 @@ export default function Navbar(props: { navClass: any; navJustify: any; bg: any 
 
       <style jsx global>{`
         .fox-nav__inner {
-          height: 100%; max-width: 1440px; margin: 0 auto;
+          height: 100%; max-width: 1280px; margin: 0 auto;
           padding: 0 24px; display: flex; align-items: center; justify-content: center;
+          width: 100%;
         }
-        @media (min-width: 1024px) { .fox-nav__inner { padding: 0 88px; } }
+        @media (min-width: 1024px) { .fox-nav__inner { padding: 0 64px; } }
         
         /* Logo Styles with Animation */
         .fox-nav__logo {

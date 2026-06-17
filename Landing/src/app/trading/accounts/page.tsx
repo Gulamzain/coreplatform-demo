@@ -81,7 +81,8 @@ function OrbField({ count = 8 }: { count?: number }) {
   );
 }
 
-const TICKER_ITEMS = [
+// Static seed prices — replaced by live data on mount
+const TICKER_SEED = [
   {sym:'EUR/USD', p:'1.08945', ch:'+0.47%', up:true},
   {sym:'GBP/USD', p:'1.27420', ch:'-0.21%', up:false},
   {sym:'XAU/USD', p:'2356.80', ch:'+0.67%', up:true},
@@ -92,8 +93,74 @@ const TICKER_ITEMS = [
   {sym:'S&P 500', p:'5,320',   ch:'+0.31%', up:true},
 ];
 
+// Live ticker hook — fetches from free Coinbase + exchangerate APIs
+function useLiveTicker() {
+  const [items, setItems] = React.useState(TICKER_SEED);
+
+  React.useEffect(() => {
+    let cancelled = false;
+
+    async function fetchPrices() {
+      try {
+        // Fetch crypto from Coinbase (free, no key)
+        const [btcRes, ethRes] = await Promise.allSettled([
+          fetch('https://api.coinbase.com/v2/prices/BTC-USD/spot'),
+          fetch('https://api.coinbase.com/v2/prices/ETH-USD/spot'),
+        ]);
+
+        // Fetch forex from exchangerate-api (free tier)
+        const fxRes = await fetch('https://open.er-api.com/v6/latest/USD').catch(() => null);
+
+        if (cancelled) return;
+
+        const updates: Record<string, string> = {};
+
+        if (btcRes.status === 'fulfilled') {
+          const d = await btcRes.value.json().catch(() => null);
+          if (d?.data?.amount) updates['BTC/USD'] = parseFloat(d.data.amount).toLocaleString('en-US', {maximumFractionDigits:0});
+        }
+
+        if (fxRes && fxRes.ok) {
+          const fx = await fxRes.json().catch(() => null);
+          if (fx?.rates) {
+            if (fx.rates.EUR) updates['EUR/USD'] = (1 / fx.rates.EUR).toFixed(5);
+            if (fx.rates.GBP) updates['GBP/USD'] = (1 / fx.rates.GBP).toFixed(5);
+            if (fx.rates.JPY) updates['USD/JPY'] = fx.rates.JPY.toFixed(3);
+          }
+        }
+
+        if (Object.keys(updates).length > 0) {
+          setItems(prev => prev.map(item => {
+            const newPrice = updates[item.sym];
+            if (!newPrice) return item;
+            const oldNum = parseFloat(item.p.replace(/,/g, ''));
+            const newNum = parseFloat(newPrice.replace(/,/g, ''));
+            const diff = ((newNum - oldNum) / oldNum) * 100;
+            return {
+              ...item,
+              p: newPrice,
+              ch: (diff >= 0 ? '+' : '') + diff.toFixed(2) + '%',
+              up: diff >= 0,
+            };
+          }));
+        }
+      } catch (_) {
+        // silently keep seed data on error
+      }
+    }
+
+    fetchPrices();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchPrices, 30000);
+    return () => { cancelled = true; clearInterval(interval); };
+  }, []);
+
+  return items;
+}
+
 export default function AccountsOverviewPage() {
   const [openFaq, setOpenFaq] = useState<number|null>(null);
+  const tickerItems = useLiveTicker();
   const [visible, setVisible] = useState<Set<string>>(new Set());
   const [isDarkMode, setIsDarkMode] = useState(false);
   const refs = useRef<{[k:string]: HTMLElement|null}>({});
@@ -186,7 +253,7 @@ export default function AccountsOverviewPage() {
                 className="aov-hero__title"
                 initial={{opacity:0,y:28}} animate={{opacity:1,y:0}} transition={{delay:.22,duration:.65}}
               >
-                Pick Your Account.<br/>
+                Pick Your Account<br/>
                 <span className="aov-hero__accent">Start Trading.</span>
               </motion.h1>
               <motion.p
@@ -220,7 +287,7 @@ export default function AccountsOverviewPage() {
           <div className="aov-ticker__label"><FiActivity size={10}/>MARKETS</div>
           <div className="aov-ticker__track">
             <div className="aov-ticker__inner">
-              {[...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS, ...TICKER_ITEMS].map((t,i) => (
+              {[...tickerItems, ...tickerItems, ...tickerItems, ...tickerItems].map((t,i) => (
                 <div key={i} className="aov-ticker__item">
                   <span className="aov-ticker__sym">{t.sym}</span>
                   <span className="aov-ticker__price">{t.p}</span>
@@ -669,11 +736,11 @@ export default function AccountsOverviewPage() {
         .aov-btn-primary--lg { padding:15px 34px; font-size:.95rem; }
         .aov-btn-ghost { 
           display:inline-flex; align-items:center; gap:7px; padding:13px 28px; 
-          background:transparent; color:var(--text-light); font-weight:700; font-size:.88rem; 
-          border:1.5px solid var(--border-light); border-radius:100px; text-decoration:none; 
-          transition:all .3s; 
+          background:rgba(255,255,255,0.08); color:#fff; font-weight:700; font-size:.88rem; 
+          border:1.5px solid rgba(255,255,255,0.35); border-radius:100px; text-decoration:none; 
+          transition:all .3s; backdrop-filter:blur(8px);
         }
-        .aov-btn-ghost:hover { border-color:var(--g); color:var(--g); transform:translateY(-2px); }
+        .aov-btn-ghost:hover { border-color:var(--g); color:var(--g); background:rgba(63,203,27,0.1); transform:translateY(-2px); box-shadow:0 8px 24px rgba(63,203,27,0.15); }
 
         /* ========== 1. HERO (always dark) ========== */
         .aov-hero { position:relative; background:#000; overflow:clip; display:flex; flex-direction:column; align-items:stretch; padding:0; }
@@ -684,15 +751,26 @@ export default function AccountsOverviewPage() {
         .aov-aurora-2 { width:480px; height:480px; background:radial-gradient(circle,rgba(45,180,10,.15),transparent 70%); bottom:-100px; left:-60px; animation:auraDrift 9s ease-in-out infinite reverse; }
         .aov-aurora-3 { width:300px; height:300px; background:radial-gradient(circle,rgba(100,220,60,.09),transparent 70%); top:40%; left:35%; animation:auraDrift 7s ease-in-out infinite; }
         .aov-hero__grid { position:absolute; inset:0; width:100%; height:100%; }
-        .aov-hero__inner { display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; width:100%; position:relative; z-index:1; min-height: calc(100vh - 72px); }
+        .aov-hero__inner { display:grid; grid-template-columns:1fr 1fr; gap:0; align-items:stretch; width:100%; position:relative; z-index:1; min-height: calc(100vh - 80px); }
         .aov-hero__title { font-size:clamp(2.4rem,5.5vw,4rem); font-weight:900; line-height:1.12; color:#fff; letter-spacing:-.045em; margin:0 0 18px; }
         .aov-hero__accent { background:linear-gradient(135deg,#3fcb1b 0%,#7de84a 50%,#3fcb1b 100%); background-size:200% auto; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:shimmer 4s linear infinite; }
         .aov-hero__desc { font-size:.98rem; color:rgba(237,240,234,0.55); line-height:1.72; margin:0 0 28px; }
         .aov-hero__actions { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px; }
         .aov-hero__copy { display:flex; flex-direction:column; justify-content:center; padding:60px 60px 60px 80px; }
         .aov-hero__graphic { position:relative; display:flex; justify-content:flex-start; align-items:flex-end; overflow:visible; }
-        .aov-hero__img-wrap { position:absolute; bottom:-20px; left:-5%; width:115%; display:flex; align-items:flex-end; justify-content:flex-start; pointer-events:none; }
+        .aov-hero__img-wrap { position:absolute; bottom:0px; left:-13%; width:122%; display:flex; align-items:flex-center; justify-content:flex-start; pointer-events:none; }
         .aov-hero__img { width:100%; height:auto; display:block; object-fit:contain; object-position:left bottom; filter:drop-shadow(-20px 0 80px rgba(0,0,0,0.7)); }
+
+        /* Mobile hero image fix */
+        @media(max-width:968px) {
+          .aov-hero__graphic { position:relative; min-height:320px; width:100%; overflow:visible; }
+          .aov-hero__img-wrap { position:relative; bottom:auto; left:auto; width:100%; max-width:500px; margin:0 auto; display:flex; justify-content:center; align-items:flex-end; padding:0 24px 20px; }
+          .aov-hero__img { width:100%; height:auto; object-position:center bottom; filter:drop-shadow(0 -10px 40px rgba(0,0,0,0.6)); }
+        }
+        @media(max-width:540px) {
+          .aov-hero__graphic { min-height:260px; }
+          .aov-hero__img-wrap { max-width:360px; padding:0 16px 16px; }
+        }
 
         .orb-field { position:absolute; inset:0; pointer-events:none; overflow:hidden; }
         .orb-field__dot { position:absolute; background:var(--g); border-radius:50%; opacity:0; box-shadow:0 0 8px 2px rgba(63,203,27,.4); animation:ptFloat var(--dur,4s) ease-in-out infinite; }
@@ -702,14 +780,16 @@ export default function AccountsOverviewPage() {
         .aov-ticker { display: flex; align-items: center; height: 44px; background: #111; border-bottom: 1px solid rgba(255,255,255,0.08); overflow: hidden; position: relative; z-index: 10; width: 100%; }
         .aov-ticker__label { display: flex; align-items: center; gap: 6px; padding: 0 20px; background: var(--g); color: #000; font-size: .65rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; height: 100%; flex-shrink: 0; white-space: nowrap; z-index: 12; box-shadow: 8px 0 20px rgba(0,0,0,0.4); }
         .aov-ticker__track { flex: 1; overflow: hidden; height: 100%; display: flex; align-items: center; }
-        .aov-ticker__inner { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 0; height: 100%; width: max-content; animation: tickerLoop 25s linear infinite; }
+        .aov-ticker__inner { display: flex; flex-direction: row; flex-wrap: nowrap; align-items: center; gap: 0; height: 100%; width: max-content; animation: tickerLoop 60s linear infinite; }
         .aov-ticker__item { display: flex; flex-direction: row; align-items: center; gap: 8px; padding: 0 28px; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.08); height: 100%; flex-shrink: 0; }
-        .aov-ticker__sym { font-size: .75rem; font-weight: 700; color: #fff; }
-        .aov-ticker__price { font-size: .75rem; color: rgba(237,240,234,0.55); font-family: monospace; }
-        .aov-ticker__chg { font-size: .7rem; font-weight: 700; }
+        .aov-ticker__sym { font-size: .75rem; font-weight: 700; color: #fff; font-family: 'Sora', sans-serif; }
+        .aov-ticker__price { font-size: .75rem; color: rgba(237,240,234,0.7); font-family: 'DM Sans', 'Sora', monospace; font-weight:500; letter-spacing:.01em; }
+        .aov-ticker__chg { font-size: .7rem; font-weight: 700; font-family: 'DM Sans', sans-serif; }
         .aov-ticker__chg.up { color: var(--g); }
         .aov-ticker__chg.dn { color: var(--red); }
         @keyframes tickerLoop { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
+        @keyframes priceFlash { 0%,100%{opacity:1} 50%{opacity:.4} }
+        .aov-ticker__price.flash { animation: priceFlash 0.4s ease; }
 
         /* ========== 2. ACCOUNT TYPES (WHITE BG) ========== */
         .aov-section-white { padding:96px 0; background: var(--bg-white); }
@@ -811,10 +891,10 @@ export default function AccountsOverviewPage() {
         @media (max-width: 968px) {
           .cmp-mobile { display: flex; }
           .cmp-wrap { display: none; }
-          .aov-hero__inner { grid-template-columns:1fr; min-height: auto; text-align: center; }
-          .aov-hero__copy { padding: 80px 24px 60px; max-width: 700px; margin: 0 auto; }
+          .aov-hero__inner { grid-template-columns:1fr; min-height: auto; text-align: center; gap: 0; }
+          .aov-hero__copy { padding: 100px 24px 40px; max-width: 700px; margin: 0 auto; }
           .aov-hero__actions { justify-content: center; }
-          .aov-hero__graphic { display: none; }
+          .aov-hero__graphic { display: flex; justify-content: center; align-items: center; min-height: 340px; }
           .fx-accounts-three-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
           .aov-why-grid { grid-template-columns: repeat(2, 1fr); }
           .aov-cta-grid { grid-template-columns: 1fr; text-align: center; gap: 40px; }

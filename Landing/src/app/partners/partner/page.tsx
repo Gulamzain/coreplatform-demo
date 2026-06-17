@@ -268,11 +268,11 @@ export default function IBPartnersPage() {
                 Join thousands of Introducing Brokers earning up to <strong>$15 per lot</strong> by referring traders to Foxnance — the multi-regulated broker trusted by 500,000+ clients worldwide.
               </p>
               <div className="ib-hero__actions h-item h-d2">
-                <Link href="/partners/ib-apply" className="ib-btn-primary">
-                  Become an IB Partner <FiArrowRight />
+                <Link href="/auth-signup" className="ib-btn-primary">
+                  Sign up <FiArrowRight />
                 </Link>
-                <Link href="#how-it-works" className="ib-btn-ghost">
-                  How It Works
+                <Link href="/auth-login" className="ib-btn-ghost">
+                  Sign in
                 </Link>
               </div>
             </div>
