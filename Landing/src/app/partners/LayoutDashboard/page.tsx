@@ -10,78 +10,85 @@ import {
   Eye, EyeOff, CheckCircle, Clock, AlertCircle,
   Download, Filter, Search, UserPlus, Briefcase,
   CreditCard, HelpCircle, Sun, Moon, Star,
-  FileText, Layers, Home
+  FileText, Layers, Home, UserCheck, Award,
+  Target, Zap, Share2, BarChart
 } from "react-feather"
 
 /* ─── TYPES ─────────────────────────────────────────── */
-type NavItem   = { key: string; label: string; icon: React.FC<any>; children: string[] }
-type Referral  = { id: string; name: string; email: string; joined: string; status: "active"|"pending"|"inactive"; vol: string; comm: string }
-type Commission= { date: string; client: string; type: string; amount: string; status: "paid"|"pending"|"processing" }
+type NavItem = { key: string; label: string; icon: React.FC<any>; children: string[] }
+type Client = { id: string; name: string; email: string; joined: string; status: "active" | "pending" | "inactive"; volume: string; commission: string; trades: number }
+type Commission = { date: string; client: string; type: string; amount: string; status: "paid" | "pending" | "processing" }
+type Payout = { id: string; date: string; amount: string; status: "completed" | "pending" | "failed"; method: string }
 
 /* ─── DATA ───────────────────────────────────────────── */
 const TICKERS = [
-  { n:"EUR/USD", v:"1.08432", up:true,  c:"+0.04%" },
-  { n:"BTC/USD", v:"69,150",  up:true,  c:"+1.39%" },
-  { n:"USD/JPY", v:"154.32",  up:false, c:"-0.12%" },
-  { n:"OIL/USD", v:"78.45",   up:false, c:"-0.88%" },
-  { n:"EUR/USD", v:"1.08945", up:true,  c:"+0.47%" },
-  { n:"GBP/USD", v:"1.27420", up:false, c:"-0.21%" },
-  { n:"XAU/USD", v:"2356.80", up:true,  c:"+0.67%" },
-  { n:"BTC/USD", v:"69,150",  up:true,  c:"+1.39%" },
+  { n: "EUR/USD", v: "1.08432", up: true, c: "+0.04%" },
+  { n: "BTC/USD", v: "69,150", up: true, c: "+1.39%" },
+  { n: "USD/JPY", v: "154.32", up: false, c: "-0.12%" },
+  { n: "OIL/USD", v: "78.45", up: false, c: "-0.88%" },
+  { n: "GBP/USD", v: "1.27420", up: false, c: "-0.21%" },
+  { n: "XAU/USD", v: "2356.80", up: true, c: "+0.67%" },
 ]
 
-const REFERRALS: Referral[] = [
-  { id:"R-001", name:"Alex Turner",    email:"alex.t@email.com",   joined:"2024-12-01", status:"active",   vol:"$12,440", comm:"$186.60" },
-  { id:"R-002", name:"Sarah Mitchell", email:"sarah.m@email.com",  joined:"2024-12-08", status:"active",   vol:"$8,920",  comm:"$133.80" },
-  { id:"R-003", name:"Omar Hassan",    email:"omar.h@email.com",   joined:"2024-12-15", status:"pending",  vol:"$0",      comm:"$0.00"   },
-  { id:"R-004", name:"Li Wei",         email:"li.w@email.com",     joined:"2024-12-18", status:"active",   vol:"$21,300", comm:"$319.50" },
-  { id:"R-005", name:"Priya Sharma",   email:"priya.s@email.com",  joined:"2024-12-22", status:"active",   vol:"$5,670",  comm:"$85.05"  },
-  { id:"R-006", name:"Carlos Mendez",  email:"carlos.m@email.com", joined:"2025-01-03", status:"inactive", vol:"$2,100",  comm:"$31.50"  },
-  { id:"R-007", name:"Nina Kowalski",  email:"nina.k@email.com",   joined:"2025-01-10", status:"active",   vol:"$9,800",  comm:"$147.00" },
+const CLIENTS: Client[] = [
+  { id: "C-001", name: "Alex Turner", email: "alex.t@email.com", joined: "2024-12-01", status: "active", volume: "$12,440", commission: "$186.60", trades: 47 },
+  { id: "C-002", name: "Sarah Mitchell", email: "sarah.m@email.com", joined: "2024-12-08", status: "active", volume: "$8,920", commission: "$133.80", trades: 32 },
+  { id: "C-003", name: "Omar Hassan", email: "omar.h@email.com", joined: "2024-12-15", status: "pending", volume: "$0", commission: "$0.00", trades: 0 },
+  { id: "C-004", name: "Li Wei", email: "li.w@email.com", joined: "2024-12-18", status: "active", volume: "$21,300", commission: "$319.50", trades: 68 },
+  { id: "C-005", name: "Priya Sharma", email: "priya.s@email.com", joined: "2024-12-22", status: "active", volume: "$5,670", commission: "$85.05", trades: 23 },
+  { id: "C-006", name: "Carlos Mendez", email: "carlos.m@email.com", joined: "2025-01-03", status: "inactive", volume: "$2,100", commission: "$31.50", trades: 8 },
+  { id: "C-007", name: "Nina Kowalski", email: "nina.k@email.com", joined: "2025-01-10", status: "active", volume: "$9,800", commission: "$147.00", trades: 41 },
 ]
 
 const COMMISSIONS: Commission[] = [
-  { date:"Jan 28, 2025", client:"Li Wei",         type:"Volume Rebate", amount:"+$84.25",  status:"paid"       },
-  { date:"Jan 27, 2025", client:"Alex Turner",    type:"Spread Share",  amount:"+$62.10",  status:"paid"       },
-  { date:"Jan 26, 2025", client:"Sarah Mitchell", type:"Volume Rebate", amount:"+$44.70",  status:"pending"    },
-  { date:"Jan 25, 2025", client:"Li Wei",         type:"Spread Share",  amount:"+$91.30",  status:"paid"       },
-  { date:"Jan 24, 2025", client:"Priya Sharma",   type:"Volume Rebate", amount:"+$28.40",  status:"paid"       },
-  { date:"Jan 23, 2025", client:"Nina Kowalski",  type:"Spread Share",  amount:"+$55.00",  status:"processing" },
+  { date: "Jan 28, 2025", client: "Li Wei", type: "Volume Rebate", amount: "+$84.25", status: "paid" },
+  { date: "Jan 27, 2025", client: "Alex Turner", type: "Spread Share", amount: "+$62.10", status: "paid" },
+  { date: "Jan 26, 2025", client: "Sarah Mitchell", type: "Volume Rebate", amount: "+$44.70", status: "pending" },
+  { date: "Jan 25, 2025", client: "Li Wei", type: "Spread Share", amount: "+$91.30", status: "paid" },
+  { date: "Jan 24, 2025", client: "Priya Sharma", type: "Volume Rebate", amount: "+$28.40", status: "paid" },
+  { date: "Jan 23, 2025", client: "Nina Kowalski", type: "Spread Share", amount: "+$55.00", status: "processing" },
+]
+
+const PAYOUTS: Payout[] = [
+  { id: "P-001", date: "Jan 28, 2025", amount: "$420.50", status: "completed", method: "Bank Transfer" },
+  { id: "P-002", date: "Jan 21, 2025", amount: "$310.00", status: "completed", method: "Crypto" },
+  { id: "P-003", date: "Jan 14, 2025", amount: "$250.00", status: "pending", method: "Skrill" },
+  { id: "P-004", date: "Jan 07, 2025", amount: "$180.00", status: "failed", method: "Bank Transfer" },
 ]
 
 const NAV_ITEMS: NavItem[] = [
-  { key:"overview",  label:"Overview",  icon:Grid,       children:[] },
-  { key:"referrals", label:"Referrals", icon:Users,      children:["My Clients","Referral Links","Invitations"] },
-  { key:"earnings",  label:"Earnings",  icon:DollarSign, children:["Commissions","Withdrawals","History"] },
-  { key:"analytics", label:"Analytics", icon:BarChart2,  children:["Performance","Reports"] },
-  { key:"marketing", label:"Marketing", icon:Gift,       children:["Materials","Banners"] },
-  { key:"wallet",    label:"Wallet",    icon:Briefcase,  children:[] },
-  { key:"settings",  label:"Settings",  icon:Settings,   children:["Profile","Security"] },
-  { key:"support",   label:"Support",   icon:HelpCircle, children:[] },
+  { key: "overview", label: "Overview", icon: Grid, children: [] },
+  { key: "referrals", label: "Referrals", icon: Users, children: ["Referral Links", "Invite Clients", "My Clients"] },
+  { key: "earnings", label: "Earnings", icon: DollarSign, children: ["Commissions", "Payouts"] },
+  { key: "analytics", label: "Analytics", icon: BarChart2, children: ["Performance", "Reports"] },
+  { key: "marketing", label: "Marketing", icon: Gift, children: ["Materials", "Banners"] },
+  { key: "wallet", label: "Wallet", icon: Briefcase, children: [] },
+  { key: "settings", label: "Settings", icon: Settings, children: ["Profile", "Security"] },
+  { key: "support", label: "Support", icon: HelpCircle, children: [] },
 ]
 
-const BAR_DATA = [
-  {m:"Aug",v:320},{m:"Sep",v:480},{m:"Oct",v:290},
-  {m:"Nov",v:610},{m:"Dec",v:740},{m:"Jan",v:547},
+const MONTHLY_DATA = [
+  { m: "Aug", v: 320 }, { m: "Sep", v: 480 }, { m: "Oct", v: 290 },
+  { m: "Nov", v: 610 }, { m: "Dec", v: 740 }, { m: "Jan", v: 547 },
 ]
 
 const REF_LINK = "https://foxnance.com/ref/GZ-PARTNER-8821"
 
 /* ─── COMPONENT ─────────────────────────────────────── */
 export default function PartnerDashboard() {
-  const [activeNav,   setActiveNav]   = useState("overview")
-  const [expanded,    setExpanded]    = useState<string[]>(["referrals","earnings"])
+  const [activeNav, setActiveNav] = useState("overview")
+  const [expanded, setExpanded] = useState<string[]>(["referrals", "earnings", "analytics"])
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeTab,   setActiveTab]   = useState("overview")
-  const [dateRange,   setDateRange]   = useState("Last 30 days")
-  const [dateOpen,    setDateOpen]    = useState(false)
-  const [notifOpen,   setNotifOpen]   = useState(false)
-  const [showLink,    setShowLink]    = useState(false)
-  const [copied,      setCopied]      = useState(false)
-  const [searchQ,     setSearchQ]     = useState("")
-  const [darkMode,    setDarkMode]    = useState(true)
-  const [tickerX,     setTickerX]     = useState(0)
-  const tickRef = useRef<number|null>(null)
+  const [activeTab, setActiveTab] = useState("overview")
+  const [dateRange, setDateRange] = useState("Last 30 days")
+  const [dateOpen, setDateOpen] = useState(false)
+  const [notifOpen, setNotifOpen] = useState(false)
+  const [showLink, setShowLink] = useState(false)
+  const [copied, setCopied] = useState(false)
+  const [searchQ, setSearchQ] = useState("")
+  const [darkMode, setDarkMode] = useState(true)
+  const [tickerX, setTickerX] = useState(0)
+  const tickRef = useRef<number | null>(null)
 
   /* Ticker */
   useEffect(() => {
@@ -110,7 +117,7 @@ export default function PartnerDashboard() {
   }
 
   const toggleNav = (key: string) => {
-    setExpanded(p => p.includes(key) ? p.filter(k=>k!==key) : [...p, key])
+    setExpanded(p => p.includes(key) ? p.filter(k => k !== key) : [...p, key])
     setActiveNav(key)
   }
 
@@ -120,16 +127,23 @@ export default function PartnerDashboard() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const filtered = REFERRALS.filter(r =>
-    r.name.toLowerCase().includes(searchQ.toLowerCase()) ||
-    r.email.toLowerCase().includes(searchQ.toLowerCase())
+  const filtered = CLIENTS.filter(c =>
+    c.name.toLowerCase().includes(searchQ.toLowerCase()) ||
+    c.email.toLowerCase().includes(searchQ.toLowerCase())
   )
 
+  // Calculate stats
+  const totalClients = CLIENTS.filter(c => c.status === "active").length
+  const pendingClients = CLIENTS.filter(c => c.status === "pending").length
+  const totalCommission = CLIENTS.reduce((sum, c) => sum + parseFloat(c.commission.replace(/[$,]/g, '') || '0'), 0)
+  const pendingPayout = PAYOUTS.filter(p => p.status === "pending").reduce((sum, p) => sum + parseFloat(p.amount.replace(/[$,]/g, '') || '0'), 0)
+  const totalVolume = CLIENTS.reduce((sum, c) => sum + parseFloat(c.volume.replace(/[$,]/g, '') || '0'), 0)
+
   const KPIS = [
-    { label:"Total Commission", val:"$1,547.20", sub:"+12.4% this month", icon:DollarSign, color:"#3fcb1b" },
-    { label:"Active Referrals", val:"18",         sub:"6 pending",         icon:Users,      color:"#3b82f6" },
-    { label:"Total Volume",     val:"$187,320",   sub:"+8.1% this month",  icon:Activity,   color:"#f59e0b" },
-    { label:"Conversion Rate",  val:"74.2%",      sub:"24 total referrals",icon:PieChart,   color:"#8b5cf6" },
+    { label: "Total Clients", val: String(totalClients), sub: `${pendingClients} pending`, icon: Users, color: "#3b82f6", bar: "78%" },
+    { label: "Pending Payout", val: `$${pendingPayout.toFixed(2)}`, sub: "Processing", icon: CreditCard, color: "#f59e0b", bar: "44%" },
+    { label: "Total Commission", val: `$${totalCommission.toFixed(2)}`, sub: "+12.4% this month", icon: DollarSign, color: "#3fcb1b", bar: "82%" },
+    { label: "Total Volume", val: `$${totalVolume.toFixed(0)}`, sub: "+8.1% this month", icon: Activity, color: "#8b5cf6", bar: "90%" },
   ]
 
   return (
@@ -145,14 +159,14 @@ export default function PartnerDashboard() {
               src="/images/FoxnanceMain.png"
               width={130} height={34} alt="Foxnance"
               style={{
-                objectFit:"contain", height:34, width:"auto",
+                objectFit: "contain", height: 34, width: "auto",
                 filter: darkMode ? "brightness(1.15)" : "brightness(0) saturate(100%)"
               }}
               priority
             />
           </div>
           <span className="pd__portal-label">Partner Portal</span>
-          <button className="pd__close" onClick={() => setSidebarOpen(false)}><X size={15}/></button>
+          <button className="pd__close" onClick={() => setSidebarOpen(false)}><X size={15} /></button>
         </div>
 
         {/* User chip */}
@@ -162,7 +176,7 @@ export default function PartnerDashboard() {
             <span className="pd__user-name">Gulam Zain</span>
             <span className="pd__user-id">ID: PTR-88210</span>
           </div>
-          <div className="pd__user-tier"><Star size={10} fill="currentColor"/> Gold</div>
+          <div className="pd__user-tier"><Star size={10} fill="currentColor" /> Gold</div>
         </div>
 
         {/* Nav */}
@@ -170,15 +184,15 @@ export default function PartnerDashboard() {
           {NAV_ITEMS.map(item => (
             <div key={item.key}>
               <button
-                className={`pd__nav-row${activeNav===item.key?" pd__nav-row--active":""}`}
+                className={`pd__nav-row${activeNav === item.key ? " pd__nav-row--active" : ""}`}
                 onClick={() => toggleNav(item.key)}
               >
-                <item.icon size={15} className="pd__nav-icon"/>
+                <item.icon size={15} className="pd__nav-icon" />
                 <span className="pd__nav-label">{item.label}</span>
                 {item.children.length > 0 && (
-                  <ChevronDown size={12} className={`pd__nav-chev${expanded.includes(item.key)?" rot":""}`}/>
+                  <ChevronDown size={12} className={`pd__nav-chev${expanded.includes(item.key) ? " rot" : ""}`} />
                 )}
-                {activeNav===item.key && <span className="pd__nav-pill"/>}
+                {activeNav === item.key && <span className="pd__nav-pill" />}
               </button>
               {item.children.length > 0 && expanded.includes(item.key) && (
                 <div className="pd__nav-sub">
@@ -192,10 +206,10 @@ export default function PartnerDashboard() {
         </nav>
 
         {/* Disconnect */}
-        <button className="pd__disconnect"><LogOut size={13}/> Disconnect MT5</button>
+        <button className="pd__disconnect"><LogOut size={13} /> Disconnect MT5</button>
       </aside>
 
-      {sidebarOpen && <div className="pd__overlay" onClick={() => setSidebarOpen(false)}/>}
+      {sidebarOpen && <div className="pd__overlay" onClick={() => setSidebarOpen(false)} />}
 
       {/* ════ MAIN ════ */}
       <div className="pd__main">
@@ -203,46 +217,45 @@ export default function PartnerDashboard() {
         {/* Top bar */}
         <header className="pd__topbar">
           <div className="pd__topbar-l">
-            <button className="pd__hamburger" onClick={() => setSidebarOpen(true)}><Menu size={19}/></button>
+            <button className="pd__hamburger" onClick={() => setSidebarOpen(true)}><Menu size={19} /></button>
             <div>
-              <p className="pd__topbar-title">Hello, Gulam Zain</p>
-              <p className="pd__topbar-sub">Welcome back! Here&apos;s your partner overview</p>
+              <p className="pd__topbar-title">Partner Dashboard</p>
+              <p className="pd__topbar-sub">Manage your clients, commissions, and payouts</p>
             </div>
           </div>
           <div className="pd__topbar-r">
-            {/* Date picker */}
             <div className="pd__date-wrap">
               <button className="pd__date-btn" onClick={() => { setDateOpen(!dateOpen); setNotifOpen(false) }}>
-                {dateRange} <ChevronDown size={12}/>
+                {dateRange} <ChevronDown size={12} />
               </button>
               {dateOpen && (
                 <div className="pd__drop">
-                  {["Last 7 days","Last 30 days","Last 90 days","This year"].map(d => (
-                    <button key={d} className={`pd__drop-item${dateRange===d?" sel":""}`}
+                  {["Last 7 days", "Last 30 days", "Last 90 days", "This year"].map(d => (
+                    <button key={d} className={`pd__drop-item${dateRange === d ? " sel" : ""}`}
                       onClick={() => { setDateRange(d); setDateOpen(false) }}>{d}</button>
                   ))}
                 </div>
               )}
             </div>
-            <button className="pd__icon-btn"><RefreshCw size={13}/></button>
+            <button className="pd__icon-btn"><RefreshCw size={13} /></button>
             <button className="pd__icon-btn" onClick={toggleDark} title="Toggle theme">
-              {darkMode ? <Sun size={13}/> : <Moon size={13}/>}
+              {darkMode ? <Sun size={13} /> : <Moon size={13} />}
             </button>
             <div className="pd__notif-wrap">
               <button className="pd__icon-btn pd__notif-btn" onClick={() => { setNotifOpen(!notifOpen); setDateOpen(false) }}>
-                <Bell size={13}/>
+                <Bell size={13} />
                 <span className="pd__notif-badge">3</span>
               </button>
               {notifOpen && (
                 <div className="pd__drop pd__drop--notif">
                   <p className="pd__drop-head">Notifications</p>
                   {[
-                    {txt:"New referral: Omar Hassan deposited $500", t:"2h ago", dot:"green"},
-                    {txt:"Commission $310.50 processed",             t:"5h ago", dot:"blue"},
-                    {txt:"Tier upgraded to Gold Partner",            t:"1d ago", dot:"amber"},
-                  ].map((n,i) => (
+                    { txt: "New client: Omar Hassan registered", t: "2h ago", dot: "green" },
+                    { txt: "Commission $310.50 processed", t: "5h ago", dot: "blue" },
+                    { txt: "Tier upgraded to Gold Partner", t: "1d ago", dot: "amber" },
+                  ].map((n, i) => (
                     <div key={i} className="pd__notif-row">
-                      <span className={`pd__notif-dot pd__notif-dot--${n.dot}`}/>
+                      <span className={`pd__notif-dot pd__notif-dot--${n.dot}`} />
                       <div>
                         <p className="pd__notif-txt">{n.txt}</p>
                         <p className="pd__notif-time">{n.t}</p>
@@ -257,15 +270,15 @@ export default function PartnerDashboard() {
 
         {/* Ticker */}
         <div className="pd__ticker">
-          <div className="pd__ticker-live"><span className="pd__ticker-dot"/> LIVE</div>
+          <div className="pd__ticker-live"><span className="pd__ticker-dot" /> LIVE</div>
           <div className="pd__ticker-track">
-            <div className="pd__ticker-inner" style={{transform:`translateX(${tickerX}px)`}}>
-              {[...TICKERS,...TICKERS,...TICKERS].map((t,i) => (
+            <div className="pd__ticker-inner" style={{ transform: `translateX(${tickerX}px)` }}>
+              {[...TICKERS, ...TICKERS, ...TICKERS].map((t, i) => (
                 <div key={i} className="pd__ticker-item">
                   <span className="pd__ticker-name">{t.n}</span>
                   <span className="pd__ticker-price">{t.v}</span>
-                  <span className={`pd__ticker-chg ${t.up?"up":"dn"}`}>
-                    {t.up ? <ArrowUpRight size={10}/> : <ArrowDownRight size={10}/>}{t.c}
+                  <span className={`pd__ticker-chg ${t.up ? "up" : "dn"}`}>
+                    {t.up ? <ArrowUpRight size={10} /> : <ArrowDownRight size={10} />}{t.c}
                   </span>
                 </div>
               ))}
@@ -279,58 +292,75 @@ export default function PartnerDashboard() {
           {/* Welcome banner */}
           <div className="pd__banner">
             <div className="pd__banner-l">
-              <p className="pd__banner-greet"><span className="pd__banner-dot"/> GOOD MORNING</p>
-              <h2 className="pd__banner-name">Gulam Zain <span>👋</span></h2>
-              <p className="pd__banner-hint">Here&apos;s your partner performance overview for today</p>
+              <p className="pd__banner-greet"><span className="pd__banner-dot" /> PARTNER OVERVIEW</p>
+              <h2 className="pd__banner-name">Welcome back, Gulam Zain <span>👋</span></h2>
+              <p className="pd__banner-hint">Here&apos;s your partner performance overview</p>
             </div>
             <div className="pd__banner-r">
               <div className="pd__banner-stat">
-                <div className="pd__banner-stat-ico"><Users size={15}/></div>
+                <div className="pd__banner-stat-ico"><Users size={15} /></div>
                 <div>
                   <p className="pd__banner-stat-lbl">Total Clients</p>
-                  <p className="pd__banner-stat-val">24</p>
+                  <p className="pd__banner-stat-val">{totalClients}</p>
                 </div>
               </div>
               <div className="pd__banner-stat">
-                <div className="pd__banner-stat-ico pd__banner-stat-ico--green"><TrendingUp size={15}/></div>
+                <div className="pd__banner-stat-ico pd__banner-stat-ico--green"><DollarSign size={15} /></div>
                 <div>
                   <p className="pd__banner-stat-lbl">Total Earnings</p>
-                  <p className="pd__banner-stat-val pd__banner-stat-val--green">+$1,547.20</p>
+                  <p className="pd__banner-stat-val pd__banner-stat-val--green">+${totalCommission.toFixed(2)}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Account-style tabs (mirrors MT5 LIVE / DEMO) */}
+          {/* Account-style tabs */}
           <div className="pd__acct-tabs">
             <button className="pd__acct-tab pd__acct-tab--active">
-              <span className="pd__acct-dot pd__acct-dot--green"/>
+              <span className="pd__acct-dot pd__acct-dot--green" />
               PARTNER #PTR-88210
               <span className="pd__acct-badge">ACTIVE</span>
             </button>
             <button className="pd__acct-tab">
-              <span className="pd__acct-dot pd__acct-dot--blue"/>
+              <span className="pd__acct-dot pd__acct-dot--blue" />
               DEMO PARTNER
               <span className="pd__acct-badge pd__acct-badge--demo">DEMO</span>
             </button>
           </div>
 
+          {/* Action buttons - Invite Client / Request Payout */}
+          <div className="pd__action-grid">
+            <button className="pd__action-primary">
+              <UserPlus size={16} />
+              Invite Client
+              <span className="pd__action-badge">New</span>
+            </button>
+            <button className="pd__action-secondary">
+              <CreditCard size={16} />
+              Request Payout
+            </button>
+            <button className="pd__action-secondary">
+              <Share2 size={16} />
+              Share Link
+            </button>
+          </div>
+
           {/* KPI cards */}
           <div className="pd__kpi-grid">
-            {KPIS.map((k,i) => (
+            {KPIS.map((k, i) => (
               <div key={i} className="pd__kpi-card">
                 <div className="pd__kpi-top">
-                  <div className="pd__kpi-ico" style={{background:`${k.color}22`,color:k.color}}>
-                    <k.icon size={15}/>
+                  <div className="pd__kpi-ico" style={{ background: `${k.color}22`, color: k.color }}>
+                    <k.icon size={15} />
                   </div>
                   <span className="pd__kpi-label">{k.label.toUpperCase()}</span>
                 </div>
                 <p className="pd__kpi-val">{k.val}</p>
-                <p className="pd__kpi-sub" style={{color:k.sub.startsWith("+")?k.color:"#94a3b8"}}>
-                  {k.sub.startsWith("+") && <ArrowUpRight size={10}/>}{k.sub}
+                <p className="pd__kpi-sub" style={{ color: k.sub.startsWith("+") ? k.color : "#94a3b8" }}>
+                  {k.sub.startsWith("+") && <ArrowUpRight size={10} />}{k.sub}
                 </p>
                 <div className="pd__kpi-bar">
-                  <div className="pd__kpi-bar-fill" style={{width:`${[78,60,82,74][i]}%`,background:k.color}}/>
+                  <div className="pd__kpi-bar-fill" style={{ width: k.bar, background: k.color }} />
                 </div>
               </div>
             ))}
@@ -338,137 +368,153 @@ export default function PartnerDashboard() {
 
           {/* Referral link bar */}
           <div className="pd__reflink">
-            <Link2 size={14} className="pd__reflink-ico"/>
+            <Link2 size={14} className="pd__reflink-ico" />
             <div className="pd__reflink-info">
               <p className="pd__reflink-label">Your Referral Link</p>
               <p className="pd__reflink-url">
-                {showLink ? REF_LINK : REF_LINK.replace(/(?<=.{30}).+/,"••••••")}
+                {showLink ? REF_LINK : REF_LINK.replace(/(?<=.{30}).+/, "••••••")}
               </p>
             </div>
             <div className="pd__reflink-btns">
               <button className="pd__reflink-btn" onClick={() => setShowLink(!showLink)}>
-                {showLink ? <EyeOff size={13}/> : <Eye size={13}/>}
+                {showLink ? <EyeOff size={13} /> : <Eye size={13} />}
               </button>
               <button className="pd__reflink-btn" onClick={copyLink}>
-                {copied ? <CheckCircle size={13} color="#3fcb1b"/> : <Copy size={13}/>}
+                {copied ? <CheckCircle size={13} color="#3fcb1b" /> : <Copy size={13} />}
                 {copied ? "Copied!" : "Copy"}
               </button>
               <button className="pd__reflink-btn pd__reflink-btn--green">
-                <ExternalLink size={13}/> Share
+                <ExternalLink size={13} /> Share
               </button>
             </div>
           </div>
 
           {/* Content tabs */}
           <div className="pd__tabs-row">
-            {["overview","referrals","commissions","performance"].map(t => (
-              <button key={t} className={`pd__tab${activeTab===t?" active":""}`}
+            {["overview", "my clients", "commissions", "analytics"].map(t => (
+              <button key={t} className={`pd__tab${activeTab === t ? " active" : ""}`}
                 onClick={() => setActiveTab(t)}>
-                {t.charAt(0).toUpperCase()+t.slice(1)}
+                {t === "my clients" ? "My Clients" : t === "commissions" ? "Commission History" : t.charAt(0).toUpperCase() + t.slice(1)}
               </button>
             ))}
           </div>
 
           {/* ══ OVERVIEW ══ */}
-          {activeTab==="overview" && (
+          {activeTab === "overview" && (
             <div className="pd__overview">
               {[
-                {ico:DollarSign, bg:"rgba(63,203,27,0.18)",  c:"#3fcb1b", label:"TOTAL COMMISSION EARNED", val:"$1,547.20", sub:"+$186.60 this week",  barW:"78%", barC:"#3fcb1b"},
-                {ico:Activity,   bg:"rgba(59,130,246,0.18)", c:"#3b82f6", label:"CLIENT TRADING VOLUME",   val:"$187,320",  sub:"Floating: +$12,440",  barW:"82%", barC:"#3b82f6"},
-                {ico:CreditCard, bg:"rgba(245,158,11,0.18)", c:"#f59e0b", label:"PENDING PAYOUT",          val:"$244.10",   sub:"Est. payout Jan 31",  barW:"44%", barC:"#f59e0b"},
-                {ico:Star,       bg:"rgba(139,92,246,0.18)", c:"#8b5cf6", label:"PARTNER TIER",            val:"Gold",      sub:"Platinum at $5K/mo",  barW:"60%", barC:"#8b5cf6"},
-              ].map((c,i) => (
+                { ico: Users, bg: "rgba(59,130,246,0.18)", c: "#3b82f6", label: "TOTAL CLIENTS", val: String(totalClients), sub: `${pendingClients} pending approval`, barW: "78%", barC: "#3b82f6" },
+                { ico: DollarSign, bg: "rgba(63,203,27,0.18)", c: "#3fcb1b", label: "TOTAL COMMISSION EARNED", val: `$${totalCommission.toFixed(2)}`, sub: "+$186.60 this week", barW: "82%", barC: "#3fcb1b" },
+                { ico: CreditCard, bg: "rgba(245,158,11,0.18)", c: "#f59e0b", label: "PENDING PAYOUT", val: `$${pendingPayout.toFixed(2)}`, sub: "Est. payout Feb 5", barW: "44%", barC: "#f59e0b" },
+                { ico: Award, bg: "rgba(139,92,246,0.18)", c: "#8b5cf6", label: "PARTNER TIER", val: "Gold", sub: "Platinum at $5K/month", barW: "60%", barC: "#8b5cf6" },
+              ].map((c, i) => (
                 <div key={i} className="pd__ov-card">
                   <div className="pd__ov-top">
-                    <div className="pd__ov-ico" style={{background:c.bg,color:c.c}}><c.ico size={15}/></div>
+                    <div className="pd__ov-ico" style={{ background: c.bg, color: c.c }}><c.ico size={15} /></div>
                     <span className="pd__ov-label">{c.label}</span>
                   </div>
                   <p className="pd__ov-val">{c.val}</p>
-                  <p className="pd__ov-sub" style={{color:c.c}}>{c.sub}</p>
+                  <p className="pd__ov-sub" style={{ color: c.c }}>{c.sub}</p>
                   <div className="pd__ov-bar-track">
-                    <div className="pd__ov-bar-fill" style={{width:c.barW,background:c.barC}}/>
+                    <div className="pd__ov-bar-fill" style={{ width: c.barW, background: c.barC }} />
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* ══ REFERRALS ══ */}
-          {activeTab==="referrals" && (
+          {/* ══ MY CLIENTS ══ */}
+          {activeTab === "my clients" && (
             <div className="pd__card">
               <div className="pd__card-head">
-                <p className="pd__card-title">My Referred Clients</p>
+                <p className="pd__card-title">My Clients</p>
                 <div className="pd__card-actions">
                   <div className="pd__search-box">
-                    <Search size={12} className="pd__search-ico"/>
+                    <Search size={12} className="pd__search-ico" />
                     <input className="pd__search" placeholder="Search clients…"
-                      value={searchQ} onChange={e => setSearchQ(e.target.value)}/>
+                      value={searchQ} onChange={e => setSearchQ(e.target.value)} />
                   </div>
-                  <button className="pd__action-btn"><Filter size={12}/> Filter</button>
-                  <button className="pd__action-btn"><Download size={12}/> Export</button>
+                  <button className="pd__action-btn"><Filter size={12} /> Filter</button>
+                  <button className="pd__action-btn"><Download size={12} /> Export</button>
                 </div>
               </div>
               <div className="pd__table-wrap">
                 <table className="pd__table">
                   <thead><tr>
-                    <th>Client</th><th>Joined</th><th>Status</th>
-                    <th>Volume</th><th>Commission</th><th></th>
+                    <th>Client</th>
+                    <th>Joined</th>
+                    <th>Status</th>
+                    <th>Volume</th>
+                    <th>Commission</th>
+                    <th>Trades</th>
+                    <th></th>
                   </tr></thead>
                   <tbody>
-                    {filtered.map(r => (
-                      <tr key={r.id}>
+                    {filtered.map(c => (
+                      <tr key={c.id}>
                         <td>
                           <div className="pd__client-cell">
                             <div className="pd__client-av">
-                              {r.name.split(" ").map(n=>n[0]).join("")}
+                              {c.name.split(" ").map(n => n[0]).join("")}
                             </div>
                             <div>
-                              <p className="pd__client-name">{r.name}</p>
-                              <p className="pd__client-email">{r.email}</p>
+                              <p className="pd__client-name">{c.name}</p>
+                              <p className="pd__client-email">{c.email}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="pd__td-muted">{r.joined}</td>
+                        <td className="pd__td-muted">{c.joined}</td>
                         <td>
-                          <span className={`pd__status pd__status--${r.status}`}>
-                            {r.status==="active"   && <CheckCircle size={10}/>}
-                            {r.status==="pending"  && <Clock size={10}/>}
-                            {r.status==="inactive" && <AlertCircle size={10}/>}
-                            {r.status}
+                          <span className={`pd__status pd__status--${c.status}`}>
+                            {c.status === "active" && <CheckCircle size={10} />}
+                            {c.status === "pending" && <Clock size={10} />}
+                            {c.status === "inactive" && <AlertCircle size={10} />}
+                            {c.status}
                           </span>
                         </td>
-                        <td className="pd__td-mono">{r.vol}</td>
-                        <td className="pd__td-green">{r.comm}</td>
-                        <td><button className="pd__row-btn"><ChevronRight size={13}/></button></td>
+                        <td className="pd__td-mono">{c.volume}</td>
+                        <td className="pd__td-green">{c.commission}</td>
+                        <td className="pd__td-muted">{c.trades}</td>
+                        <td><button className="pd__row-btn"><ChevronRight size={13} /></button></td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+              <div className="pd__card-foot">
+                <span className="pd__td-muted">Total Clients: {filtered.length}</span>
+                <span className="pd__td-green" style={{ fontSize: "1rem", fontWeight: 800 }}>
+                  Total Commission: ${filtered.reduce((sum, c) => sum + parseFloat(c.commission.replace(/[$,]/g, '') || '0'), 0).toFixed(2)}
+                </span>
+              </div>
             </div>
           )}
 
-          {/* ══ COMMISSIONS ══ */}
-          {activeTab==="commissions" && (
+          {/* ══ COMMISSION HISTORY ══ */}
+          {activeTab === "commissions" && (
             <div className="pd__card">
               <div className="pd__card-head">
                 <p className="pd__card-title">Commission History</p>
-                <button className="pd__action-btn"><Download size={12}/> Export</button>
+                <button className="pd__action-btn"><Download size={12} /> Export</button>
               </div>
               <div className="pd__table-wrap">
                 <table className="pd__table">
                   <thead><tr>
-                    <th>Date</th><th>Client</th><th>Type</th><th>Amount</th><th>Status</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Status</th>
                   </tr></thead>
                   <tbody>
-                    {COMMISSIONS.map((c,i) => (
+                    {COMMISSIONS.map((c, i) => (
                       <tr key={i}>
                         <td className="pd__td-muted">{c.date}</td>
                         <td>{c.client}</td>
                         <td><span className="pd__comm-type">{c.type}</span></td>
                         <td className="pd__td-green">{c.amount}</td>
                         <td>
-                          <span className={`pd__status pd__status--${c.status==="paid"?"active":c.status==="pending"?"pending":"inactive"}`}>
+                          <span className={`pd__status pd__status--${c.status === "paid" ? "active" : c.status === "pending" ? "pending" : "processing"}`}>
                             {c.status}
                           </span>
                         </td>
@@ -479,21 +525,21 @@ export default function PartnerDashboard() {
               </div>
               <div className="pd__card-foot">
                 <span className="pd__td-muted">Total this period:</span>
-                <span className="pd__td-green" style={{fontSize:"1rem",fontWeight:800}}>+$365.75</span>
+                <span className="pd__td-green" style={{ fontSize: "1rem", fontWeight: 800 }}>+$365.75</span>
               </div>
             </div>
           )}
 
-          {/* ══ PERFORMANCE ══ */}
-          {activeTab==="performance" && (
+          {/* ══ ANALYTICS ══ */}
+          {activeTab === "analytics" && (
             <div className="pd__perf">
               <div className="pd__perf-grid">
                 {[
-                  {l:"Commission Rate",   v:"1.5%",   s:"On total client volume"  },
-                  {l:"Partner Tier",      v:"Gold",   s:"Next: Platinum at $5K/mo"},
-                  {l:"Avg. Client Vol.",  v:"$7,805", s:"Per active client/month" },
-                  {l:"Lifetime Earnings", v:"$4,220", s:"Since Apr 2024"          },
-                ].map((p,i) => (
+                  { l: "Commission Rate", v: "1.5%", s: "On total client volume" },
+                  { l: "Partner Tier", v: "Gold", s: "Next: Platinum at $5K/mo" },
+                  { l: "Avg. Client Vol.", v: `$${(totalVolume / Math.max(totalClients, 1)).toFixed(0)}`, s: "Per active client" },
+                  { l: "Lifetime Earnings", v: `$${(totalCommission * 2.7).toFixed(2)}`, s: "Since Apr 2024" },
+                ].map((p, i) => (
                   <div key={i} className="pd__perf-card">
                     <p className="pd__perf-label">{p.l}</p>
                     <p className="pd__perf-val">{p.v}</p>
@@ -501,20 +547,60 @@ export default function PartnerDashboard() {
                   </div>
                 ))}
               </div>
+
+              {/* Commission Chart */}
               <div className="pd__card">
                 <div className="pd__card-head">
                   <p className="pd__card-title">Monthly Commission Earnings</p>
                 </div>
                 <div className="pd__bars">
-                  {BAR_DATA.map((b,i) => (
+                  {MONTHLY_DATA.map((b, i) => (
                     <div key={i} className="pd__bar-col">
                       <span className="pd__bar-val">${b.v}</span>
                       <div className="pd__bar-track">
-                        <div className="pd__bar-fill" style={{height:`${(b.v/740)*100}%`}}/>
+                        <div className="pd__bar-fill" style={{ height: `${(b.v / 740) * 100}%` }} />
                       </div>
                       <span className="pd__bar-month">{b.m}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Client Distribution */}
+              <div className="pd__card">
+                <div className="pd__card-head">
+                  <p className="pd__card-title">Client Distribution</p>
+                </div>
+                <div className="pd__dist-grid">
+                  <div className="pd__dist-item">
+                    <div className="pd__dist-donut">
+                      <svg viewBox="0 0 100 100" className="pd__dist-svg">
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#3b82f6" strokeWidth="12"
+                          strokeDasharray={`${(totalClients / Math.max(totalClients + pendingClients + 2, 1)) * 264} 264`}
+                          strokeDashoffset="0" strokeLinecap="round" />
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#f59e0b" strokeWidth="12"
+                          strokeDasharray={`${(pendingClients / Math.max(totalClients + pendingClients + 2, 1)) * 264} 264`}
+                          strokeDashoffset="-30" strokeLinecap="round" />
+                        <circle cx="50" cy="50" r="42" fill="none" stroke="#ef4444" strokeWidth="12"
+                          strokeDasharray={`${(2 / Math.max(totalClients + pendingClients + 2, 1)) * 264} 264`}
+                          strokeDashoffset="-60" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <div className="pd__dist-legend">
+                      <div className="pd__dist-legend-item">
+                        <span className="pd__dist-dot" style={{ background: "#3b82f6" }} />
+                        Active: {totalClients}
+                      </div>
+                      <div className="pd__dist-legend-item">
+                        <span className="pd__dist-dot" style={{ background: "#f59e0b" }} />
+                        Pending: {pendingClients}
+                      </div>
+                      <div className="pd__dist-legend-item">
+                        <span className="pd__dist-dot" style={{ background: "#ef4444" }} />
+                        Inactive: {CLIENTS.filter(c => c.status === "inactive").length}
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -544,9 +630,9 @@ export default function PartnerDashboard() {
 
         /* Dark */
         .pd--dark {
-          --bg:      #111111;
-          --bg2:     #181818;
-          --bg3:     #1e1e1e;
+          --bg:      #0a0a0a;
+          --bg2:     #111111;
+          --bg3:     #1a1a1a;
           --bg4:     #242424;
           --border:  rgba(255,255,255,0.07);
           --border2: rgba(255,255,255,0.13);
@@ -784,6 +870,51 @@ export default function PartnerDashboard() {
         .pd__scroll::-webkit-scrollbar-thumb { background:rgba(255,255,255,.1); border-radius:2px; }
         @media(max-width:640px){ .pd__scroll { padding:14px 12px 28px; } }
 
+        /* Action buttons grid */
+        .pd__action-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 10px;
+        }
+        @media(max-width:768px){
+          .pd__action-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+        .pd__action-primary, .pd__action-secondary {
+          display: flex; align-items: center; justify-content: center;
+          gap: 8px; padding: 12px 16px;
+          border-radius: 12px;
+          font-size: .85rem; font-weight: 700;
+          cursor: pointer; transition: all .25s;
+          border: none;
+          position: relative;
+        }
+        .pd__action-primary {
+          background: linear-gradient(135deg, var(--green), var(--green-dk));
+          color: #000;
+        }
+        .pd__action-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px rgba(63,203,27,.3);
+        }
+        .pd__action-secondary {
+          background: var(--bg3);
+          color: var(--text2);
+          border: 1px solid var(--border2);
+        }
+        .pd__action-secondary:hover {
+          border-color: var(--text2);
+          color: var(--text);
+        }
+        .pd__action-badge {
+          font-size: .55rem; font-weight: 800;
+          padding: 2px 6px; border-radius: 4px;
+          background: #ef4444; color: #fff;
+          text-transform: uppercase;
+          letter-spacing: .05em;
+        }
+
         /* Banner */
         .pd__banner {
           background:linear-gradient(135deg,rgba(63,203,27,.1),rgba(63,203,27,.03));
@@ -924,6 +1055,15 @@ export default function PartnerDashboard() {
         .pd__bar-track { flex:1; width:100%; background:var(--bg3); border-radius:4px 4px 0 0; overflow:hidden; display:flex; align-items:flex-end; border:1px solid var(--border); }
         .pd__bar-fill  { width:100%; background:linear-gradient(to top,var(--green-dk),var(--green)); border-radius:4px 4px 0 0; min-height:4px; transition:height .7s var(--ease); }
         .pd__bar-month { font-size:.66rem; color:var(--text3); font-weight:600; }
+
+        /* Client Distribution */
+        .pd__dist-grid { padding: 20px; }
+        .pd__dist-item { display:flex; align-items:center; gap:30px; justify-content:center; flex-wrap:wrap; }
+        .pd__dist-donut { width:140px; height:140px; flex-shrink:0; }
+        .pd__dist-svg { width:100%; height:100%; transform:rotate(-90deg); }
+        .pd__dist-legend { display:flex; flex-direction:column; gap:8px; }
+        .pd__dist-legend-item { display:flex; align-items:center; gap:10px; font-size:.85rem; color:var(--text2); }
+        .pd__dist-dot { width:12px; height:12px; border-radius:50%; flex-shrink:0; }
 
         /* Mobile tweaks */
         @media(max-width:640px){

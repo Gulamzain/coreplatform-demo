@@ -144,7 +144,7 @@ export default function FoxnanceBroker() {
         </span>
       </button>
 
-      {/* ═══ 1. HERO SECTION WITH MODERN FLOATING ANIMATIONS ═══ */}
+      {/* ═══ 1. HERO SECTION ═══ */}
       <section className="fx-hero">
         <video className="fx-hero__vid fx-hero__vid--desk" autoPlay loop muted playsInline poster="/images/hero-poster.jpg">
           <source src="/videos/hero-desktop.mp4" type="video/mp4" />
@@ -155,7 +155,7 @@ export default function FoxnanceBroker() {
         <div className="fx-hero__overlay" />
         <div className={`fx-hero__body ${heroReady ? "hero-animate" : ""}`}>
           <h1 className="fx-hero__h1 hero-float hero-float--1">
-            <span className="hero-line hero-line--1">Markets Move Fast.</span>
+            <span className="hero-line hero-line--1">Markets Move Fast</span>
             <span className="hero-line hero-line--2">We Move Faster</span>
           </h1>
           <p className="fx-hero__sub hero-float hero-float--2">
@@ -248,7 +248,7 @@ export default function FoxnanceBroker() {
         </div>
       </section>
 
-      {/* ═══ 4. MT5 SECTION - Larger device image with animated floating tabs ═══ */}
+      {/* ═══ 4. MT5 SECTION ═══ */}
       <section id="platform" ref={ref("platform")} className={`fx-section fx-section--white fx-reveal ${visible.has("platform")?"on":""}`}>
         <div className="fx-container">
           <div className="fx-section__head">
@@ -381,7 +381,7 @@ export default function FoxnanceBroker() {
         </div>
       </section>
 
-      {/* ═══ 6. PAYMENT METHODS SECTION - Centered logos ═══ */}
+      {/* ═══ 6. PAYMENT METHODS SECTION ═══ */}
       <section id="payments" ref={ref("payments")} className={`fx-section fx-section--white fx-reveal ${visible.has("payments")?"on":""}`}>
         <div className="fx-container">
           <div className="fx-section__head">
@@ -757,10 +757,21 @@ export default function FoxnanceBroker() {
         .fx-trade-category-card.hovered .fx-trade-hover-overlay { transform: translateY(0); }
         .fx-trade-hover-text { font-size: 0.8rem; font-weight: 800; color: #fff; letter-spacing: 1px; text-transform: uppercase; }
 
-        /* UPGRADE SECTION - Two-column card layout */
-        .fx-upgrade-two-col-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
-        @media(max-width:1024px){ .fx-upgrade-two-col-grid { grid-template-columns: repeat(2,1fr); } }
-        @media(max-width:640px){ .fx-upgrade-two-col-grid { grid-template-columns: 1fr; } }
+        /* ============================================================
+           UPGRADE SECTION - FIXED CENTERING
+           ============================================================ */
+        .fx-upgrade-two-col-grid { 
+          display: grid; 
+          grid-template-columns: repeat(3, 1fr); 
+          gap: 18px; 
+          margin-top: 40px; 
+        }
+        @media(max-width:1024px){ 
+          .fx-upgrade-two-col-grid { grid-template-columns: repeat(2,1fr); } 
+        }
+        @media(max-width:640px){ 
+          .fx-upgrade-two-col-grid { grid-template-columns: 1fr; } 
+        }
 
         .fx-upgrade-card-v2 {
           background: rgba(255,255,255,0.04);
@@ -768,10 +779,10 @@ export default function FoxnanceBroker() {
           border-radius: 20px;
           display: flex;
           flex-direction: row;
-          align-items: stretch;
+          align-items: center; /* ← CHANGED: was stretch, now center */
           overflow: hidden;
           transition: all 0.3s ease;
-          min-height: 200px;
+          min-height: 180px; /* ← CHANGED: slightly reduced */
         }
         .fx-upgrade-card-v2.hovered {
           transform: translateY(-6px);
@@ -780,80 +791,343 @@ export default function FoxnanceBroker() {
           background: rgba(255,255,255,0.08);
         }
 
-        /* Left column: icon + text */
         .fx-upgrade-v2-left {
           flex: 0 0 52%;
-          padding: 22px 16px 22px 22px;
+          padding: 20px 16px 20px 20px; /* ← CHANGED: adjusted padding */
           display: flex;
           flex-direction: column;
-          justify-content: flex-start;
-          gap: 8px;
+          justify-content: center; /* ← CHANGED: was flex-start, now center */
+          gap: 6px; /* ← CHANGED: reduced gap */
         }
         .fx-upgrade-v2-icon {
-          width: 36px;
-          height: 36px;
+          width: 32px; /* ← CHANGED: slightly smaller */
+          height: 32px;
           object-fit: contain;
           filter: invert(61%) sepia(85%) saturate(1219%) hue-rotate(63deg) brightness(96%) contrast(90%);
           flex-shrink: 0;
         }
-        .fx-upgrade-title { font-size: 1rem; font-weight: 800; color: #fff; margin: 0; line-height: 1.25; }
-        .fx-upgrade-desc { font-size: 0.75rem; color: rgba(255,255,255,0.55); line-height: 1.5; margin: 0; }
+        .fx-upgrade-title { 
+          font-size: 0.95rem; /* ← CHANGED: slightly smaller */
+          font-weight: 800; 
+          color: #fff; 
+          margin: 0; 
+          line-height: 1.2; 
+        }
+        .fx-upgrade-desc { 
+          font-size: 0.72rem; /* ← CHANGED: slightly smaller */
+          color: rgba(255,255,255,0.55); 
+          line-height: 1.4; 
+          margin: 0; 
+        }
 
-        /* Right column: device image flush to bottom, no clipping */
         .fx-upgrade-v2-right {
           flex: 1;
           display: flex;
-          align-items: flex-center;
+          align-items: center; /* ← CHANGED: was flex-start, now center */
           justify-content: center;
           overflow: hidden;
-          padding: 0 0 0 4px;
+          padding: 8px 6px; /* ← CHANGED: reduced padding */
+          min-height: 120px; /* ← CHANGED: reduced minimum height */
         }
         .fx-upgrade-v2-img {
           display: block;
           width: 100%;
+          max-width: 150px; /* ← CHANGED: reduced max width */
           height: auto;
-          max-height: 190px;
+          max-height: 140px; /* ← CHANGED: reduced max height */
           object-fit: contain;
-          object-position: bottom center;
+          object-position: center; /* ← CHANGED: was bottom center, now center */
         }
 
-        /* MT5 SECTION */
-        .fx-mt5-layout { display: grid; grid-template-columns: 1fr 1.2fr; gap: 18px; margin-bottom: 48px; align-items: start; }
-        @media(max-width:1024px) { .fx-mt5-layout { grid-template-columns: 1fr; gap: 40px; } }
-        .fx-mt5-feature { display: flex; align-items: flex-start; gap: 6px; margin-bottom: 24px; opacity: 0; transform: translateX(-20px); animation: slideInRight 0.5s ease forwards; }
-        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
-        .fx-mt5-feature-icon-box { width: 44px; height: 44px; background: var(--grey); border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s ease; }
-        .dark-mode .fx-mt5-feature-icon-box { background: rgba(255,255,255,0.08); }
-        .fx-mt5-feature:hover .fx-mt5-feature-icon-box { transform: scale(1.1); background: var(--green); color: white; }
-        .fx-mt5-feature-title { font-weight: 800; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 4px; transition: color 0.3s ease; }
-        .fx-mt5-feature-desc { font-size: 0.8rem; color: var(--text-secondary); line-height: 1.5; }
-        .fx-mt5-visual { position: relative; display: flex; justify-content: center; align-items: flex-start; min-height: unset; }
-        .fx-mt5-devices { width: 100%; display: flex; justify-content: center; align-items: center; }
-        .fx-mt5-devices-img { width: 100%; max-width: 800px; height: auto; display: block; object-fit: contain; }
-        .fx-mt5-floating-tab { position: absolute; background: rgba(255, 255, 255, 0.3); backdrop-filter: blur(16px); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.4); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); z-index: 10; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 8px 20px; min-height: 70px; animation: floatTab 3s ease-in-out infinite; }
-        .dark-mode .fx-mt5-floating-tab { background: rgba(0, 0, 0, 0.5); border-color: rgba(255,255,255,0.2); }
-        .fx-mt5-floating-tab.left-tab { left: -40px; top: 30%; min-width: 140px; animation-delay: 0s; }
-        .fx-mt5-floating-tab.right-tab { right: -60px; bottom: 35%; min-width: 150px; animation-delay: 0.5s; }
-        @media(max-width:1024px) and (min-width:769px) { .fx-mt5-floating-tab.left-tab { left: -20px; min-width: 120px; padding: 8px 16px; } .fx-mt5-floating-tab.right-tab { right: -20px; min-width: 130px; padding: 8px 16px; } }
-        @media(max-width:768px) { .fx-mt5-floating-tab { position: relative; left: auto !important; right: auto !important; top: auto !important; bottom: auto !important; margin: 10px auto; width: 75%; min-width: auto; padding: 8px 16px; min-height: 65px; animation: floatTabMobile 3s ease-in-out infinite; } .fx-mt5-floating-tab.left-tab, .fx-mt5-floating-tab.right-tab { left: auto; right: auto; top: auto; bottom: auto; } .fx-mt5-visual { display: flex; flex-direction: column; } .fx-mt5-devices { order: 1; } .fx-mt5-floating-tab.left-tab { order: 2; } .fx-mt5-floating-tab.right-tab { order: 3; } }
-        @keyframes floatTab { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes floatTabMobile { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
-        .animate-slide-left { animation: slideInLeft 0.6s ease-out, floatTab 3s ease-in-out infinite; animation-fill-mode: both; }
-        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
-        .animate-slide-right { animation: slideInRight 0.6s ease-out, floatTab 3s ease-in-out infinite; animation-fill-mode: both; animation-delay: 0.2s; }
-        .fx-mt5-tab-title { font-size: 0.7rem; font-weight: 800; color: #000000; text-transform: uppercase; letter-spacing: 1px; line-height: 1; margin-bottom: 4px; transition: all 0.3s ease; }
-        .dark-mode .fx-mt5-tab-title { color: #ffffff; }
-        .fx-mt5-tab-value-large { font-size: 1.4rem; font-weight: 900; color: var(--green); line-height: 1; margin: 3px 0; transition: all 0.3s ease; }
-        .fx-mt5-tab-subvalue { font-size: 0.72rem; font-weight: 700; color: #22c55e; line-height: 1; transition: all 0.3s ease; }
-        .fx-mt5-tab-subtitle { font-size: 0.7rem; font-weight: 800; color: #000000; line-height: 1; margin-top: 4px; transition: all 0.3s ease; }
-        .dark-mode .fx-mt5-tab-subtitle { color: #ffffff; }
-        .animate-text-pulse { animation: textPulse 2s ease-in-out infinite; }
-        @keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .animate-number-pulse { animation: numberPulse 2s ease-in-out infinite; }
-        @keyframes numberPulse { 0%, 100% { transform: scale(1); color: var(--green); } 50% { transform: scale(1.05); color: #2e9c14; } }
-        .animate-up-trend { animation: upTrend 1.5s ease-in-out infinite; }
-        @keyframes upTrend { 0%, 100% { transform: translateY(0px); opacity: 0.8; } 50% { transform: translateY(-3px); opacity: 1; color: #22c55e; } }
-        .fx-mt5-ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px; justify-content: center; }
+        /* ============================================================
+           MT5 SECTION - FIXED DARK MODE ICONS & IMAGE
+           ============================================================ */
+    /* ============================================================
+   MT5 SECTION - FIXED IMAGE BACKGROUND IN DARK MODE
+   ============================================================ */
+.fx-mt5-layout { 
+  display: grid; 
+  grid-template-columns: 1fr 1.2fr; 
+  gap: 18px; 
+  margin-bottom: 48px; 
+  align-items: start; 
+}
+@media(max-width:1024px) { 
+  .fx-mt5-layout { grid-template-columns: 1fr; gap: 40px; } 
+}
+.fx-mt5-feature { 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 6px; 
+  margin-bottom: 24px; 
+  opacity: 0; 
+  transform: translateX(-20px); 
+  animation: slideInRight 0.5s ease forwards; 
+}
+@keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+
+/* MT5 Feature Icon Box - FIXED for dark mode */
+.fx-mt5-feature-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+/* Force icon color inheritance */
+.fx-mt5-feature-icon-box svg {
+  color: #1a1a1a;
+  stroke: #1a1a1a;
+  width: 20px;
+  height: 20px;
+}
+/* Dark mode overrides */
+.dark-mode .fx-mt5-feature-icon-box {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.dark-mode .fx-mt5-feature-icon-box svg {
+  color: #ffffff;
+  stroke: #ffffff;
+}
+.fx-mt5-feature:hover .fx-mt5-feature-icon-box { 
+  transform: scale(1.1); 
+  background: #3fcb1b; 
+  color: #000;
+}
+.fx-mt5-feature:hover .fx-mt5-feature-icon-box svg {
+  color: #000;
+  stroke: #000;
+}
+.fx-mt5-feature-title { 
+  font-weight: 800; 
+  color: var(--text-primary); 
+  font-size: 0.95rem; 
+  margin-bottom: 4px; 
+  transition: color 0.3s ease; 
+}
+.fx-mt5-feature-desc { 
+  font-size: 0.8rem; 
+  color: var(--text-secondary); 
+  line-height: 1.5; 
+}
+.fx-mt5-visual { 
+  position: relative; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center;
+  min-height: unset;
+}
+
+/* ============================================================
+   MT5 DEVICES - THE ACTUAL FIX FOR WHITE BACKGROUND
+   ============================================================ */
+.fx-mt5-devices {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: transparent;
+}
+
+.fx-mt5-devices-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: transparent;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.fx-mt5-devices-img {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* THE FIX: Dark mode overlay that removes white background */
+.fx-mt5-devices-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  border-radius: 16px;
+}
+
+/* In dark mode, show the overlay with mix-blend-mode */
+.dark-mode .fx-mt5-devices-overlay {
+  display: block;
+  background: #0a0a0a;
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+}
+
+/* Alternative: Use a gradient overlay if multiply doesn't work well */
+.dark-mode .fx-mt5-devices-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(10, 10, 10, 0.9) 0%,
+    rgba(10, 10, 10, 0.7) 50%,
+    rgba(10, 10, 10, 0.9) 100%
+  );
+  mix-blend-mode: normal;
+  opacity: 0.7;
+}
+
+/* Floating Tabs - FIXED for dark mode */
+.fx-mt5-floating-tab {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(16px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px 20px;
+  min-height: 70px;
+  animation: floatTab 3s ease-in-out infinite;
+}
+.dark-mode .fx-mt5-floating-tab {
+  background: rgba(20, 20, 30, 0.88);
+  border-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.fx-mt5-floating-tab.left-tab { 
+  left: -40px; 
+  top: 30%; 
+  min-width: 140px; 
+  animation-delay: 0s; 
+}
+.fx-mt5-floating-tab.right-tab { 
+  right: -60px; 
+  bottom: 35%; 
+  min-width: 150px; 
+  animation-delay: 0.5s; 
+}
+@media(max-width:1024px) and (min-width:769px) { 
+  .fx-mt5-floating-tab.left-tab { left: -20px; min-width: 120px; padding: 8px 16px; } 
+  .fx-mt5-floating-tab.right-tab { right: -20px; min-width: 130px; padding: 8px 16px; } 
+}
+@media(max-width:768px) { 
+  .fx-mt5-floating-tab { 
+    position: relative; 
+    left: auto !important; 
+    right: auto !important; 
+    top: auto !important; 
+    bottom: auto !important; 
+    margin: 10px auto; 
+    width: 75%; 
+    min-width: auto; 
+    padding: 8px 16px; 
+    min-height: 65px; 
+    animation: floatTabMobile 3s ease-in-out infinite; 
+    background: rgba(255, 255, 255, 0.92);
+  }
+  .dark-mode .fx-mt5-floating-tab {
+    background: rgba(20, 20, 30, 0.9);
+  }
+  .fx-mt5-floating-tab.left-tab, 
+  .fx-mt5-floating-tab.right-tab { 
+    left: auto; right: auto; top: auto; bottom: auto; 
+  } 
+  .fx-mt5-visual { display: flex; flex-direction: column; align-items: center; } 
+  .fx-mt5-devices { order: 1; width: 100%; } 
+  .fx-mt5-floating-tab.left-tab { order: 2; } 
+  .fx-mt5-floating-tab.right-tab { order: 3; } 
+}
+@keyframes floatTab { 
+  0%, 100% { transform: translateY(0px); } 
+  50% { transform: translateY(-10px); } 
+}
+@keyframes floatTabMobile { 
+  0%, 100% { transform: translateY(0px); } 
+  50% { transform: translateY(-6px); } 
+}
+.animate-slide-left { 
+  animation: slideInLeft 0.6s ease-out, floatTab 3s ease-in-out infinite; 
+  animation-fill-mode: both; 
+}
+@keyframes slideInLeft { 
+  from { opacity: 0; transform: translateX(-100px); } 
+  to { opacity: 1; transform: translateX(0); } 
+}
+.animate-slide-right { 
+  animation: slideInRight 0.6s ease-out, floatTab 3s ease-in-out infinite; 
+  animation-fill-mode: both; 
+  animation-delay: 0.2s; 
+}
+
+/* Tab text colors - FIXED for dark mode */
+.fx-mt5-tab-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1;
+  margin-bottom: 4px;
+  transition: all 0.3s ease;
+}
+.dark-mode .fx-mt5-tab-title {
+  color: #ffffff;
+}
+
+.fx-mt5-tab-value-large {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #3fcb1b;
+  line-height: 1;
+  margin: 3px 0;
+  transition: all 0.3s ease;
+}
+.fx-mt5-tab-subvalue {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #22c55e;
+  line-height: 1;
+  transition: all 0.3s ease;
+}
+.fx-mt5-tab-subtitle {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1;
+  margin-top: 4px;
+  transition: all 0.3s ease;
+}
+.dark-mode .fx-mt5-tab-subtitle {
+  color: #ffffff;
+}
+
+.animate-text-pulse { animation: textPulse 2s ease-in-out infinite; }
+@keyframes textPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+.animate-number-pulse { animation: numberPulse 2s ease-in-out infinite; }
+@keyframes numberPulse { 0%, 100% { transform: scale(1); color: #3fcb1b; } 50% { transform: scale(1.05); color: #2e9c14; } }
+.animate-up-trend { animation: upTrend 1.5s ease-in-out infinite; }
+@keyframes upTrend { 0%, 100% { transform: translateY(0px); opacity: 0.8; } 50% { transform: translateY(-3px); opacity: 1; color: #22c55e; } }
+.fx-mt5-ctas { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px; justify-content: center; }
 
         /* ACCOUNTS */
         .fx-accounts-three-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1100px; margin: 0 auto; }
