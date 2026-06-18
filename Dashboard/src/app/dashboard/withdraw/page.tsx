@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BiBitcoin, BiWallet, BiCheck, BiArrowToRight, 
-  BiInfoCircle, BiLock, BiShield, BiTime, BiDollar
+  BiInfoCircle, BiLock, BiTime, BiDollar
 } from 'react-icons/bi';
 import { FaUniversity } from 'react-icons/fa';
 
@@ -284,15 +284,15 @@ export default function WithdrawPage() {
           <div className="summary-card">
             <div className="summary-row">
               <span>Withdrawal Amount</span>
-              <span>${amount || '0'}</span>
+              <span>${amount || '0.00'}</span>
             </div>
             <div className="summary-row">
               <span>Processing Fee</span>
-              <span>${selectedMethod.fee}</span>
+              <span>${selectedMethod.fee.toFixed(2)}</span>
             </div>
             <div className="summary-row total">
               <span>You'll Receive</span>
-              <span>${amount || '0'}</span>
+              <span>${amount || '0.00'}</span>
             </div>
           </div>
 
@@ -339,10 +339,43 @@ export default function WithdrawPage() {
       </AnimatePresence>
 
       <style jsx>{`
+        /* CSS Variables for Theme Support */
+        :root {
+          --bg-primary: #0a0a0a;
+          --bg-card: #1a1a1a;
+          --bg-secondary: #141414;
+          --bg-input: #141414;
+          --text-primary: #ffffff;
+          --text-secondary: rgba(255,255,255,0.6);
+          --border-color: rgba(255,255,255,0.1);
+          --shadow-color: rgba(0,0,0,0.2);
+        }
+
+        /* Light Mode */
+        @media (prefers-color-scheme: light) {
+          :root {
+            --bg-primary: #f8f9fa;
+            --bg-card: #ffffff;
+            --bg-secondary: #f1f3f5;
+            --bg-input: #f8f9fa;
+            --text-primary: #1a1a1a;
+            --text-secondary: rgba(0,0,0,0.6);
+            --border-color: #e9ecef;
+            --shadow-color: rgba(0,0,0,0.08);
+          }
+        }
+
         .withdraw-page {
           max-width: 1200px;
           margin: 0 auto;
+          padding: 0 16px;
           width: 100%;
+        }
+
+        @media (max-width: 480px) {
+          .withdraw-page {
+            padding: 0 12px;
+          }
         }
 
         .page-header {
@@ -352,19 +385,19 @@ export default function WithdrawPage() {
         .page-header h1 {
           font-size: clamp(1.25rem, 4vw, 1.75rem);
           font-weight: 700;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin: 0;
         }
 
         .page-header p {
           font-size: clamp(0.7rem, 3vw, 0.875rem);
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           margin: 6px 0 0;
         }
 
         /* Balance Card */
         .balance-card {
-          background: linear-gradient(135deg, rgba(63,203,27,0.1), rgba(0,0,0,0.05));
+          background: var(--bg-card);
           border: 1px solid rgba(63,203,27,0.2);
           border-radius: 20px;
           padding: 20px 24px;
@@ -372,6 +405,7 @@ export default function WithdrawPage() {
           align-items: center;
           gap: 20px;
           margin-bottom: 28px;
+          box-shadow: 0 2px 8px var(--shadow-color);
         }
 
         @media (max-width: 480px) {
@@ -392,6 +426,7 @@ export default function WithdrawPage() {
           align-items: center;
           justify-content: center;
           color: #3fcb1b;
+          flex-shrink: 0;
         }
 
         @media (max-width: 480px) {
@@ -408,14 +443,14 @@ export default function WithdrawPage() {
 
         .balance-info p {
           font-size: 13px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           margin: 0 0 4px;
         }
 
         .balance-info h2 {
           font-size: clamp(1.25rem, 5vw, 2rem);
           font-weight: 700;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin: 0;
         }
 
@@ -424,6 +459,7 @@ export default function WithdrawPage() {
           display: grid;
           grid-template-columns: 1fr 1.2fr;
           gap: 28px;
+          align-items: start;
         }
 
         @media (max-width: 968px) {
@@ -435,10 +471,11 @@ export default function WithdrawPage() {
 
         /* Methods Section */
         .methods-section, .form-section {
-          background: var(--bg-card, #1a1a1a);
-          border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          background: var(--bg-card);
+          border: 1px solid var(--border-color);
           border-radius: 20px;
           padding: 24px;
+          box-shadow: 0 2px 8px var(--shadow-color);
         }
 
         @media (max-width: 480px) {
@@ -451,7 +488,7 @@ export default function WithdrawPage() {
         .methods-section h3, .form-section h3 {
           font-size: 1.125rem;
           font-weight: 600;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin: 0 0 20px;
         }
 
@@ -474,11 +511,12 @@ export default function WithdrawPage() {
           align-items: center;
           gap: 16px;
           padding: 16px;
-          border: 1.5px solid var(--border-color, rgba(255,255,255,0.1));
+          border: 1.5px solid var(--border-color);
           border-radius: 14px;
           cursor: pointer;
           transition: all 0.3s ease;
           position: relative;
+          background: var(--bg-card);
         }
 
         @media (max-width: 480px) {
@@ -490,10 +528,12 @@ export default function WithdrawPage() {
 
         .method-card:hover {
           transform: translateX(4px);
+          border-color: rgba(63,203,27,0.3);
         }
 
         .method-card.selected {
           background: rgba(63,203,27,0.05);
+          border-color: #3fcb1b;
         }
 
         .method-icon {
@@ -519,12 +559,13 @@ export default function WithdrawPage() {
 
         .method-info {
           flex: 1;
+          min-width: 0;
         }
 
         .method-info h4 {
           font-size: 1rem;
           font-weight: 600;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin: 0 0 6px;
         }
 
@@ -543,7 +584,7 @@ export default function WithdrawPage() {
 
         .min-amount, .max-amount {
           font-size: 11px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
         }
 
         .method-time {
@@ -551,7 +592,7 @@ export default function WithdrawPage() {
           align-items: center;
           gap: 4px;
           font-size: 11px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
         }
 
         .selected-badge {
@@ -565,6 +606,7 @@ export default function WithdrawPage() {
           align-items: center;
           justify-content: center;
           color: white;
+          flex-shrink: 0;
         }
 
         /* Form Styles - Fixed Alignment */
@@ -573,11 +615,15 @@ export default function WithdrawPage() {
           width: 100%;
         }
 
+        .form-group:last-child {
+          margin-bottom: 0;
+        }
+
         .form-group label {
           display: block;
           font-size: 13px;
           font-weight: 500;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin-bottom: 8px;
         }
 
@@ -585,13 +631,27 @@ export default function WithdrawPage() {
         .form-group select {
           width: 100%;
           padding: 14px 16px;
-          background: var(--bg-secondary, #141414);
-          border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          background: var(--bg-input);
+          border: 1px solid var(--border-color);
           border-radius: 12px;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           font-size: 14px;
           transition: all 0.3s ease;
           box-sizing: border-box;
+          -webkit-appearance: none;
+          appearance: none;
+        }
+
+        .form-group select {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 16px center;
+          padding-right: 40px;
+        }
+
+        .form-group select option {
+          background: var(--bg-card);
+          color: var(--text-primary);
         }
 
         @media (max-width: 480px) {
@@ -606,12 +666,13 @@ export default function WithdrawPage() {
         .form-group select:focus {
           outline: none;
           border-color: #3fcb1b;
-          box-shadow: 0 0 0 2px rgba(63,203,27,0.1);
+          box-shadow: 0 0 0 3px rgba(63,203,27,0.1);
         }
 
         .form-group input::placeholder,
         .form-group select::placeholder {
-          color: rgba(255,255,255,0.4);
+          color: var(--text-secondary);
+          opacity: 0.5;
         }
 
         .form-row {
@@ -627,6 +688,12 @@ export default function WithdrawPage() {
           }
         }
 
+        .fields-container {
+          margin-top: 0;
+          width: 100%;
+        }
+
+        /* Amount Input */
         .amount-input-wrapper {
           position: relative;
           width: 100%;
@@ -639,20 +706,21 @@ export default function WithdrawPage() {
           transform: translateY(-50%);
           font-size: 20px;
           font-weight: 600;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           pointer-events: none;
         }
 
         .amount-input {
           width: 100%;
           padding: 14px 16px 14px 42px;
-          background: var(--bg-secondary, #141414);
-          border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          background: var(--bg-input);
+          border: 1px solid var(--border-color);
           border-radius: 12px;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           font-size: 24px;
           font-weight: 600;
           box-sizing: border-box;
+          transition: all 0.3s ease;
         }
 
         @media (max-width: 480px) {
@@ -669,7 +737,7 @@ export default function WithdrawPage() {
         .amount-input:focus {
           outline: none;
           border-color: #3fcb1b;
-          box-shadow: 0 0 0 2px rgba(63,203,27,0.1);
+          box-shadow: 0 0 0 3px rgba(63,203,27,0.1);
         }
 
         .quick-amounts {
@@ -681,10 +749,10 @@ export default function WithdrawPage() {
 
         .quick-amount-btn {
           padding: 6px 16px;
-          background: var(--bg-secondary, #141414);
-          border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          background: var(--bg-input);
+          border: 1px solid var(--border-color);
           border-radius: 20px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           font-size: 13px;
           cursor: pointer;
           transition: all 0.3s ease;
@@ -703,17 +771,13 @@ export default function WithdrawPage() {
           color: #3fcb1b;
         }
 
-        .fields-container {
-          margin-top: 20px;
-          width: 100%;
-        }
-
         /* Info Box */
         .info-box {
           display: flex;
           gap: 12px;
           padding: 16px;
           background: rgba(63,203,27,0.08);
+          border: 1px solid rgba(63,203,27,0.1);
           border-radius: 12px;
           margin: 20px 0;
           width: 100%;
@@ -735,25 +799,27 @@ export default function WithdrawPage() {
 
         .info-content {
           flex: 1;
+          min-width: 0;
         }
 
         .info-title {
           font-size: 13px;
           font-weight: 600;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           margin: 0 0 4px;
         }
 
         .info-text {
           font-size: 12px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           margin: 0;
           line-height: 1.4;
         }
 
         /* Summary Card */
         .summary-card {
-          background: var(--bg-secondary, #141414);
+          background: var(--bg-input);
+          border: 1px solid var(--border-color);
           border-radius: 14px;
           padding: 16px 20px;
           margin: 20px 0;
@@ -773,17 +839,22 @@ export default function WithdrawPage() {
           justify-content: space-between;
           align-items: center;
           padding: 10px 0;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           font-size: 14px;
+          gap: 12px;
+        }
+
+        .summary-row:not(:last-child) {
+          border-bottom: 1px solid var(--border-color);
         }
 
         .summary-row.total {
           padding-top: 12px;
-          margin-top: 8px;
-          border-top: 1px solid var(--border-color, rgba(255,255,255,0.1));
+          margin-top: 0;
           font-weight: 600;
-          color: var(--text-primary, #ffffff);
+          color: var(--text-primary);
           font-size: 15px;
+          border-bottom: none;
         }
 
         @media (max-width: 480px) {
@@ -804,7 +875,7 @@ export default function WithdrawPage() {
           gap: 8px;
           margin-bottom: 24px;
           font-size: 12px;
-          color: var(--text-secondary, rgba(255,255,255,0.6));
+          color: var(--text-secondary);
           flex-wrap: wrap;
           text-align: center;
         }
@@ -860,6 +931,7 @@ export default function WithdrawPage() {
           border-top-color: white;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
+          flex-shrink: 0;
         }
 
         @keyframes spin {
@@ -881,6 +953,7 @@ export default function WithdrawPage() {
           border-radius: 14px;
           z-index: 1000;
           box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+          max-width: 90%;
         }
 
         @media (max-width: 480px) {
@@ -891,6 +964,7 @@ export default function WithdrawPage() {
             transform: translateX(0);
             padding: 12px 16px;
             gap: 10px;
+            max-width: 100%;
           }
         }
 
@@ -903,15 +977,6 @@ export default function WithdrawPage() {
           font-size: 12px;
           margin: 2px 0 0;
           opacity: 0.9;
-        }
-
-        /* Ensure all inputs have consistent width */
-        .form-group {
-          width: 100%;
-        }
-
-        input, select, button {
-          font-family: inherit;
         }
 
         /* Remove number input spinners */
